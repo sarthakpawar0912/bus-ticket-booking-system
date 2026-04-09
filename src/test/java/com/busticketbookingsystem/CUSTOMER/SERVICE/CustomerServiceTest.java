@@ -22,12 +22,14 @@ class CustomerServiceTest {
 
     @InjectMocks CustomerService customerService;
 
-    // 🔥 COMMON DATA
+
     CustomerRequestDTO dto;
+
     Address address;
 
     @BeforeEach
     void setup() {
+
         dto = new CustomerRequestDTO();
         dto.setName("Sarthak");
         dto.setEmail("test@gmail.com");
@@ -39,11 +41,13 @@ class CustomerServiceTest {
         address.setCity("Pune");
     }
 
-    // ================= CREATE =================
+
 
     @Test
     void create_success() {
+
         when(addressRepository.findById(1)).thenReturn(Optional.of(address));
+
         when(customerRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         CustomerResponseDTO res = customerService.create(dto);
@@ -53,16 +57,17 @@ class CustomerServiceTest {
 
     @Test
     void create_addressNotFound() {
+
         when(addressRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> customerService.create(dto));
     }
 
-    // ================= GET ALL =================
 
     @Test
     void getAll_success() {
+
         Customer c = Customer.builder().customerId(1).name("A").email("a").phone("123").address(address).build();
 
         when(customerRepository.findAll()).thenReturn(List.of(c));
@@ -74,15 +79,16 @@ class CustomerServiceTest {
 
     @Test
     void getAll_empty() {
+
         when(customerRepository.findAll()).thenReturn(Collections.emptyList());
 
         assertTrue(customerService.getAll().isEmpty());
     }
 
-    // ================= GET BY ID =================
 
     @Test
     void getById_success() {
+
         Customer c = Customer.builder().customerId(1).name("A").email("a").phone("123").address(address).build();
 
         when(customerRepository.findById(1)).thenReturn(Optional.of(c));
@@ -92,50 +98,58 @@ class CustomerServiceTest {
 
     @Test
     void getById_notFound() {
+
         when(customerRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
                 () -> customerService.getById(1));
     }
 
-    // ================= UPDATE =================
+
 
     @Test
     void update_success() {
+
         Customer c = Customer.builder().customerId(1).name("Old").email("old").phone("111").address(address).build();
 
         when(customerRepository.findById(1)).thenReturn(Optional.of(c));
-        when(customerRepository.save(any())).thenReturn(c);
+
+          when(customerRepository.save(any())).thenReturn(c);
 
         CustomerResponseDTO res = customerService.update(1, dto);
 
-        assertEquals("Sarthak", res.getName());
+         assertEquals("Sarthak", res.getName());
     }
 
     @Test
     void update_notFound() {
+
         when(customerRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class,
+
+         assertThrows(ResourceNotFoundException.class,
                 () -> customerService.update(1, dto));
     }
 
-    // ================= DELETE =================
 
     @Test
     void delete_success() {
+
         when(customerRepository.existsById(1)).thenReturn(true);
 
         customerService.delete(1);
 
         verify(customerRepository).deleteById(1);
+
     }
 
     @Test
     void delete_notFound() {
+
         when(customerRepository.existsById(1)).thenReturn(false);
 
         assertThrows(ResourceNotFoundException.class,
                 () -> customerService.delete(1));
+
     }
 }
