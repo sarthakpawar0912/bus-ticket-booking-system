@@ -1,7 +1,7 @@
 package com.busticketbookingsystem.CONTROLLER;
 
-import com.busticketbookingsystem.CUSTOMER.CONTROLLER.AddressController;
-import com.busticketbookingsystem.CUSTOMER.SERVICE.AddressService;
+import com.busticketbookingsystem.CUSTOMER.controller.AddressController;
+import com.busticketbookingsystem.CUSTOMER.service.AddressService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
-package com.busticketbookingsystem.CUSTOMER.SERVICE;
+package com.busticketbookingsystem.CUSTOMER.service;
 
-import com.busticketbookingsystem.CUSTOMER.DTO.*;
-import com.busticketbookingsystem.CUSTOMER.ENTITY.*;
-import com.busticketbookingsystem.CUSTOMER.EXCEPTION.ResourceNotFoundException;
-import com.busticketbookingsystem.CUSTOMER.REPOSITORY.*;
+import com.busticketbookingsystem.CUSTOMER.dto.*;
+import com.busticketbookingsystem.CUSTOMER.entity.*;
+import com.busticketbookingsystem.CUSTOMER.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.CUSTOMER.repository.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,8 @@ class CustomerServiceTest {
     @Mock CustomerRepository customerRepository;
     @Mock AddressRepository addressRepository;
 
-    @InjectMocks CustomerService customerService;
+    @InjectMocks
+    com.busticketbookingsystem.CUSTOMER.SERVICE.CustomerService customerService;
 
 
     CustomerRequestDTO dto;

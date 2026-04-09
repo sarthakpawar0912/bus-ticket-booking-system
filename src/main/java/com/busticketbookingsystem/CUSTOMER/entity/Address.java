@@ -1,4 +1,4 @@
-package com.busticketbookingsystem.CUSTOMER.ENTITY;
+package com.busticketbookingsystem.CUSTOMER.entity;
 
 
 import jakarta.persistence.*;

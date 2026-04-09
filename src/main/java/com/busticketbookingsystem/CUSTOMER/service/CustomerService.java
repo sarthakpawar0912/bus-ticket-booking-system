@@ -1,12 +1,12 @@
 package com.busticketbookingsystem.CUSTOMER.SERVICE;
 
-import com.busticketbookingsystem.CUSTOMER.DTO.CustomerRequestDTO;
-import com.busticketbookingsystem.CUSTOMER.DTO.CustomerResponseDTO;
-import com.busticketbookingsystem.CUSTOMER.ENTITY.Address;
-import com.busticketbookingsystem.CUSTOMER.ENTITY.Customer;
-import com.busticketbookingsystem.CUSTOMER.EXCEPTION.ResourceNotFoundException;
-import com.busticketbookingsystem.CUSTOMER.REPOSITORY.AddressRepository;
-import com.busticketbookingsystem.CUSTOMER.REPOSITORY.CustomerRepository;
+import com.busticketbookingsystem.CUSTOMER.dto.CustomerRequestDTO;
+import com.busticketbookingsystem.CUSTOMER.dto.CustomerResponseDTO;
+import com.busticketbookingsystem.CUSTOMER.entity.Address;
+import com.busticketbookingsystem.CUSTOMER.entity.Customer;
+import com.busticketbookingsystem.CUSTOMER.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.CUSTOMER.repository.AddressRepository;
+import com.busticketbookingsystem.CUSTOMER.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

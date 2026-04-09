@@ -1,4 +1,4 @@
-package com.busticketbookingsystem.CUSTOMER.EXCEPTION;
+package com.busticketbookingsystem.CUSTOMER.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

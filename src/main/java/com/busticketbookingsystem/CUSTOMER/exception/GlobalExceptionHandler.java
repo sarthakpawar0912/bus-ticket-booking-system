@@ -1,4 +1,4 @@
-package com.busticketbookingsystem.CUSTOMER.EXCEPTION;
+package com.busticketbookingsystem.CUSTOMER.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

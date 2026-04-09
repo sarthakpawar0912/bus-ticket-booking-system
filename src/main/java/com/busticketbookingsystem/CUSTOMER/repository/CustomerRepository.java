@@ -1,6 +1,6 @@
-package com.busticketbookingsystem.CUSTOMER.REPOSITORY;
+package com.busticketbookingsystem.CUSTOMER.repository;
 
-import com.busticketbookingsystem.CUSTOMER.ENTITY.Customer;
+import com.busticketbookingsystem.CUSTOMER.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

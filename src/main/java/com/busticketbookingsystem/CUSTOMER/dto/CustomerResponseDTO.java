@@ -1,4 +1,4 @@
-package com.busticketbookingsystem.CUSTOMER.DTO;
+package com.busticketbookingsystem.CUSTOMER.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

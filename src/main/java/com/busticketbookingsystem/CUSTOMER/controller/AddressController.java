@@ -1,7 +1,7 @@
-package com.busticketbookingsystem.CUSTOMER.CONTROLLER;
+package com.busticketbookingsystem.CUSTOMER.controller;
 
-import com.busticketbookingsystem.CUSTOMER.ENTITY.Address;
-import com.busticketbookingsystem.CUSTOMER.SERVICE.AddressService;
+import com.busticketbookingsystem.CUSTOMER.entity.Address;
+import com.busticketbookingsystem.CUSTOMER.service.AddressService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

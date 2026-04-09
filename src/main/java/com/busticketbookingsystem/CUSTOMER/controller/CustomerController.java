@@ -1,8 +1,7 @@
-package com.busticketbookingsystem.CUSTOMER.CONTROLLER;
+package com.busticketbookingsystem.CUSTOMER.controller;
 
-import com.busticketbookingsystem.CUSTOMER.DTO.CustomerRequestDTO;
-import com.busticketbookingsystem.CUSTOMER.DTO.CustomerResponseDTO;
-import com.busticketbookingsystem.CUSTOMER.SERVICE.CustomerService;
+import com.busticketbookingsystem.CUSTOMER.dto.CustomerRequestDTO;
+import com.busticketbookingsystem.CUSTOMER.dto.CustomerResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +11,9 @@ import java.util.List;
 @RequestMapping("/api/customers")
 public class CustomerController {
 
-    private final CustomerService customerService;
+    private final com.busticketbookingsystem.CUSTOMER.SERVICE.CustomerService customerService;
 
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(com.busticketbookingsystem.CUSTOMER.SERVICE.CustomerService customerService) {
         this.customerService = customerService;
     }
 

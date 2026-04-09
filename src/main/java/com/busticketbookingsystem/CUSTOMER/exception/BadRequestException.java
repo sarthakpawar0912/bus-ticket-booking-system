@@ -1,4 +1,4 @@
-package com.busticketbookingsystem.CUSTOMER.EXCEPTION;
+package com.busticketbookingsystem.CUSTOMER.exception;
 
 public class BadRequestException extends RuntimeException {
     public BadRequestException(String message) {

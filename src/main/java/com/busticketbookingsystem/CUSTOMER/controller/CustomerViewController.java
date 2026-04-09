@@ -1,7 +1,6 @@
-package com.busticketbookingsystem.CUSTOMER.CONTROLLER;
+package com.busticketbookingsystem.CUSTOMER.controller;
 
-import com.busticketbookingsystem.CUSTOMER.DTO.CustomerRequestDTO;
-import com.busticketbookingsystem.CUSTOMER.SERVICE.CustomerService;
+import com.busticketbookingsystem.CUSTOMER.dto.CustomerRequestDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/view/customers")
 public class CustomerViewController {
 
-    private final CustomerService service;
+    private final com.busticketbookingsystem.CUSTOMER.SERVICE.CustomerService service;
 
-    public CustomerViewController(CustomerService service) {
+    public CustomerViewController(com.busticketbookingsystem.CUSTOMER.SERVICE.CustomerService service) {
         this.service = service;
     }
 
