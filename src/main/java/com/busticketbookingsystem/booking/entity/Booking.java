@@ -27,5 +27,5 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private BookingStatus status = BookingStatus.Available;
+    private com.busticketbookingsystem.booking.entity.BookingStatus status = com.busticketbookingsystem.booking.entity.BookingStatus.Available;
 }

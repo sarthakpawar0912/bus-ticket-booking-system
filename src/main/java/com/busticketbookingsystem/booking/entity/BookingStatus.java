@@ -1,4 +1,4 @@
-package com.busticketbookingsystem.booking.entity;
+package com.busticketbookingsystem.BOOKING.ENTITY;
 
 public enum BookingStatus {
     Available,
