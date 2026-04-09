@@ -29,7 +29,7 @@ public class CustomerService {
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),
-                customer.getAddress().getCity()  // getting city from Address
+                customer.getAddress().getCity()
         );
     }
 
@@ -76,27 +76,26 @@ public class CustomerService {
         if (dto.getName() != null) {
             customer.setName(dto.getName());
         }
-
         if (dto.getEmail() != null) {
             customer.setEmail(dto.getEmail());
         }
-
         if (dto.getPhone() != null) {
             customer.setPhone(dto.getPhone());
         }
-
         if (dto.getAddressId() != null) {
             Address address = addressRepository.findById(dto.getAddressId())
                     .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
             customer.setAddress(address);
         }
-
         return mapToDTO(customerRepository.save(customer));
     }
+
+
     public void delete(Integer id){
         if(!customerRepository.existsById(id)){
             throw new ResourceNotFoundException("Customer not found");
         }
-        customerRepository.deleteById(id); // ✅ ADD THIS
+        customerRepository.deleteById(id);
+
     }
 }

@@ -21,23 +21,23 @@ public class AddressService {
         this.customerRepository = customerRepository;
     }
 
-    // ✅ CREATE
+
     public Address create(Address address) {
         return addressRepository.save(address);
     }
 
-    // ✅ GET ALL
+
     public List<Address> getAll() {
         return addressRepository.findAll();
     }
 
-    // ✅ GET BY ID
+
     public Address getById(Integer id) {
         return addressRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
     }
 
-    // ✅ UPDATE (SAFE UPDATE)
+
     @Transactional
     public Address update(Integer id, Address updatedAddress) {
         Address address = getById(id);
@@ -58,7 +58,7 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    // ✅ DELETE (WITH FK CHECK)
+
     @Transactional
     public void delete(Integer id) {
 

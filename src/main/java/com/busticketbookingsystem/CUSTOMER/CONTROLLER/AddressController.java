@@ -36,8 +36,7 @@ public class AddressController {
 
 
     @PutMapping("/{id}")
-    public Address update(@PathVariable Integer id,
-                          @RequestBody Address address) {
+    public Address update(@PathVariable Integer id, @RequestBody Address address) {
         return addressService.update(id, address);
     }
 

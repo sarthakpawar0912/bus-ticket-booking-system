@@ -5,10 +5,9 @@ import com.busticketbookingsystem.booking.dto.BookingResponseDTO;
 import com.busticketbookingsystem.booking.entity.Booking;
 import com.busticketbookingsystem.booking.entity.BookingStatus;
 import com.busticketbookingsystem.booking.repository.BookingRepository;
-// Note: You will import Member 3's Trip and TripRepository here once they create it
-import com.busticketbookingsystem.booking.entity.Trip;
-import com.busticketbookingsystem.booking.repository.TripRepository;
 
+import com.busticketbookingsystem.trip.entity.Trip;
+import com.busticketbookingsystem.trip.repository.TripRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

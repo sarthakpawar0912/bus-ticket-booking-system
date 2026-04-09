@@ -15,7 +15,6 @@ public class CustomerResponseDTO {
     private String phone;
     private String city;
 
-
 }
 
 
