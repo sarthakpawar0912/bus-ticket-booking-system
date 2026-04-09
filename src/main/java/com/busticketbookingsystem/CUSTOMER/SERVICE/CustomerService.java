@@ -58,9 +58,9 @@ public class CustomerService {
         return mapToDTO(customer);
     }
 
-    public CustomerResponseDTO update(Integer id,CustomerRequestDTO dto){
-        Customer customer=customerRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Customer Not found"));
+    public CustomerResponseDTO update(Integer id, CustomerRequestDTO dto){
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Not found"));
 
         customer.setName(dto.getName());
         customer.setEmail(dto.getEmail());
@@ -69,6 +69,30 @@ public class CustomerService {
         return mapToDTO(customerRepository.save(customer));
     }
 
+    public CustomerResponseDTO patch(Integer id, CustomerRequestDTO dto){
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Not found"));
+
+        if (dto.getName() != null) {
+            customer.setName(dto.getName());
+        }
+
+        if (dto.getEmail() != null) {
+            customer.setEmail(dto.getEmail());
+        }
+
+        if (dto.getPhone() != null) {
+            customer.setPhone(dto.getPhone());
+        }
+
+        if (dto.getAddressId() != null) {
+            Address address = addressRepository.findById(dto.getAddressId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+            customer.setAddress(address);
+        }
+
+        return mapToDTO(customerRepository.save(customer));
+    }
     public void delete(Integer id){
         if(!customerRepository.existsById(id)){
             throw new ResourceNotFoundException("Customer not found");
