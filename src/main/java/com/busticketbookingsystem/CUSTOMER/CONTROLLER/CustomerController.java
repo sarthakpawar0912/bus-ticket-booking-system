@@ -42,7 +42,7 @@ public class CustomerController {
     @PatchMapping("/{id}")
     public CustomerResponseDTO patch(@PathVariable Integer id,
                                      @RequestBody CustomerRequestDTO dto) {
-        return customerService.update(id, dto);
+        return customerService.patch(id, dto); // ✅ call PATCH method
     }
 
     @DeleteMapping("/{id}")
