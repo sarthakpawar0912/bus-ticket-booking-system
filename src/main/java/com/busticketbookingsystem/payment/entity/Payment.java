@@ -1,14 +1,14 @@
 package com.busticketbookingsystem.payment.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
-import java.math.BigDecimal;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,22 +16,16 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
-    private Integer paymentId;
+    private Long paymentId;
 
-    @Column(name = "booking_id", nullable = false)
-    private Integer bookingId;
+    private Long bookingId;
 
-    @Column(name = "customer_id")
-    private Integer customerId;
-
-    @Column(nullable = false)
-    private BigDecimal amount;
-
-    @Column(name = "payment_date")
-    private LocalDateTime paymentDate;
+    private Double amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_status")
-    private PaymentStatus paymentStatus;
+    private PaymentStatus status;
+
+    private String transactionId;
+
+    private LocalDateTime paymentTime;
 }

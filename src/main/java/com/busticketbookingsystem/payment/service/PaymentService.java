@@ -4,77 +4,83 @@ import com.busticketbookingsystem.payment.dto.PaymentRequestDTO;
 import com.busticketbookingsystem.payment.dto.PaymentResponseDTO;
 import com.busticketbookingsystem.payment.entity.Payment;
 import com.busticketbookingsystem.payment.entity.PaymentStatus;
+import com.busticketbookingsystem.payment.exception.*;
 import com.busticketbookingsystem.payment.repository.PaymentRepository;
-
-import com.busticketbookingsystem.booking.entity.Booking;
-import com.busticketbookingsystem.booking.repository.BookingRepository;
-
-import com.busticketbookingsystem.customer.entity.Customer;
-import com.busticketbookingsystem.customer.repository.CustomerRepository;
-
-import com.busticketbookingsystem.shared.exception.ResourceNotFoundException;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final BookingRepository bookingRepository;
-    private final CustomerRepository customerRepository;
 
-    // 💳 PROCESS PAYMENT
-    public PaymentResponseDTO processPayment(PaymentRequestDTO request) {
+    public PaymentService(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
 
-        Booking booking = bookingRepository.findById(request.getBookingId())
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-        Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+    public PaymentResponseDTO makePayment(PaymentRequestDTO request) {
+
+        if (request.getAmount() <= 0) {
+            throw new InvalidPaymentException("Amount must be greater than zero");
+        }
 
         Payment payment = Payment.builder()
-                .booking(booking)
-                .customer(customer)
-                .amount(booking.getTrip().getFare())
-                .paymentDate(LocalDateTime.now())
-                .paymentStatus(PaymentStatus.Success)
+                .bookingId(request.getBookingId())
+                .amount(request.getAmount())
+                .status(PaymentStatus.PENDING)
+                .paymentTime(LocalDateTime.now())
                 .build();
+
+        // Simulate payment success
+        payment.setStatus(PaymentStatus.SUCCESS);
+        payment.setTransactionId(UUID.randomUUID().toString());
 
         Payment saved = paymentRepository.save(payment);
 
-        return PaymentResponseDTO.builder()
-                .paymentId(saved.getPaymentId())
-                .bookingId(booking.getBookingId())
-                .customerId(customer.getCustomerId())
-                .amount(saved.getAmount())
-                .status(saved.getPaymentStatus().name())
-                .paymentDate(saved.getPaymentDate())
-                .build();
+        return new PaymentResponseDTO(
+                saved.getPaymentId(),
+                saved.getBookingId(),
+                saved.getAmount(),
+                saved.getStatus(),
+                "Payment Successful"
+        );
     }
 
-    // 🔁 REFUND
-    public PaymentResponseDTO refund(Integer bookingId) {
 
-        Payment payment = paymentRepository.findByBooking_BookingId(bookingId);
+    public PaymentResponseDTO getPayment(Long id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found"));
 
-        if (payment == null) {
-            throw new ResourceNotFoundException("Payment not found");
+        return new PaymentResponseDTO(
+                payment.getPaymentId(),
+                payment.getBookingId(),
+                payment.getAmount(),
+                payment.getStatus(),
+                "Payment fetched successfully"
+        );
+    }
+
+
+    public PaymentResponseDTO refund(Long id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found"));
+
+        if (payment.getStatus() != PaymentStatus.SUCCESS) {
+            throw new RefundNotAllowedException("Refund not allowed");
         }
 
-        payment.setPaymentStatus(PaymentStatus.Failed);
-        Payment updated = paymentRepository.save(payment);
+        payment.setStatus(PaymentStatus.REFUNDED);
+        paymentRepository.save(payment);
 
-        return PaymentResponseDTO.builder()
-                .paymentId(updated.getPaymentId())
-                .bookingId(updated.getBooking().getBookingId())
-                .customerId(updated.getCustomer().getCustomerId())
-                .amount(updated.getAmount())
-                .status(updated.getPaymentStatus().name())
-                .paymentDate(updated.getPaymentDate())
-                .build();
+        return new PaymentResponseDTO(
+                payment.getPaymentId(),
+                payment.getBookingId(),
+                payment.getAmount(),
+                payment.getStatus(),
+                "Refund successful"
+        );
     }
 }

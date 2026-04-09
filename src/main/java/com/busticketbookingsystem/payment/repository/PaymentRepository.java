@@ -3,7 +3,9 @@ package com.busticketbookingsystem.payment.repository;
 import com.busticketbookingsystem.payment.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PaymentRepository extends JpaRepository<Payment, Integer> {
+import java.util.Optional;
 
-    Payment findByBooking_BookingId(Integer bookingId);
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
+
+    Optional<Payment> findByBookingId(Long bookingId);
 }

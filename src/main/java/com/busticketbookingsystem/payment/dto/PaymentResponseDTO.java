@@ -1,19 +1,16 @@
 package com.busticketbookingsystem.payment.dto;
 
-import lombok.Builder;
+import com.busticketbookingsystem.payment.entity.PaymentStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 @Data
-@Builder
+@AllArgsConstructor
 public class PaymentResponseDTO {
 
-    private Integer paymentId;
-    private Integer bookingId;
-    private Integer customerId;
-    private BigDecimal amount;
-    private String status;
-    private LocalDateTime paymentDate;
+    private Long paymentId;
+    private Long bookingId;
+    private Double amount;
+    private PaymentStatus status;
+    private String message;
 }
