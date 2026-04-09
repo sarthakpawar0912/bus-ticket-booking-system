@@ -81,7 +81,7 @@ public class AgencyService {
 
         bus.setRegistrationNumber(updatedBus.getRegistrationNumber());
         bus.setCapacity(updatedBus.getCapacity());
-        bus.setType(updatedBus.getType());
+        bus.setType(updatedBus.getType());~
 
         return busRepository.save(bus);
     }
