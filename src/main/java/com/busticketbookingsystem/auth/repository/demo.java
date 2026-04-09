@@ -1,4 +1,4 @@
-package auth.repository;
+package com.busticketbookingsystem.auth.repository;
 
 public class demo {
 }

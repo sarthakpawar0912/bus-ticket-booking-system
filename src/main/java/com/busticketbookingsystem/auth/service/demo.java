@@ -1,4 +1,4 @@
-package auth.service;
+package com.busticketbookingsystem.auth.service;
 
 public class demo {
 }

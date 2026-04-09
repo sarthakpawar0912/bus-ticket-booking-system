@@ -1,4 +1,4 @@
-package payment.entity;
+package com.busticketbookingsystem.payment.entity;
 
 public class demo {
 }

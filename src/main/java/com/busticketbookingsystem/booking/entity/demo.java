@@ -1,4 +1,4 @@
-package booking.entity;
+package com.busticketbookingsystem.booking.entity;
 
 public class demo {
 }

@@ -1,4 +1,4 @@
-package payment.dto;
+package com.busticketbookingsystem.payment.dto;
 
 public class demo {
 }

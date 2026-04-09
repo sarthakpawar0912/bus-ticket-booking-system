@@ -1,4 +1,4 @@
-package auth.controller;
+package com.busticketbookingsystem.auth.controller;
 
 public class demo {
 }

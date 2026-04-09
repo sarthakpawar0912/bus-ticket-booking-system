@@ -1,4 +1,4 @@
-package auth.dto;
+package com.busticketbookingsystem.auth.dto;
 
 public class demo {
 }

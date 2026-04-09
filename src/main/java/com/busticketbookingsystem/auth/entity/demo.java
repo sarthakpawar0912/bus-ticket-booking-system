@@ -1,4 +1,4 @@
-package auth.entity;
+package com.busticketbookingsystem.auth.entity;
 
 public class demo {
 }
