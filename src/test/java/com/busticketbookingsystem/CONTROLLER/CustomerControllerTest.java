@@ -1,7 +1,7 @@
 package com.busticketbookingsystem.CONTROLLER;
 
-import com.busticketbookingsystem.CUSTOMER.controller.CustomerController;
-import com.busticketbookingsystem.CUSTOMER.service.CustomerService;
+import com.busticketbookingsystem.customer.controller.CustomerController;
+import com.busticketbookingsystem.customer.service.CustomerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest; // ✅ FIX
