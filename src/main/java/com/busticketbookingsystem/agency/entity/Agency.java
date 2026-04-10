@@ -8,7 +8,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // ✅ Added Builder pattern
+@Builder // ✅ Restored: Crucial for your Service layer to convert DTOs into this Entity
 public class Agency {
 
     @Id
@@ -22,9 +22,9 @@ public class Agency {
     @Column(name = "contact_person_name", nullable = false)
     private String contactPersonName;
 
-    @Column(nullable = false, unique = true) // ✅ Emails must be unique
+    @Column(nullable = false, unique = true) // ✅ Prevents duplicate emails at the database level
     private String email;
 
-    @Column(nullable = false, unique = true) // ✅ Phones must be unique
+    @Column(nullable = false, unique = true) // ✅ Prevents duplicate phones at the database level
     private String phone;
 }

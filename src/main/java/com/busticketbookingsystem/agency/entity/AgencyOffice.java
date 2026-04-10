@@ -8,7 +8,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // ✅ Added Builder pattern
+@Builder // ✅ Crucial for converting RequestDTOs into this Entity
 public class AgencyOffice {
 
     @Id
@@ -16,7 +16,8 @@ public class AgencyOffice {
     @Column(name = "office_id")
     private Integer officeId;
 
-    @ManyToOne(fetch = FetchType.LAZY) // ✅ Optimized performance
+    // ✅ LAZY fetch prevents dragging the entire Agency object out of the DB unless explicitly requested
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
@@ -29,6 +30,7 @@ public class AgencyOffice {
     @Column(name = "office_contact_number")
     private String officeContactNumber;
 
+    // Kept as an Integer to easily link with Member 5's Address table without importing their entity
     @Column(name = "office_address_id")
     private Integer officeAddressId;
 }

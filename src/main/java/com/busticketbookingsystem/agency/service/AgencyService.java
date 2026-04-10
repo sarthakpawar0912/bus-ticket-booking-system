@@ -1,17 +1,10 @@
 package com.busticketbookingsystem.agency.service;
 
-import com.busticketbookingsystem.agency.dto.AgencyRequestDTO;
-import com.busticketbookingsystem.agency.dto.AgencyResponseDTO;
-import com.busticketbookingsystem.agency.dto.OfficeRequestDTO;
-import com.busticketbookingsystem.agency.dto.OfficeResponseDTO;
-import com.busticketbookingsystem.agency.entity.Agency;
-import com.busticketbookingsystem.agency.entity.AgencyOffice;
+import com.busticketbookingsystem.agency.dto.*;
+import com.busticketbookingsystem.agency.entity.*;
 import com.busticketbookingsystem.agency.exception.BadRequestException;
 import com.busticketbookingsystem.agency.exception.ResourceNotFoundException;
-import com.busticketbookingsystem.agency.repository.AgencyOfficeRepository;
-import com.busticketbookingsystem.agency.repository.AgencyRepository;
-import com.busticketbookingsystem.agency.repository.BusRepository;
-import com.busticketbookingsystem.agency.repository.DriverRepository;
+import com.busticketbookingsystem.agency.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +19,7 @@ public class AgencyService {
     private final BusRepository busRepository;
     private final DriverRepository driverRepository;
 
-    // ✅ Constructor Injection (Industry Standard)
+    // ✅ Constructor Injection: Standard practice for safety and testing
     public AgencyService(AgencyRepository agencyRepository,
                          AgencyOfficeRepository officeRepository,
                          BusRepository busRepository,
@@ -38,20 +31,15 @@ public class AgencyService {
     }
 
     // ==========================================
-    // AGENCY LOGIC
+    // AGENCY BUSINESS LOGIC [cite: 2]
     // ==========================================
 
     @Transactional
     public AgencyResponseDTO createAgency(AgencyRequestDTO dto) {
-        // 1. Business Rule: Prevent duplicate emails and phones
         if (agencyRepository.existsByEmail(dto.getEmail())) {
-            throw new BadRequestException("An agency with this email already exists.");
-        }
-        if (agencyRepository.existsByPhone(dto.getPhone())) {
-            throw new BadRequestException("An agency with this phone number already exists.");
+            throw new BadRequestException("Email already registered to another agency.");
         }
 
-        // 2. Map DTO to Entity using @Builder
         Agency agency = Agency.builder()
                 .name(dto.getName())
                 .contactPersonName(dto.getContactPersonName())
@@ -59,16 +47,11 @@ public class AgencyService {
                 .phone(dto.getPhone())
                 .build();
 
-        // 3. Save and return mapped response
-        Agency savedAgency = agencyRepository.save(agency);
-        return mapToAgencyResponseDTO(savedAgency);
+        return mapToAgencyResponseDTO(agencyRepository.save(agency));
     }
 
-
-
     public List<AgencyResponseDTO> getAllAgencies() {
-        return agencyRepository.findAll()
-                .stream()
+        return agencyRepository.findAll().stream()
                 .map(this::mapToAgencyResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -80,44 +63,23 @@ public class AgencyService {
     }
 
     @Transactional
-    public AgencyResponseDTO updateAgency(Integer id, AgencyRequestDTO dto) {
-        Agency agency = agencyRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Agency not found with ID: " + id));
-
-        // Update fields
-        agency.setName(dto.getName());
-        agency.setContactPersonName(dto.getContactPersonName());
-        agency.setEmail(dto.getEmail());
-        agency.setPhone(dto.getPhone());
-
-        return mapToAgencyResponseDTO(agencyRepository.save(agency));
-    }
-
-    @Transactional
     public void deleteAgency(Integer id) {
-        if (!agencyRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Agency not found with ID: " + id);
-        }
-
-        // ✅ Safety Net: Check if offices exist before deleting!
+        // ✅ Safety Check: Cannot delete if offices exist [cite: 4]
         if (officeRepository.existsByAgency_AgencyId(id)) {
-            throw new BadRequestException("Cannot delete Agency. It still has active offices assigned to it.");
+            throw new BadRequestException("Cannot delete Agency. Remove all Offices first.");
         }
-
         agencyRepository.deleteById(id);
     }
 
     // ==========================================
-    // OFFICE LOGIC
+    // OFFICE BUSINESS LOGIC [cite: 4]
     // ==========================================
 
     @Transactional
     public OfficeResponseDTO createOffice(OfficeRequestDTO dto) {
-        // 1. Verify parent agency exists
         Agency agency = agencyRepository.findById(dto.getAgencyId())
-                .orElseThrow(() -> new ResourceNotFoundException("Parent Agency not found with ID: " + dto.getAgencyId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Parent Agency not found"));
 
-        // 2. Build Entity
         AgencyOffice office = AgencyOffice.builder()
                 .agency(agency)
                 .officeMail(dto.getOfficeMail())
@@ -126,42 +88,59 @@ public class AgencyService {
                 .officeAddressId(dto.getOfficeAddressId())
                 .build();
 
-        AgencyOffice savedOffice = officeRepository.save(office);
-        return mapToOfficeResponseDTO(savedOffice);
+        return mapToOfficeResponseDTO(officeRepository.save(office));
+    }
+
+    public List<OfficeResponseDTO> getAllOffices() {
+        return officeRepository.findAll().stream()
+                .map(this::mapToOfficeResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public void deleteOffice(Integer officeId) {
-        if (!officeRepository.existsById(officeId)) {
-            throw new ResourceNotFoundException("Office not found with ID: " + officeId);
-        }
-
-        // ✅ Safety Net: Check for assigned Buses or Drivers!
+        // ✅ Safety Check: Prevents crashing if Buses or Drivers are linked [cite: 6, 7]
         if (busRepository.existsByOffice_OfficeId(officeId)) {
-            throw new BadRequestException("Cannot delete Office. Buses are still registered to this location.");
+            throw new BadRequestException("Cannot delete Office. Move or delete registered Buses first.");
         }
         if (driverRepository.existsByOffice_OfficeId(officeId)) {
-            throw new BadRequestException("Cannot delete Office. Drivers are still assigned to this location.");
+            throw new BadRequestException("Cannot delete Office. Reassign active Drivers first.");
         }
-
         officeRepository.deleteById(officeId);
     }
 
-    // ----------------------------------------------------
-    // MISSING OFFICE LOGIC (Paste this into AgencyService)
-    // ----------------------------------------------------
+    // ==========================================
+    // MISSING AGENCY UPDATE METHOD
+    // ==========================================
+    @Transactional
+    public AgencyResponseDTO updateAgency(Integer id, AgencyRequestDTO dto) {
+        Agency agency = agencyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Agency not found with ID: " + id));
 
+        agency.setName(dto.getName());
+        agency.setContactPersonName(dto.getContactPersonName());
+
+        // Safety check: Only throw error if they are changing the email to one that is already taken
+        if (!agency.getEmail().equals(dto.getEmail()) && agencyRepository.existsByEmail(dto.getEmail())) {
+            throw new BadRequestException("Email already in use.");
+        }
+        agency.setEmail(dto.getEmail());
+
+        if (!agency.getPhone().equals(dto.getPhone()) && agencyRepository.existsByPhone(dto.getPhone())) {
+            throw new BadRequestException("Phone number already in use.");
+        }
+        agency.setPhone(dto.getPhone());
+
+        return mapToAgencyResponseDTO(agencyRepository.save(agency));
+    }
+
+    // ==========================================
+    // MISSING OFFICE METHODS
+    // ==========================================
     public OfficeResponseDTO getOfficeById(Integer officeId) {
         AgencyOffice office = officeRepository.findById(officeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Office not found with ID: " + officeId));
         return mapToOfficeResponseDTO(office);
-    }
-
-    public List<OfficeResponseDTO> getAllOffices() {
-        return officeRepository.findAll()
-                .stream()
-                .map(this::mapToOfficeResponseDTO)
-                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -185,7 +164,7 @@ public class AgencyService {
         return mapToOfficeResponseDTO(officeRepository.save(office));
     }
     // ==========================================
-    // HELPER MAPPING METHODS
+    // MAPPING HELPERS (Entity -> DTO)
     // ==========================================
 
     private AgencyResponseDTO mapToAgencyResponseDTO(Agency agency) {

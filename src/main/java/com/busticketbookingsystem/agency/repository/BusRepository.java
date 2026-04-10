@@ -8,13 +8,13 @@ import org.springframework.stereotype.Repository;
 public interface BusRepository extends JpaRepository<Bus, Integer> {
 
     /**
-     * Used by BusService to prevent adding two buses with the same license plate.
+     * Used by BusService to prevent adding two buses with the exact same license plate.
      */
     boolean existsByRegistrationNumber(String registrationNumber);
 
     /**
+     * CRITICAL for safe deletions!
      * Used by AgencyService to prevent deleting an Office if it still has physical buses parked there.
-     * (This matches the safe-delete logic from the Customer module!)
      */
     boolean existsByOffice_OfficeId(Integer officeId);
 }

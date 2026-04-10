@@ -8,7 +8,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // ✅ Added Builder pattern for cleaner object creation
+@Builder // ✅ Required for your Service layer
 public class Bus {
 
     @Id
@@ -16,11 +16,12 @@ public class Bus {
     @Column(name = "bus_id")
     private Integer busId;
 
-    @ManyToOne(fetch = FetchType.LAZY) // ✅ Added LAZY fetching for better performance
+    // ✅ THIS was the missing line causing the red error!
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "office_id")
     private AgencyOffice office;
 
-    @Column(name = "registration_number", nullable = false, unique = true) // ✅ Added database-level safety
+    @Column(name = "registration_number", nullable = false, unique = true)
     private String registrationNumber;
 
     @Column(nullable = false)
