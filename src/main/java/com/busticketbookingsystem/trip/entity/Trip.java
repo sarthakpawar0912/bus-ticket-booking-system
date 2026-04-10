@@ -1,5 +1,7 @@
 package com.busticketbookingsystem.trip.entity;
 
+import com.busticketbookingsystem.agency.entity.Bus;
+import com.busticketbookingsystem.agency.entity.Driver;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,17 +24,20 @@ public class Trip {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "trip_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "route_id", nullable = false)
     private Route route;
 
-    @Column(name = "bus_id")
-    private Long busId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "bus_id", nullable = false)
+    private Bus bus;
 
-    @Column(name = "driver_id")
-    private Long driverId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "driver_id", nullable = false)
+    private Driver driver;
 
     @Column(nullable = false)
     private LocalDate travelDate;
@@ -69,20 +74,20 @@ public class Trip {
         this.route = route;
     }
 
-    public Long getBusId() {
-        return busId;
+    public Bus getBus() {
+        return bus;
     }
 
-    public void setBusId(Long busId) {
-        this.busId = busId;
+    public void setBus(Bus bus) {
+        this.bus = bus;
     }
 
-    public Long getDriverId() {
-        return driverId;
+    public Driver getDriver() {
+        return driver;
     }
 
-    public void setDriverId(Long driverId) {
-        this.driverId = driverId;
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 
     public LocalDate getTravelDate() {

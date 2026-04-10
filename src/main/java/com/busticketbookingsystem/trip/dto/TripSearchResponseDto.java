@@ -9,6 +9,8 @@ public record TripSearchResponseDto(
         Long routeId,
         String source,
         String destination,
+        Integer busId,
+        String busType,
         LocalDate travelDate,
         LocalTime departureTime,
         LocalTime arrivalTime,

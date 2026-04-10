@@ -12,8 +12,8 @@ import java.time.LocalTime;
 
 public record TripUpdateRequestDto(
         @NotNull Long routeId,
-        Long busId,
-        Long driverId,
+        @NotNull Integer busId,
+        @NotNull Integer driverId,
         @NotNull @FutureOrPresent LocalDate travelDate,
         @NotNull LocalTime departureTime,
         @NotNull LocalTime arrivalTime,
