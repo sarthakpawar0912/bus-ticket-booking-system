@@ -1,5 +1,9 @@
 package com.busticketbookingsystem.exception;
 
+// Import our new Booking Exceptions!
+import com.busticketbookingsystem.booking.exception.BookingNotFoundException;
+import com.busticketbookingsystem.booking.exception.SeatAlreadyBookedException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +15,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handle Resource Not Found (404)
+    // Handle General Resource Not Found (404)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request) {
         ErrorResponse error = new ErrorResponse(
@@ -37,21 +41,41 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
-    // Handle YOUR Booking Exceptions (Member 4 specific)
-    // Even though the exception is in your folder, this global handler can catch it!
-    @ExceptionHandler(com.busticketbookingsystem.booking.exception.SeatAlreadyBookedException.class)
-    public ResponseEntity<ErrorResponse> handleSeatBooked(Exception ex, WebRequest request) {
+    // ==========================================
+    //      NEW: BOOKING MODULE EXCEPTIONS
+    // ==========================================
+
+    // Handle Seat Already Booked / Concurrency (400 Bad Request)
+    @ExceptionHandler(SeatAlreadyBookedException.class)
+    public ResponseEntity<ErrorResponse> handleSeatAlreadyBooked(SeatAlreadyBookedException ex, WebRequest request) {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                "Conflict",
+                HttpStatus.BAD_REQUEST.value(),
+                "Seat Unavailable",
+                ex.getMessage(),
+                request.getDescription(false) // This adds the API path (e.g., /api/bookings)
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    // Handle Booking Not Found (404 Not Found)
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBookingNotFound(BookingNotFoundException ex, WebRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Booking Not Found",
                 ex.getMessage(),
                 request.getDescription(false)
         );
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    // Global Catch-All for any other unexpected errors (500)
+    // ==========================================
+    //           GLOBAL CATCH-ALL
+    // ==========================================
+
+    // Handle any other unexpected errors (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
         ErrorResponse error = new ErrorResponse(

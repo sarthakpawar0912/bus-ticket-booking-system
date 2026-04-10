@@ -1,17 +1,20 @@
 package com.busticketbookingsystem.booking.dto;
 
-import lombok.Data;
-import java.util.List;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
-@Data
-public class BookingRequestDTO {
+/**
+ * DTO for receiving a seat reservation request from the frontend.
+ */
+public record BookingRequestDTO(
 
-    private Long tripId;
+        @NotNull(message = "Trip ID cannot be null")
+        Long tripId,
 
-    // An array of the seats the user clicked on the grid (e.g., [12, 13, 14])
-    private List<Integer> seatNumbers;
+        @NotNull(message = "Seat number cannot be null")
+        @Min(value = 1, message = "Seat number must be at least 1")
+        Integer seatNumber,
 
-    // You don't save this in your bookings table, but you NEED it from the frontend
-    // so you can pass it to Member 5's Payment system later!
-    private Long customerId;
-}
+        @NotNull(message = "Customer ID cannot be null")
+        Integer customerId
+) {}

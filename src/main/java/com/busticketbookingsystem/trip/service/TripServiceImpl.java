@@ -4,6 +4,12 @@ import com.busticketbookingsystem.agency.entity.Bus;
 import com.busticketbookingsystem.agency.entity.Driver;
 import com.busticketbookingsystem.agency.repository.BusRepository;
 import com.busticketbookingsystem.agency.repository.DriverRepository;
+
+// 🌟 NEW: Imports for the Booking Module
+import com.busticketbookingsystem.booking.entity.Booking;
+import com.busticketbookingsystem.booking.entity.BookingStatus;
+import com.busticketbookingsystem.booking.repository.BookingRepository;
+
 import com.busticketbookingsystem.trip.dto.TripCreateRequestDto;
 import com.busticketbookingsystem.trip.dto.TripResponseDto;
 import com.busticketbookingsystem.trip.dto.TripSearchResponseDto;
@@ -22,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList; // 🌟 NEW: Needed for the seats list
 import java.util.List;
 
 @Service
@@ -33,16 +40,21 @@ public class TripServiceImpl implements TripService {
     private final BusRepository busRepository;
     private final DriverRepository driverRepository;
 
+    // 🌟 NEW: Injecting the BookingRepository to generate seats
+    private final BookingRepository bookingRepository;
+
     public TripServiceImpl(
             TripRepository tripRepository,
             RouteRepository routeRepository,
             BusRepository busRepository,
-            DriverRepository driverRepository
+            DriverRepository driverRepository,
+            BookingRepository bookingRepository // 🌟 NEW: Added to constructor
     ) {
         this.tripRepository = tripRepository;
         this.routeRepository = routeRepository;
         this.busRepository = busRepository;
         this.driverRepository = driverRepository;
+        this.bookingRepository = bookingRepository; // 🌟 NEW: Assigned
     }
 
     @Override
@@ -53,7 +65,26 @@ public class TripServiceImpl implements TripService {
         applyRequest(trip, request.routeId(), request.busId(), request.driverId(), request.travelDate(),
                 request.departureTime(), request.arrivalTime(), request.fare(), request.availableSeats(), TripStatus.SCHEDULED);
 
-        return toResponse(tripRepository.save(trip));
+        // 🌟 NEW: We save the trip to generate its ID in the database
+        Trip savedTrip = tripRepository.save(trip);
+
+        // 🌟 NEW: Generate the Seat Inventory for this specific trip
+        List<Booking> emptySeats = new ArrayList<>();
+        int totalSeats = savedTrip.getBus().getCapacity();
+
+        for (int i = 1; i <= totalSeats; i++) {
+            Booking seat = Booking.builder()
+                    .trip(savedTrip)
+                    .seatNumber(i)
+                    .status(BookingStatus.Available)
+                    .build();
+            emptySeats.add(seat);
+        }
+
+        // Save all seats at once to the 'bookings' table
+        bookingRepository.saveAll(emptySeats);
+
+        return toResponse(savedTrip);
     }
 
     @Override

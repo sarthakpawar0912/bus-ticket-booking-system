@@ -1,31 +1,32 @@
 package com.busticketbookingsystem.booking.entity;
 
+import com.busticketbookingsystem.trip.entity.Trip;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "bookings")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
-    private Long bookingId;
+    private Integer bookingId;
 
-    // In a pure JPA setup, you could use @ManyToOne here,
-    // but storing the ID directly keeps your logic simple and decoupled!
-    @Column(name = "trip_id", nullable = false)
-    private Long tripId;
+    // Links to the Trip.java you uploaded
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trip_id")
+    private Trip trip;
 
     @Column(name = "seat_number", nullable = false)
     private Integer seatNumber;
 
+    // Matches your ENUM in MySQL
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private com.busticketbookingsystem.booking.entity.BookingStatus status = com.busticketbookingsystem.booking.entity.BookingStatus.Available;
+    @Column(nullable = false, columnDefinition = "ENUM('Available', 'Booked') DEFAULT 'Available'")
+    private BookingStatus status;
 }
