@@ -4,7 +4,7 @@ import com.busticketbookingsystem.customer.dto.CustomerRequestDTO;
 import com.busticketbookingsystem.customer.dto.CustomerResponseDTO;
 import com.busticketbookingsystem.customer.entity.Address;
 import com.busticketbookingsystem.customer.entity.Customer;
-import com.busticketbookingsystem.customer.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.customer.repository.AddressRepository;
 import com.busticketbookingsystem.customer.repository.CustomerRepository;
 import org.junit.jupiter.api.*;
