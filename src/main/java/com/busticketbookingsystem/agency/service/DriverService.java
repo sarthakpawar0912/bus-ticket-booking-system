@@ -4,25 +4,29 @@ import com.busticketbookingsystem.agency.dto.DriverRequestDTO;
 import com.busticketbookingsystem.agency.dto.DriverResponseDTO;
 import com.busticketbookingsystem.agency.entity.AgencyOffice;
 import com.busticketbookingsystem.agency.entity.Driver;
-import com.busticketbookingsystem.agency.exception.BadRequestException;
-import com.busticketbookingsystem.agency.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.agency.repository.AgencyOfficeRepository;
 import com.busticketbookingsystem.agency.repository.DriverRepository;
+import com.busticketbookingsystem.customer.entity.Address;
+import com.busticketbookingsystem.customer.repository.AddressRepository;
+import com.busticketbookingsystem.exception.BadRequestException;
+import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DriverService {
 
     private final DriverRepository driverRepository;
     private final AgencyOfficeRepository officeRepository;
+    private final AddressRepository addressRepository;
 
-    public DriverService(DriverRepository driverRepository, AgencyOfficeRepository officeRepository) {
+    public DriverService(DriverRepository driverRepository, AgencyOfficeRepository officeRepository,
+                         AddressRepository addressRepository) {
         this.driverRepository = driverRepository;
         this.officeRepository = officeRepository;
+        this.addressRepository = addressRepository;
     }
 
     @Transactional
@@ -37,22 +41,25 @@ public class DriverService {
         AgencyOffice office = officeRepository.findById(dto.getOfficeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Office not found with ID: " + dto.getOfficeId()));
 
+        Address address = addressRepository.findById(dto.getAddressId())
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + dto.getAddressId()));
+
         Driver driver = Driver.builder()
                 .licenseNumber(dto.getLicenseNumber())
                 .name(dto.getName())
                 .phone(dto.getPhone())
                 .office(office)
-                .addressId(dto.getAddressId())
+                .address(address)
                 .build();
 
         return mapToDriverResponseDTO(driverRepository.save(driver));
     }
 
     public List<DriverResponseDTO> getAllDrivers() {
-        return driverRepository.findAll()
+        return driverRepository.findAllWithDetails()
                 .stream()
                 .map(this::mapToDriverResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public DriverResponseDTO getDriverById(Integer id) {
@@ -85,7 +92,9 @@ public class DriverService {
             driver.setOffice(newOffice);
         }
 
-        driver.setAddressId(dto.getAddressId());
+        Address address = addressRepository.findById(dto.getAddressId())
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + dto.getAddressId()));
+        driver.setAddress(address);
 
         return mapToDriverResponseDTO(driverRepository.save(driver));
     }
@@ -98,6 +107,13 @@ public class DriverService {
         driverRepository.deleteById(id);
     }
 
+    public List<DriverResponseDTO> getDriversByOfficeId(Integer officeId) {
+        return driverRepository.findByOffice_OfficeId(officeId)
+                .stream()
+                .map(this::mapToDriverResponseDTO)
+                .toList();
+    }
+
     // Helper mapping method
     private DriverResponseDTO mapToDriverResponseDTO(Driver driver) {
         return DriverResponseDTO.builder()
@@ -106,7 +122,7 @@ public class DriverService {
                 .name(driver.getName())
                 .phone(driver.getPhone())
                 .officeId(driver.getOffice().getOfficeId())
-                .addressId(driver.getAddressId())
+                .addressId(driver.getAddress() != null ? driver.getAddress().getAddressId() : null)
                 .build();
     }
 }

@@ -19,6 +19,6 @@ public class AgencyRequestDTO {
     private String email;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be exactly 10 digits")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone must be exactly 10 digits")
     private String phone;
 }

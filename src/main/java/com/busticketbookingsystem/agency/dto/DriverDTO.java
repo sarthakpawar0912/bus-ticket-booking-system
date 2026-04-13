@@ -21,7 +21,7 @@ public class DriverDTO {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone must be 10 digits")
     private String phone;
 
     private Integer officeId;

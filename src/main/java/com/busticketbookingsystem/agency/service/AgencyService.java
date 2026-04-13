@@ -1,15 +1,23 @@
 package com.busticketbookingsystem.agency.service;
 
-import com.busticketbookingsystem.agency.dto.*;
-import com.busticketbookingsystem.agency.entity.*;
-import com.busticketbookingsystem.agency.exception.BadRequestException;
-import com.busticketbookingsystem.agency.exception.ResourceNotFoundException;
-import com.busticketbookingsystem.agency.repository.*;
+import com.busticketbookingsystem.agency.dto.AgencyRequestDTO;
+import com.busticketbookingsystem.agency.dto.AgencyResponseDTO;
+import com.busticketbookingsystem.agency.dto.OfficeRequestDTO;
+import com.busticketbookingsystem.agency.dto.OfficeResponseDTO;
+import com.busticketbookingsystem.agency.entity.Agency;
+import com.busticketbookingsystem.agency.entity.AgencyOffice;
+import com.busticketbookingsystem.agency.repository.AgencyOfficeRepository;
+import com.busticketbookingsystem.agency.repository.AgencyRepository;
+import com.busticketbookingsystem.agency.repository.BusRepository;
+import com.busticketbookingsystem.agency.repository.DriverRepository;
+import com.busticketbookingsystem.customer.entity.Address;
+import com.busticketbookingsystem.customer.repository.AddressRepository;
+import com.busticketbookingsystem.exception.BadRequestException;
+import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AgencyService {
@@ -18,16 +26,18 @@ public class AgencyService {
     private final AgencyOfficeRepository officeRepository;
     private final BusRepository busRepository;
     private final DriverRepository driverRepository;
+    private final AddressRepository addressRepository;
 
-    // ✅ Constructor Injection: Standard practice for safety and testing
     public AgencyService(AgencyRepository agencyRepository,
                          AgencyOfficeRepository officeRepository,
                          BusRepository busRepository,
-                         DriverRepository driverRepository) {
+                         DriverRepository driverRepository,
+                         AddressRepository addressRepository) {
         this.agencyRepository = agencyRepository;
         this.officeRepository = officeRepository;
         this.busRepository = busRepository;
         this.driverRepository = driverRepository;
+        this.addressRepository = addressRepository;
     }
 
     // ==========================================
@@ -53,7 +63,7 @@ public class AgencyService {
     public List<AgencyResponseDTO> getAllAgencies() {
         return agencyRepository.findAll().stream()
                 .map(this::mapToAgencyResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public AgencyResponseDTO getAgencyById(Integer id) {
@@ -80,21 +90,24 @@ public class AgencyService {
         Agency agency = agencyRepository.findById(dto.getAgencyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Parent Agency not found"));
 
+        Address address = addressRepository.findById(dto.getOfficeAddressId())
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + dto.getOfficeAddressId()));
+
         AgencyOffice office = AgencyOffice.builder()
                 .agency(agency)
                 .officeMail(dto.getOfficeMail())
                 .officeContactPersonName(dto.getOfficeContactPersonName())
                 .officeContactNumber(dto.getOfficeContactNumber())
-                .officeAddressId(dto.getOfficeAddressId())
+                .officeAddress(address)
                 .build();
 
         return mapToOfficeResponseDTO(officeRepository.save(office));
     }
 
     public List<OfficeResponseDTO> getAllOffices() {
-        return officeRepository.findAll().stream()
+        return officeRepository.findAllWithDetails().stream()
                 .map(this::mapToOfficeResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional
@@ -155,11 +168,17 @@ public class AgencyService {
             office.setAgency(newAgency);
         }
 
+        // Update address if changed
+        if (dto.getOfficeAddressId() != null) {
+            Address address = addressRepository.findById(dto.getOfficeAddressId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + dto.getOfficeAddressId()));
+            office.setOfficeAddress(address);
+        }
+
         // Update the rest of the fields
         office.setOfficeMail(dto.getOfficeMail());
         office.setOfficeContactPersonName(dto.getOfficeContactPersonName());
         office.setOfficeContactNumber(dto.getOfficeContactNumber());
-        office.setOfficeAddressId(dto.getOfficeAddressId());
 
         return mapToOfficeResponseDTO(officeRepository.save(office));
     }
@@ -181,7 +200,7 @@ public class AgencyService {
         return OfficeResponseDTO.builder()
                 .officeId(office.getOfficeId())
                 .agencyId(office.getAgency().getAgencyId())
-                .officeAddressId(office.getOfficeAddressId())
+                .officeAddressId(office.getOfficeAddress() != null ? office.getOfficeAddress().getAddressId() : null)
                 .officeMail(office.getOfficeMail())
                 .officeContactPersonName(office.getOfficeContactPersonName())
                 .officeContactNumber(office.getOfficeContactNumber())

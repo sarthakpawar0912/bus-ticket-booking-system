@@ -26,7 +26,7 @@ public class AgencyOfficeDTO {
     @NotBlank(message = "Office contact person name is required")
     private String officeContactPersonName;
 
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be 10 digits")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone must be 10 digits")
     private String officeContactNumber;
 
     @NotNull(message = "Office address ID is required")

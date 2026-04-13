@@ -4,15 +4,14 @@ import com.busticketbookingsystem.agency.dto.BusRequestDTO;
 import com.busticketbookingsystem.agency.dto.BusResponseDTO;
 import com.busticketbookingsystem.agency.entity.AgencyOffice;
 import com.busticketbookingsystem.agency.entity.Bus;
-import com.busticketbookingsystem.agency.exception.BadRequestException;
-import com.busticketbookingsystem.agency.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.agency.repository.AgencyOfficeRepository;
 import com.busticketbookingsystem.agency.repository.BusRepository;
+import com.busticketbookingsystem.exception.BadRequestException;
+import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BusService {
@@ -49,10 +48,10 @@ public class BusService {
     }
 
     public List<BusResponseDTO> getAllBuses() {
-        return busRepository.findAll()
+        return busRepository.findAllWithOffice()
                 .stream()
                 .map(this::mapToBusResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public BusResponseDTO getBusById(Integer id) {
@@ -93,6 +92,13 @@ public class BusService {
         }
         // Note: If Member 3's "Trips" rely on this bus, you might need a check here later!
         busRepository.deleteById(id);
+    }
+
+    public List<BusResponseDTO> getBusesByOfficeId(Integer officeId) {
+        return busRepository.findByOffice_OfficeId(officeId)
+                .stream()
+                .map(this::mapToBusResponseDTO)
+                .toList();
     }
 
     // Helper mapping method

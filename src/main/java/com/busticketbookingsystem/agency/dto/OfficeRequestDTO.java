@@ -20,7 +20,7 @@ public class OfficeRequestDTO {
     private String officeContactPersonName;
 
     @NotBlank(message = "Office contact number is required")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone must be exactly 10 digits")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone must be exactly 10 digits")
     private String officeContactNumber;
 
     @NotNull(message = "Office Address ID is required")
