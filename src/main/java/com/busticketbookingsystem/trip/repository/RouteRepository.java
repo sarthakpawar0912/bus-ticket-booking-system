@@ -3,11 +3,12 @@ package com.busticketbookingsystem.trip.repository;
 import com.busticketbookingsystem.trip.entity.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
-public interface RouteRepository extends JpaRepository<Route, Long> {
+import java.util.List;
 
-    boolean existsBySourceIgnoreCaseAndDestinationIgnoreCase(String source, String destination);
+@Repository
+public interface RouteRepository extends JpaRepository<Route, Integer> {
 
-    Optional<Route> findBySourceIgnoreCaseAndDestinationIgnoreCase(String source, String destination);
+    List<Route> findByFromCityIgnoreCaseAndToCityIgnoreCase(String fromCity, String toCity);
 }

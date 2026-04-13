@@ -1,16 +1,28 @@
-package com.busticketbookingsystem.trip.service;
+package com.busticketbookingsystem.trip.dto;
 
-import java.util.List;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public interface RouteService {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class RouteDTO {
 
-    RouteResponseDto createRoute(RouteCreateRequestDto request);
+    private Integer routeId;
 
-    List<RouteResponseDto> getAllRoutes();
+    @NotBlank(message = "From city is required")
+    private String fromCity;
 
-    RouteResponseDto getRouteById(Long routeId);
+    @NotBlank(message = "To city is required")
+    private String toCity;
 
-    RouteResponseDto updateRoute(Long routeId, RouteUpdateRequestDto request);
+    private Integer breakPoints;
 
-    void deleteRoute(Long routeId);
+    @Min(value = 1, message = "Duration must be at least 1 minute")
+    private Integer duration;
 }

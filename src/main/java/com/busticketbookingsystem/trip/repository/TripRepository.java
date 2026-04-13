@@ -1,82 +1,32 @@
 package com.busticketbookingsystem.trip.repository;
 
 import com.busticketbookingsystem.trip.entity.Trip;
-import com.busticketbookingsystem.trip.entity.TripStatus;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
-import java.util.Optional;
 
-public interface TripRepository extends JpaRepository<Trip, Long> {
+@Repository
+public interface TripRepository extends JpaRepository<Trip, Integer> {
 
-    @Override
-    @EntityGraph(attributePaths = {"route", "bus", "driver"})
-    List<Trip> findAll();
+    @Query("SELECT t FROM Trip t JOIN FETCH t.route r WHERE LOWER(r.fromCity) = LOWER(:from) AND LOWER(r.toCity) = LOWER(:to) AND t.availableSeats > 0")
+    List<Trip> searchTrips(@Param("from") String from, @Param("to") String to);
 
-    @Override
-    @EntityGraph(attributePaths = {"route", "bus", "driver"})
-    Optional<Trip> findById(Long tripId);
+    @Query("SELECT DISTINCT t FROM Trip t " +
+            "LEFT JOIN FETCH t.route " +
+            "LEFT JOIN FETCH t.bus " +
+            "LEFT JOIN FETCH t.boardingAddress " +
+            "LEFT JOIN FETCH t.droppingAddress " +
+            "LEFT JOIN FETCH t.driver1 " +
+            "LEFT JOIN FETCH t.driver2")
+    List<Trip> findAllWithDetails();
 
-    @EntityGraph(attributePaths = {"route", "bus", "driver"})
-    @Query("""
-            select t
-            from Trip t
-            where (:source is null or lower(t.route.source) = lower(:source))
-              and (:destination is null or lower(t.route.destination) = lower(:destination))
-              and (:travelDate is null or t.travelDate = :travelDate)
-              and (:routeId is null or t.route.id = :routeId)
-              and (:busType is null or lower(t.bus.type) = lower(:busType))
-              and t.status = :status
-              and t.availableSeats > 0
-            order by t.travelDate asc, t.departureTime asc
-            """)
-    List<Trip> searchTrips(
-            @Param("source") String source,
-            @Param("destination") String destination,
-            @Param("travelDate") LocalDate travelDate,
-            @Param("routeId") Long routeId,
-            @Param("busType") String busType,
-            @Param("status") TripStatus status
-    );
+    boolean existsByRoute_RouteId(Integer routeId);
 
-    boolean existsByBus_BusIdAndTravelDateAndDepartureTime(Integer busId, LocalDate travelDate, LocalTime departureTime);
+    boolean existsByBus_BusId(Integer busId);
 
-    boolean existsByDriver_DriverIdAndTravelDateAndDepartureTime(Integer driverId, LocalDate travelDate, LocalTime departureTime);
-
-    boolean existsByRoute_Id(Long routeId);
-
-    @Query("""
-            select count(t) > 0
-            from Trip t
-            where t.id <> :tripId
-              and t.bus.busId = :busId
-              and t.travelDate = :travelDate
-              and t.departureTime = :departureTime
-            """)
-    boolean existsBusScheduleConflict(
-            @Param("tripId") Long tripId,
-            @Param("busId") Integer busId,
-            @Param("travelDate") LocalDate travelDate,
-            @Param("departureTime") LocalTime departureTime
-    );
-
-    @Query("""
-            select count(t) > 0
-            from Trip t
-            where t.id <> :tripId
-              and t.driver.driverId = :driverId
-              and t.travelDate = :travelDate
-              and t.departureTime = :departureTime
-            """)
-    boolean existsDriverScheduleConflict(
-            @Param("tripId") Long tripId,
-            @Param("driverId") Integer driverId,
-            @Param("travelDate") LocalDate travelDate,
-            @Param("departureTime") LocalTime departureTime
-    );
+    List<Trip> findByBus_BusId(Integer busId);
 }
