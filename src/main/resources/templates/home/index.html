@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1><i class="bi bi-bus-front-fill me-3"></i>Bus Ticket Booking System</h1>
+        <p class="lead mt-3">Manage buses, trips, bookings, and payments - all in one place</p>
+        <a th:href="@{/view/bookings}" class="btn btn-light btn-lg mt-3 px-4">
+            <i class="bi bi-ticket-perforated me-2"></i>Book a Trip
+        </a>
+    </div>
+</section>
+
+<!-- Team Members Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-heading text-center mx-auto mb-4">Our Team</h2>
+        <div class="row g-4 justify-content-center">
+            <!-- Member 1 -->
+            <div class="col-lg col-md-4 col-sm-6">
+                <div class="card team-card h-100">
+                    <div class="card-body">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #0d6efd, #6f42c1);">SP</div>
+                        <h5 class="card-title">Sarthak Pawar</h5>
+                        <h6 class="card-subtitle text-primary mb-2">Team Lead &amp; Backend</h6>
+                        <p class="card-text text-muted small">Admin Module - Customer, Address management and system architecture</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Member 2 -->
+            <div class="col-lg col-md-4 col-sm-6">
+                <div class="card team-card h-100">
+                    <div class="card-body">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #198754, #20c997);">M2</div>
+                        <h5 class="card-title">Team Member 2</h5>
+                        <h6 class="card-subtitle text-success mb-2">Agency Module Developer</h6>
+                        <p class="card-text text-muted small">Agency, Office, Bus, and Driver management</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Member 3 -->
+            <div class="col-lg col-md-4 col-sm-6">
+                <div class="card team-card h-100">
+                    <div class="card-body">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #dc3545, #fd7e14);">M3</div>
+                        <h5 class="card-title">Team Member 3</h5>
+                        <h6 class="card-subtitle text-danger mb-2">Booking Module Developer</h6>
+                        <p class="card-text text-muted small">Route, Trip, and Booking management</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Member 4 -->
+            <div class="col-lg col-md-4 col-sm-6">
+                <div class="card team-card h-100">
+                    <div class="card-body">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">M4</div>
+                        <h5 class="card-title">Team Member 4</h5>
+                        <h6 class="card-subtitle text-warning mb-2">Payment Module Developer</h6>
+                        <p class="card-text text-muted small">Payment processing and transaction management</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Member 5 -->
+            <div class="col-lg col-md-4 col-sm-6">
+                <div class="card team-card h-100">
+                    <div class="card-body">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #6f42c1, #d63384);">M5</div>
+                        <h5 class="card-title">Team Member 5</h5>
+                        <h6 class="card-subtitle text-info mb-2">Frontend Developer</h6>
+                        <p class="card-text text-muted small">UI/UX design, Thymeleaf templates, and responsive styling</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Service Navigation Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-heading text-center mx-auto mb-4">Manage Modules</h2>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/customers}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-people-fill"></i>
+                            <h5>Customers</h5>
+                            <p class="text-muted small mb-0">Manage customer records</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/addresses}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <h5>Addresses</h5>
+                            <p class="text-muted small mb-0">Manage address records</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/agencies}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-building"></i>
+                            <h5>Agencies</h5>
+                            <p class="text-muted small mb-0">Manage travel agencies</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/buses}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-bus-front"></i>
+                            <h5>Buses</h5>
+                            <p class="text-muted small mb-0">Manage bus fleet</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/drivers}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-person-badge"></i>
+                            <h5>Drivers</h5>
+                            <p class="text-muted small mb-0">Manage driver records</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/routes}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-signpost-split"></i>
+                            <h5>Routes</h5>
+                            <p class="text-muted small mb-0">Manage bus routes</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/trips}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-event"></i>
+                            <h5>Trips</h5>
+                            <p class="text-muted small mb-0">Manage scheduled trips</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/bookings}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <h5>Bookings</h5>
+                            <p class="text-muted small mb-0">View and create bookings</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/payments}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-credit-card"></i>
+                            <h5>Payments</h5>
+                            <p class="text-muted small mb-0">Track payment records</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <a th:href="@{/view/reviews}" class="text-decoration-none">
+                    <div class="card service-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-star-fill"></i>
+                            <h5>Reviews</h5>
+                            <p class="text-muted small mb-0">Customer feedback</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
