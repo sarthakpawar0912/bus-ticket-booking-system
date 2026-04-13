@@ -4,13 +4,12 @@ import com.busticketbookingsystem.customer.dto.CustomerRequestDTO;
 import com.busticketbookingsystem.customer.dto.CustomerResponseDTO;
 import com.busticketbookingsystem.customer.entity.Address;
 import com.busticketbookingsystem.customer.entity.Customer;
-import com.busticketbookingsystem.customer.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.customer.repository.AddressRepository;
 import com.busticketbookingsystem.customer.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
@@ -49,7 +48,7 @@ public class CustomerService {
     }
 
     public List<CustomerResponseDTO> getAll(){
-        return  customerRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+        return  customerRepository.findAllWithAddress().stream().map(this::mapToDTO).toList();
     }
 
     public CustomerResponseDTO getById(Integer id){

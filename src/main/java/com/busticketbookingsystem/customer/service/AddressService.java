@@ -1,8 +1,8 @@
 package com.busticketbookingsystem.customer.service;
 
 import com.busticketbookingsystem.customer.entity.Address;
-import com.busticketbookingsystem.customer.exception.BadRequestException;
-import com.busticketbookingsystem.customer.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.exception.BadRequestException;
+import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.customer.repository.AddressRepository;
 import com.busticketbookingsystem.customer.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
