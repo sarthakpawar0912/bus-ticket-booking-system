@@ -1,17 +1,24 @@
 package com.busticketbookingsystem.booking.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
+import java.util.List;
 
-/**
- * DTO for sending the booking confirmation and payment details back to the user.
- */
-public record BookingResponseDTO(
-        Integer bookingId,
-        Long tripId,
-        Integer seatNumber,
-        String status,
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class BookingResponseDTO {
 
-        // We include the Fare here so the frontend knows exactly how much
-        // to charge the user's credit card in the next step!
-        BigDecimal fare
-) {}
+    private String message;
+
+    private List<Integer> bookingIds;
+
+    private BigDecimal totalFare;
+
+    private Integer customerId;
+}

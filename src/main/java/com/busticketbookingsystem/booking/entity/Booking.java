@@ -17,16 +17,14 @@ public class Booking {
     @Column(name = "booking_id")
     private Integer bookingId;
 
-    // Links to the Trip.java you uploaded
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trip_id")
     private Trip trip;
 
-    @Column(name = "seat_number", nullable = false)
+    @Column(name = "seat_number")
     private Integer seatNumber;
 
-    // Matches your ENUM in MySQL
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('Available', 'Booked') DEFAULT 'Available'")
+    @Column(name = "status")
     private BookingStatus status;
 }

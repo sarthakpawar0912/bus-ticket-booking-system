@@ -1,20 +1,26 @@
 package com.busticketbookingsystem.booking.dto;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * DTO for receiving a seat reservation request from the frontend.
- */
-public record BookingRequestDTO(
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class BookingRequestDTO {
 
         @NotNull(message = "Trip ID cannot be null")
-        Long tripId,
+        private Integer tripId;
 
-        @NotNull(message = "Seat number cannot be null")
-        @Min(value = 1, message = "Seat number must be at least 1")
-        Integer seatNumber,
+        @NotEmpty(message = "Seat numbers cannot be empty")
+        private List<Integer> seatNumbers;
 
         @NotNull(message = "Customer ID cannot be null")
-        Integer customerId
-) {}
+        private Integer customerId;
+}
