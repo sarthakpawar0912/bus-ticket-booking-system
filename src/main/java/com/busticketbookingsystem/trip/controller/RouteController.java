@@ -1,8 +1,5 @@
 package com.busticketbookingsystem.trip.controller;
 
-import com.busticketbookingsystem.trip.dto.RouteCreateRequestDto;
-import com.busticketbookingsystem.trip.dto.RouteResponseDto;
-import com.busticketbookingsystem.trip.dto.RouteUpdateRequestDto;
 import com.busticketbookingsystem.trip.service.RouteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

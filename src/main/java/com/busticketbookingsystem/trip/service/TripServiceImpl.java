@@ -10,10 +10,6 @@ import com.busticketbookingsystem.booking.entity.Booking;
 import com.busticketbookingsystem.booking.entity.BookingStatus;
 import com.busticketbookingsystem.booking.repository.BookingRepository;
 
-import com.busticketbookingsystem.trip.dto.TripCreateRequestDto;
-import com.busticketbookingsystem.trip.dto.TripResponseDto;
-import com.busticketbookingsystem.trip.dto.TripSearchResponseDto;
-import com.busticketbookingsystem.trip.dto.TripUpdateRequestDto;
 import com.busticketbookingsystem.trip.entity.Route;
 import com.busticketbookingsystem.trip.entity.Trip;
 import com.busticketbookingsystem.trip.entity.TripStatus;

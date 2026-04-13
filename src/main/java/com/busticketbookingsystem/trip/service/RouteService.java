@@ -1,9 +1,5 @@
 package com.busticketbookingsystem.trip.service;
 
-import com.busticketbookingsystem.trip.dto.RouteCreateRequestDto;
-import com.busticketbookingsystem.trip.dto.RouteResponseDto;
-import com.busticketbookingsystem.trip.dto.RouteUpdateRequestDto;
-
 import java.util.List;
 
 public interface RouteService {

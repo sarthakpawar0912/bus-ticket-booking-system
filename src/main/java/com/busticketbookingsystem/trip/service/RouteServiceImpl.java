@@ -1,8 +1,5 @@
 package com.busticketbookingsystem.trip.service;
 
-import com.busticketbookingsystem.trip.dto.RouteCreateRequestDto;
-import com.busticketbookingsystem.trip.dto.RouteResponseDto;
-import com.busticketbookingsystem.trip.dto.RouteUpdateRequestDto;
 import com.busticketbookingsystem.trip.entity.Route;
 import com.busticketbookingsystem.trip.exception.RouteNotFoundException;
 import com.busticketbookingsystem.trip.exception.TripValidationException;

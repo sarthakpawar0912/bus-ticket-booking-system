@@ -1,9 +1,5 @@
 package com.busticketbookingsystem.trip.controller;
 
-import com.busticketbookingsystem.trip.dto.TripCreateRequestDto;
-import com.busticketbookingsystem.trip.dto.TripResponseDto;
-import com.busticketbookingsystem.trip.dto.TripSearchResponseDto;
-import com.busticketbookingsystem.trip.dto.TripUpdateRequestDto;
 import com.busticketbookingsystem.trip.service.TripService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
