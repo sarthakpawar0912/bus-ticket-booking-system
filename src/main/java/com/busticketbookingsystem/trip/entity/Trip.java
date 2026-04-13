@@ -2,139 +2,65 @@ package com.busticketbookingsystem.trip.entity;
 
 import com.busticketbookingsystem.agency.entity.Bus;
 import com.busticketbookingsystem.agency.entity.Driver;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.busticketbookingsystem.customer.entity.Address;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "trips")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Trip {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trip_id")
-    private Long id;
+    private Integer tripId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "route_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "route_id")
     private Route route;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "bus_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bus_id")
     private Bus bus;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "driver_id", nullable = false)
-    private Driver driver;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "boarding_address_id")
+    private Address boardingAddress;
 
-    @Column(nullable = false)
-    private LocalDate travelDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dropping_address_id")
+    private Address droppingAddress;
 
-    @Column(nullable = false)
-    private LocalTime departureTime;
+    @Column(name = "departure_time")
+    private LocalDateTime departureTime;
 
-    @Column(nullable = false)
-    private LocalTime arrivalTime;
+    @Column(name = "arrival_time")
+    private LocalDateTime arrivalTime;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal fare;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver1_driver_id")
+    private Driver driver1;
 
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver2_driver_id")
+    private Driver driver2;
+
+    @Column(name = "available_seats")
     private Integer availableSeats;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private TripStatus status = TripStatus.SCHEDULED;
+    @Column(name = "fare", precision = 10, scale = 2)
+    private BigDecimal fare;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
-
-    public void setRoute(Route route) {
-        this.route = route;
-    }
-
-    public Bus getBus() {
-        return bus;
-    }
-
-    public void setBus(Bus bus) {
-        this.bus = bus;
-    }
-
-    public Driver getDriver() {
-        return driver;
-    }
-
-    public void setDriver(Driver driver) {
-        this.driver = driver;
-    }
-
-    public LocalDate getTravelDate() {
-        return travelDate;
-    }
-
-    public void setTravelDate(LocalDate travelDate) {
-        this.travelDate = travelDate;
-    }
-
-    public LocalTime getDepartureTime() {
-        return departureTime;
-    }
-
-    public void setDepartureTime(LocalTime departureTime) {
-        this.departureTime = departureTime;
-    }
-
-    public LocalTime getArrivalTime() {
-        return arrivalTime;
-    }
-
-    public void setArrivalTime(LocalTime arrivalTime) {
-        this.arrivalTime = arrivalTime;
-    }
-
-    public BigDecimal getFare() {
-        return fare;
-    }
-
-    public void setFare(BigDecimal fare) {
-        this.fare = fare;
-    }
-
-    public Integer getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Integer availableSeats) {
-        this.availableSeats = availableSeats;
-    }
-
-    public TripStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TripStatus status) {
-        this.status = status;
-    }
+    @Column(name = "trip_date")
+    private LocalDateTime tripDate;
 }

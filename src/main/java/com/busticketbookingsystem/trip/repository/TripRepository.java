@@ -16,12 +16,12 @@ public interface TripRepository extends JpaRepository<Trip, Integer> {
     List<Trip> searchTrips(@Param("from") String from, @Param("to") String to);
 
     @Query("SELECT DISTINCT t FROM Trip t " +
-            "LEFT JOIN FETCH t.route " +
-            "LEFT JOIN FETCH t.bus " +
-            "LEFT JOIN FETCH t.boardingAddress " +
-            "LEFT JOIN FETCH t.droppingAddress " +
-            "LEFT JOIN FETCH t.driver1 " +
-            "LEFT JOIN FETCH t.driver2")
+           "LEFT JOIN FETCH t.route " +
+           "LEFT JOIN FETCH t.bus " +
+           "LEFT JOIN FETCH t.boardingAddress " +
+           "LEFT JOIN FETCH t.droppingAddress " +
+           "LEFT JOIN FETCH t.driver1 " +
+           "LEFT JOIN FETCH t.driver2")
     List<Trip> findAllWithDetails();
 
     boolean existsByRoute_RouteId(Integer routeId);

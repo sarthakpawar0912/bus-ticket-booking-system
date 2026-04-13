@@ -1,28 +1,56 @@
-package com.busticketbookingsystem.trip.dto;
+package com.busticketbookingsystem.trip.service;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.busticketbookingsystem.exception.BadRequestException;
+import com.busticketbookingsystem.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.trip.entity.Route;
+import com.busticketbookingsystem.trip.repository.RouteRepository;
+import com.busticketbookingsystem.trip.repository.TripRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class RouteDTO {
+import java.util.List;
 
-    private Integer routeId;
+@Service
+@RequiredArgsConstructor
+public class RouteService {
 
-    @NotBlank(message = "From city is required")
-    private String fromCity;
+    private final RouteRepository routeRepository;
+    private final TripRepository tripRepository;
 
-    @NotBlank(message = "To city is required")
-    private String toCity;
+    public Route create(Route route) {
+        return routeRepository.save(route);
+    }
 
-    private Integer breakPoints;
+    public List<Route> getAll() {
+        return routeRepository.findAll();
+    }
 
-    @Min(value = 1, message = "Duration must be at least 1 minute")
-    private Integer duration;
+    public Route getById(Integer id) {
+        return routeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + id));
+    }
+
+    @Transactional
+    public Route update(Integer id, Route updatedRoute) {
+        Route route = getById(id);
+        if (updatedRoute.getFromCity() != null) route.setFromCity(updatedRoute.getFromCity());
+        if (updatedRoute.getToCity() != null) route.setToCity(updatedRoute.getToCity());
+        if (updatedRoute.getBreakPoints() != null) route.setBreakPoints(updatedRoute.getBreakPoints());
+        if (updatedRoute.getDuration() != null) route.setDuration(updatedRoute.getDuration());
+        return routeRepository.save(route);
+    }
+
+    @Transactional
+    public void delete(Integer id) {
+        Route route = getById(id);
+        if (tripRepository.existsByRoute_RouteId(id)) {
+            throw new BadRequestException("Cannot delete route - it is used by existing trips.");
+        }
+        routeRepository.delete(route);
+    }
+
+    public List<Route> searchRoutes(String fromCity, String toCity) {
+        return routeRepository.findByFromCityIgnoreCaseAndToCityIgnoreCase(fromCity, toCity);
+    }
 }
