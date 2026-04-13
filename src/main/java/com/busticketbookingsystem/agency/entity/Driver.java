@@ -1,5 +1,6 @@
 package com.busticketbookingsystem.agency.entity;
 
+import com.busticketbookingsystem.customer.entity.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,22 +17,20 @@ public class Driver {
     @Column(name = "driver_id")
     private Integer driverId;
 
-    // Must be unique! Two drivers cannot share a license number
-    @Column(name = "license_number", nullable = false, unique = true)
+    @Column(name = "license_number", length = 20)
     private String licenseNumber;
 
-    @Column(nullable = false)
+    @Column(name = "name")
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "phone", length = 15)
     private String phone;
 
-    // LAZY fetching so we don't accidentally load the whole office every time we look up a driver
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "office_id")
     private AgencyOffice office;
 
-    // Kept as an Integer (just like the Customer template) so Member 2 doesn't have to import Member 5's Address entity
-    @Column(name = "address_id")
-    private Integer addressId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")
+    private Address address;
 }

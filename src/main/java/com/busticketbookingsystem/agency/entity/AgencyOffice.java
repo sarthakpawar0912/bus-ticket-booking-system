@@ -1,5 +1,6 @@
 package com.busticketbookingsystem.agency.entity;
 
+import com.busticketbookingsystem.customer.entity.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder // ✅ Crucial for converting RequestDTOs into this Entity
+@Builder
 public class AgencyOffice {
 
     @Id
@@ -16,21 +17,20 @@ public class AgencyOffice {
     @Column(name = "office_id")
     private Integer officeId;
 
-    // ✅ LAZY fetch prevents dragging the entire Agency object out of the DB unless explicitly requested
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
-    @Column(name = "office_mail")
+    @Column(name = "office_mail", length = 100)
     private String officeMail;
 
-    @Column(name = "office_contact_person_name")
+    @Column(name = "office_contact_person_name", length = 50)
     private String officeContactPersonName;
 
-    @Column(name = "office_contact_number")
+    @Column(name = "office_contact_number", columnDefinition = "CHAR(10)")
     private String officeContactNumber;
 
-    // Kept as an Integer to easily link with Member 5's Address table without importing their entity
-    @Column(name = "office_address_id")
-    private Integer officeAddressId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_address_id")
+    private Address officeAddress;
 }
