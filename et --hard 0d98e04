@@ -1,0 +1,30 @@
+[33m1ececc0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m HEAD@{0}: commit: "erros solved regarding customer n address"
+[33me10d843[m HEAD@{1}: reset: moving to origin/develop
+[33m87d8154[m HEAD@{2}: merge origin/develop: Fast-forward
+[33m3262321[m HEAD@{3}: reset: moving to origin/develop
+[33m3262321[m HEAD@{4}: merge origin/develop: Fast-forward
+[33m4eaf976[m HEAD@{5}: pull --no-stat -v --progress origin develop: Fast-forward
+[33m0d98e04[m HEAD@{6}: checkout: moving from sarthak/thymeleaf-ui to develop
+[33mf1418ec[m[33m ([m[1;32msarthak/thymeleaf-ui[m[33m)[m HEAD@{7}: checkout: moving from develop to sarthak/thymeleaf-ui
+[33m0d98e04[m HEAD@{8}: commit: "solved all merge conflicts"
+[33m7f2231b[m HEAD@{9}: commit: "solved all merge conflicts"
+[33m270e255[m HEAD@{10}: checkout: moving from sarthak/thymeleaf-ui to develop
+[33mf1418ec[m[33m ([m[1;32msarthak/thymeleaf-ui[m[33m)[m HEAD@{11}: checkout: moving from develop to sarthak/thymeleaf-ui
+[33m270e255[m HEAD@{12}: pull --no-stat -v --progress origin develop: Merge made by the 'ort' strategy.
+[33m10bea00[m HEAD@{13}: checkout: moving from sarthak/thymeleaf-ui to develop
+[33mf1418ec[m[33m ([m[1;32msarthak/thymeleaf-ui[m[33m)[m HEAD@{14}: pull --no-stat -v --progress origin develop: Merge made by the 'ort' strategy.
+[33m59421c1[m[33m ([m[1;31morigin/sarthak/thymeleaf-ui[m[33m)[m HEAD@{15}: commit: "made files in better reducing extra space"
+[33m10bea00[m HEAD@{16}: checkout: moving from develop to sarthak/thymeleaf-ui
+[33m10bea00[m HEAD@{17}: pull origin develop: Merge made by the 'ort' strategy.
+[33m346a987[m HEAD@{18}: checkout: moving from develop to develop
+[33m346a987[m HEAD@{19}: commit: "added thymeleaf pages for this"
+[33md395eb1[m HEAD@{20}: commit: "added thymeleaf pages for this"
+[33m13cf6d8[m HEAD@{21}: commit: "junit n mockito more test cases added"
+[33m644e7b8[m HEAD@{22}: commit: added the swagger test cases junit mockito exception handling by sarthak pawar
+[33ma3bc722[m HEAD@{23}: pull origin develop: Fast-forward
+[33mef4c808[m HEAD@{24}: commit: implemented customer and address entities with CRUD operations , validation and exception handling handling by sarthak pawar
+[33m11e07f9[m HEAD@{25}: pull origin develop: Fast-forward
+[33mebd8c40[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature/payment[m[33m, [m[1;32mmain[m[33m)[m HEAD@{26}: checkout: moving from main to develop
+[33mebd8c40[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/feature/payment[m[33m, [m[1;32mmain[m[33m)[m HEAD@{27}: pull origin main --allow-unrelated-histories: Merge made by the 'ort' strategy.
+[33m8684f52[m HEAD@{28}: Branch: renamed refs/heads/main to refs/heads/main
+[33m8684f52[m HEAD@{30}: commit (initial): Initial Spring Boot project setup from sarthak
