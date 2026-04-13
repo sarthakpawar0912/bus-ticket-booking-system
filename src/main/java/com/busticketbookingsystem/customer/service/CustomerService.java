@@ -92,10 +92,6 @@ public class CustomerService {
 
         return mapToDTO(customerRepository.save(customer));
     }
-    public void delete(Integer id){
-        if(!customerRepository.existsById(id)){
-            throw new ResourceNotFoundException("Customer not found");
-        }
-        customerRepository.deleteById(id); // ✅ ADD THIS
-    }
+
+
 }

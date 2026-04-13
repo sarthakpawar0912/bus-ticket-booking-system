@@ -56,12 +56,8 @@ public class CustomerController {
         return customerService.patch(id, dto);
     }
 
-    @DeleteMapping("/api/customers/{id}")
-    @ResponseBody
-    public String delete(@PathVariable Integer id) {
-        customerService.delete(id);
-        return "Customer deleted";
-    }
+
+
 
     // ======================== THYMELEAF VIEWS ========================
 

@@ -58,19 +58,5 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    // ✅ DELETE (WITH FK CHECK)
-    @Transactional
-    public void delete(Integer id) {
 
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
-
-        boolean isUsed = customerRepository.existsByAddress_AddressId(id);
-
-        if (isUsed) {
-            throw new BadRequestException("Address is assigned to customers. Cannot delete.");
-        }
-
-        addressRepository.delete(address);
-    }
 }

@@ -46,12 +46,7 @@ public class AddressController {
         return addressService.update(id, address);
     }
 
-    @DeleteMapping("/api/addresses/{id}")
-    @ResponseBody
-    public String delete(@PathVariable Integer id) {
-        addressService.delete(id);
-        return "Address deleted successfully";
-    }
+
 
     // ======================== THYMELEAF VIEWS ========================
 
@@ -102,9 +97,5 @@ public class AddressController {
         return REDIRECT_VIEW_ADDRESSES;
     }
 
-    @GetMapping("/view/addresses/delete/{id}")
-    public String deleteAddress(@PathVariable Integer id) {
-        addressService.delete(id);
-        return REDIRECT_VIEW_ADDRESSES;
-    }
+
 }
