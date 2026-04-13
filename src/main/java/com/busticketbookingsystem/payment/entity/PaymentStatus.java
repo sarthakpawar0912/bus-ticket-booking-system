@@ -1,8 +1,7 @@
 package com.busticketbookingsystem.payment.entity;
 
+@SuppressWarnings("java:S115")
 public enum PaymentStatus {
-    PENDING,
-    SUCCESS,
-    FAILED,
-    REFUNDED
+    Success,
+    Failed
 }
