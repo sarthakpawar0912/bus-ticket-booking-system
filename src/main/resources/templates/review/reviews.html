@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body>
 <div th:replace="~{fragments/header :: navbar}"></div>
 
@@ -14,8 +14,8 @@
 </div>
 
 <div class="container">
-    <div th:if="${message}" class="alert alert-success flash-message" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${message}"></span>
+    <div th:if="${success}" class="alert alert-success flash-message" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
     </div>
     <div th:if="${error}" class="alert alert-danger flash-message" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
@@ -27,37 +27,30 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Customer ID</th>
-                        <th>Trip ID</th>
+                        <th>Customer</th>
+                        <th>Trip</th>
                         <th>Rating</th>
                         <th>Comment</th>
                         <th>Date</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="r : ${reviews}">
                         <td th:text="${r.reviewId}"></td>
-                        <td th:text="${r.customerId}"></td>
-                        <td th:text="${r.tripId}"></td>
+                        <td th:text="${r.customerName}"></td>
+                        <td th:text="${r.tripInfo}"></td>
                         <td>
                             <span class="star-rating">
                                 <i th:each="i : ${#numbers.sequence(1, 5)}"
                                    th:classappend="${i <= r.rating ? 'bi-star-fill' : 'bi-star'}"
-                                   class="bi"></i>
+                                   class="bi text-warning"></i>
                             </span>
                         </td>
                         <td th:text="${r.comment}"></td>
                         <td th:text="${r.reviewDate}"></td>
-                        <td>
-                            <a th:href="@{/view/reviews/delete/{id}(id=${r.reviewId})}" class="btn btn-sm btn-outline-danger btn-action"
-                               onclick="return confirm('Are you sure you want to delete this review?')">
-                                <i class="bi bi-trash"></i> Delete
-                            </a>
-                        </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(reviews)}">
-                        <td colspan="7" class="text-center text-muted py-4">No reviews found.</td>
+                        <td colspan="6" class="text-center text-muted py-4">No reviews found.</td>
                     </tr>
                 </tbody>
             </table>

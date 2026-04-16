@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body>
 <div th:replace="~{fragments/header :: navbar}"></div>
 
@@ -17,9 +17,9 @@
             <div class="row">
                 <div class="col-md-4">
                     <h5 class="mb-1">
-                        <span th:text="${trip.fromCity}"></span>
-                        <i class="bi bi-arrow-right text-primary mx-2"></i>
-                        <span th:text="${trip.toCity}"></span>
+                        <span th:text="${trip.fromCity}">Origin</span>
+                        <i class="bi bi-arrow-right text-primary mx-2" aria-hidden="true"></i>
+                        <span th:text="${trip.toCity}">Destination</span>
                     </h5>
                     <span class="badge bg-info" th:text="${trip.busType}"></span>
                 </div>
@@ -82,12 +82,14 @@
                      class="seat booked"
                      th:text="${seat}">
                 </div>
-                <div th:unless="${#lists.contains(bookedSeats, seat)}"
+                <button type="button" th:unless="${#lists.contains(bookedSeats, seat)}"
                      class="seat available"
                      th:attr="data-seat=${seat}"
                      th:text="${seat}"
-                     onclick="toggleSeat(this)">
-                </div>
+                     tabindex="0"
+                     onclick="toggleSeat(this)"
+                     onkeydown="if(event.key==='Enter')this.click()">
+                </button>
             </div>
         </div>
 
@@ -112,7 +114,7 @@
     let selectedSeats = [];
 
     function toggleSeat(element) {
-        const seatNum = parseInt(element.getAttribute('data-seat'));
+        const seatNum = Number.parseInt(element.dataset.seat, 10);
 
         if (element.classList.contains('selected')) {
             element.classList.remove('selected');

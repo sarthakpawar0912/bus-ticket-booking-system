@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body>
 <div th:replace="~{fragments/header :: navbar}"></div>
 
@@ -45,10 +45,12 @@
                             <a th:href="@{/view/addresses/edit/{id}(id=${a.addressId})}" class="btn btn-sm btn-outline-primary btn-action me-1">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                            <a th:href="@{/view/addresses/delete/{id}(id=${a.addressId})}" class="btn btn-sm btn-outline-danger btn-action"
-                               onclick="return confirm('Are you sure you want to delete this address?')">
-                                <i class="bi bi-trash"></i> Delete
-                            </a>
+                            <form th:action="@{/view/addresses/delete/{id}(id=${a.addressId})}" method="get" style="display:inline;"
+                                  onsubmit="return confirm('Are you sure you want to delete this address?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger btn-action">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(addresses)}">
