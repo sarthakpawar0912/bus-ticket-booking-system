@@ -165,43 +165,6 @@ class RouteServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("delete() Tests")
-    class DeleteTests {
-
-        @Test
-        @DisplayName("POSITIVE: Should delete route when not used by any trips")
-        void delete_Success() {
-            when(routeRepository.findById(1)).thenReturn(Optional.of(route));
-            when(tripRepository.existsByRoute_RouteId(1)).thenReturn(false);
-
-            routeService.delete(1);
-
-            verify(routeRepository).delete(route);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw BadRequestException when route is used by trips")
-        void delete_RouteInUse_Throws() {
-            when(routeRepository.findById(1)).thenReturn(Optional.of(route));
-            when(tripRepository.existsByRoute_RouteId(1)).thenReturn(true);
-
-            BadRequestException ex = assertThrows(BadRequestException.class,
-                    () -> routeService.delete(1));
-
-            assertEquals("Cannot delete route - it is used by existing trips.", ex.getMessage());
-            verify(routeRepository, never()).delete(any());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException for non-existent route")
-        void delete_NotFound() {
-            when(routeRepository.findById(999)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> routeService.delete(999));
-        }
-    }
 
     @Nested
     @DisplayName("searchRoutes() Tests")

@@ -99,14 +99,14 @@
 
             <!-- Action Buttons -->
             <div class="d-flex flex-wrap gap-3 justify-content-center">
-                <!-- Group ticket (multiple seats) -->
-                <a th:if="${allPaymentIds != null and #lists.size(allPaymentIds) > 1}"
-                   th:href="@{/api/payments/group-ticket(paymentIds=${#strings.listJoin(allPaymentIds, ',')})}"
+                <!-- Single unified Download Ticket button (auto group-detects when multi-seat booking used /api/bookings/group-ticket) -->
+                <a th:if="${allBookingIds != null and seatCount != null and seatCount > 1}"
+                   th:href="@{/api/bookings/group-ticket(bookingIds=${allBookingIds})}"
                    class="btn btn-primary btn-lg px-4 shadow-sm">
-                    <i class="bi bi-download me-2"></i>Download Group Ticket (<span th:text="${#lists.size(allPaymentIds)}"></span> Seats)
+                    <i class="bi bi-download me-2"></i>Download Ticket
+                    (<span th:text="${seatCount}"></span> Seats)
                 </a>
-                <!-- Single ticket -->
-                <a th:if="${allPaymentIds == null or #lists.size(allPaymentIds) <= 1}"
+                <a th:unless="${allBookingIds != null and seatCount != null and seatCount > 1}"
                    th:href="@{/api/payments/{id}/ticket(id=${payment.paymentId})}"
                    class="btn btn-primary btn-lg px-4 shadow-sm">
                     <i class="bi bi-download me-2"></i>Download Ticket

@@ -160,13 +160,7 @@ class AgencyControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("DELETE /api/agencies/offices/{id} success")
-    void deleteOffice() throws Exception {
-        doNothing().when(agencyService).deleteOffice(1);
-        mockMvc.perform(delete("/api/agencies/offices/1"))
-                .andExpect(status().isOk());
-    }
+
 
     @Test
     @DisplayName("GET /view/agencies renders template")

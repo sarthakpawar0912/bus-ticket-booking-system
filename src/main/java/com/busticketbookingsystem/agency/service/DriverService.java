@@ -99,14 +99,6 @@ public class DriverService {
         return mapToDriverResponseDTO(driverRepository.save(driver));
     }
 
-    @Transactional
-    public void deleteDriver(Integer id) {
-        if (!driverRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Driver not found with ID: " + id);
-        }
-        driverRepository.deleteById(id);
-    }
-
     public List<DriverResponseDTO> getDriversByOfficeId(Integer officeId) {
         return driverRepository.findByOffice_OfficeId(officeId)
                 .stream()

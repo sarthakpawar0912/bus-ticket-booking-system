@@ -4,7 +4,6 @@ import com.busticketbookingsystem.booking.entity.Booking;
 import com.busticketbookingsystem.booking.repository.BookingRepository;
 import com.busticketbookingsystem.customer.entity.Customer;
 import com.busticketbookingsystem.customer.repository.CustomerRepository;
-import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.payment.dto.PaymentRequestDTO;
 import com.busticketbookingsystem.payment.dto.PaymentResponseDTO;
@@ -72,21 +71,6 @@ public class PaymentService {
         return paymentRepository.findByCustomer_CustomerId(customerId).stream()
                 .map(p -> mapToResponseDTO(p, null))
                 .toList();
-    }
-
-    @Transactional
-    public PaymentResponseDTO refundPayment(Integer id) {
-        Payment payment = paymentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment not found with id: " + id));
-
-        if (payment.getPaymentStatus() != PaymentStatus.Success) {
-            throw new BadRequestException("Refund not allowed for payment with status: " + payment.getPaymentStatus());
-        }
-
-        payment.setPaymentStatus(PaymentStatus.Failed);
-        paymentRepository.save(payment);
-
-        return mapToResponseDTO(payment, "Refund processed successfully");
     }
 
     @Transactional(readOnly = true)

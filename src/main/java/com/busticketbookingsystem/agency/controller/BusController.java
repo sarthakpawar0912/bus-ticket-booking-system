@@ -60,13 +60,6 @@ public class BusController {
         return ResponseEntity.ok(busService.updateBus(id, requestDTO));
     }
 
-    @DeleteMapping("/api/buses/{id}")
-    @ResponseBody
-    public ResponseEntity<String> deleteBus(@PathVariable Integer id) {
-        busService.deleteBus(id);
-        return ResponseEntity.ok("Bus deleted successfully.");
-    }
-
     // ======================== THYMELEAF VIEWS ========================
 
     @GetMapping("/view/buses")
@@ -102,9 +95,4 @@ public class BusController {
         return REDIRECT_VIEW_BUSES;
     }
 
-    @GetMapping("/view/buses/delete/{id}")
-    public String deleteBusView(@PathVariable Integer id) {
-        busService.deleteBus(id);
-        return REDIRECT_VIEW_BUSES;
-    }
 }

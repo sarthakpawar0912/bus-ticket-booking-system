@@ -90,13 +90,7 @@ class ReviewControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteReview() throws Exception {
-        doNothing().when(reviewService).deleteReview(1);
-        mockMvc.perform(delete("/api/reviews/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Review deleted successfully"));
-    }
+
 
     @Test
     void listReviewsView() throws Exception {
@@ -127,11 +121,5 @@ class ReviewControllerTest {
                 .andExpect(redirectedUrl("/view/reviews"));
     }
 
-    @Test
-    void deleteReviewView() throws Exception {
-        doNothing().when(reviewService).deleteReview(1);
-        mockMvc.perform(get("/view/reviews/delete/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view/reviews"));
-    }
+
 }

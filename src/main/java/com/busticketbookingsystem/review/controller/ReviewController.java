@@ -65,15 +65,6 @@ public class ReviewController {
                 .toList();
     }
 
-    @DeleteMapping("/api/reviews/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> deleteReview(@PathVariable Integer id) {
-        reviewService.deleteReview(id);
-        Map<String, String> response = new LinkedHashMap<>();
-        response.put("message", "Review deleted successfully");
-        return ResponseEntity.ok(response);
-    }
-
     // ======================== THYMELEAF VIEWS ========================
 
     @GetMapping("/view/reviews")
@@ -100,13 +91,6 @@ public class ReviewController {
     public String saveReview(@ModelAttribute("review") ReviewDTO reviewDTO, RedirectAttributes redirectAttributes) {
         reviewService.createReview(reviewDTO);
         redirectAttributes.addFlashAttribute("success", "Review created successfully");
-        return "redirect:/view/reviews";
-    }
-
-    @GetMapping("/view/reviews/delete/{id}")
-    public String deleteReviewView(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        reviewService.deleteReview(id);
-        redirectAttributes.addFlashAttribute("success", "Review deleted successfully");
         return "redirect:/view/reviews";
     }
 

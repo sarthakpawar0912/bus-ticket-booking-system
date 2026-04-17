@@ -65,13 +65,6 @@ public class DriverController {
         return ResponseEntity.ok(driverService.updateDriver(id, requestDTO));
     }
 
-    @DeleteMapping("/api/drivers/{id}")
-    @ResponseBody
-    public ResponseEntity<String> deleteDriver(@PathVariable Integer id) {
-        driverService.deleteDriver(id);
-        return ResponseEntity.ok("Driver deleted successfully.");
-    }
-
     // ======================== THYMELEAF VIEWS ========================
 
     @GetMapping("/view/drivers")
@@ -109,9 +102,4 @@ public class DriverController {
         return REDIRECT_VIEW_DRIVERS;
     }
 
-    @GetMapping("/view/drivers/delete/{id}")
-    public String deleteDriverView(@PathVariable Integer id) {
-        driverService.deleteDriver(id);
-        return REDIRECT_VIEW_DRIVERS;
-    }
 }

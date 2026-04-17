@@ -244,43 +244,6 @@ class AgencyOfficeServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("delete() Tests")
-    class DeleteTests {
-
-        @Test
-        @DisplayName("POSITIVE: Should delete office when no buses assigned")
-        void delete_Success() {
-            when(agencyOfficeRepository.findById(1)).thenReturn(Optional.of(office));
-            when(busRepository.existsByOffice_OfficeId(1)).thenReturn(false);
-
-            agencyOfficeService.delete(1);
-
-            verify(agencyOfficeRepository).delete(office);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw BadRequestException when office has buses")
-        void delete_HasBuses_Throws() {
-            when(agencyOfficeRepository.findById(1)).thenReturn(Optional.of(office));
-            when(busRepository.existsByOffice_OfficeId(1)).thenReturn(true);
-
-            BadRequestException ex = assertThrows(BadRequestException.class,
-                    () -> agencyOfficeService.delete(1));
-
-            assertEquals("Office has buses assigned. Cannot delete.", ex.getMessage());
-            verify(agencyOfficeRepository, never()).delete(any());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw when office not found for deletion")
-        void delete_OfficeNotFound() {
-            when(agencyOfficeRepository.findById(999)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> agencyOfficeService.delete(999));
-        }
-    }
 
     @Test
     @DisplayName("EDGE CASE: mapToDTO should handle null officeAddress gracefully")

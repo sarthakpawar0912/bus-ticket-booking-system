@@ -100,12 +100,6 @@ class DriverControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteDriver() throws Exception {
-        doNothing().when(driverService).deleteDriver(1);
-        mockMvc.perform(delete("/api/drivers/1"))
-                .andExpect(status().isOk());
-    }
 
     @Test
     void listDriversView() throws Exception {
@@ -137,11 +131,5 @@ class DriverControllerTest {
                 .andExpect(redirectedUrl("/view/drivers"));
     }
 
-    @Test
-    void deleteDriverView() throws Exception {
-        doNothing().when(driverService).deleteDriver(1);
-        mockMvc.perform(get("/view/drivers/delete/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view/drivers"));
-    }
+
 }

@@ -127,8 +127,7 @@ public class MemberRegistry {
                 op("Get All", "GET", base, "NONE", "Fetch all records", List.of()),
                 op("Get By ID", "GET", base + "/{id}", "ID", "Fetch one record by ID", List.of()),
                 op("Create", "POST", base, "BODY", "Create a new record", fields),
-                op("Update", "PUT", base + "/{id}", "ID_AND_BODY", "Update an existing record", fields),
-                op("Delete", "DELETE", base + "/{id}", "ID", "Delete a record by ID", List.of())
+                op("Update", "PUT", base + "/{id}", "ID_AND_BODY", "Update an existing record", fields)
         );
     }
 
@@ -186,11 +185,10 @@ public class MemberRegistry {
         List<Operation> ops = new java.util.ArrayList<>(List.of(
                 op("Get All", "GET", "/api/payments", "NONE", "Fetch all payments", List.of()),
                 op("Get By ID", "GET", "/api/payments/{id}", "ID", "Fetch payment by ID", List.of()),
-                op("Create", "POST", "/api/payments", "BODY", "Process a new payment", PAYMENT_FIELDS),
-                op("Refund", "POST", "/api/payments/{id}/refund", "ID", "Refund an existing payment", List.of())
+                op("Create", "POST", "/api/payments", "BODY", "Process a new payment", PAYMENT_FIELDS)
         ));
         return ServiceInfo.builder().key("payments").name("Payments").icon("bi-credit-card")
-                .description("Process payments, refunds, and lookups")
+                .description("Process payments and lookups")
                 .operations(ops).build();
     }
 
@@ -199,8 +197,7 @@ public class MemberRegistry {
                 op("Get All", "GET", "/api/reviews", "NONE", "Fetch all reviews", List.of()),
                 op("Get By Trip", "GET", "/api/reviews/trip/{id}", "ID", "Reviews for a trip", List.of()),
                 op("Get By Customer", "GET", "/api/reviews/customer/{id}", "ID", "Reviews by a customer", List.of()),
-                op("Create", "POST", "/api/reviews", "BODY", "Post a new review", REVIEW_FIELDS),
-                op("Delete", "DELETE", "/api/reviews/{id}", "ID", "Delete a review by ID", List.of())
+                op("Create", "POST", "/api/reviews", "BODY", "Post a new review", REVIEW_FIELDS)
         ));
         return ServiceInfo.builder().key("reviews").name("Reviews").icon("bi-star-fill")
                 .description("Customer feedback and ratings for trips")
@@ -211,11 +208,10 @@ public class MemberRegistry {
         List<Operation> ops = new java.util.ArrayList<>(List.of(
                 op("Get By Trip", "GET", "/api/bookings/trip/{id}", "ID", "All bookings for a trip", List.of()),
                 op("Get By ID", "GET", "/api/bookings/{id}", "ID", "Fetch one booking by ID", List.of()),
-                op("Create", "POST", "/api/bookings", "BODY", "Book one or more seats", BOOKING_FIELDS),
-                op("Cancel", "POST", "/api/bookings/{id}/cancel", "ID", "Cancel a booking by ID", List.of())
+                op("Create", "POST", "/api/bookings", "BODY", "Book one or more seats", BOOKING_FIELDS)
         ));
         return ServiceInfo.builder().key("bookings").name("Bookings").icon("bi-ticket-perforated")
-                .description("Reserve seats, cancel, and view booking status")
+                .description("Reserve seats and view booking status")
                 .operations(ops).build();
     }
 

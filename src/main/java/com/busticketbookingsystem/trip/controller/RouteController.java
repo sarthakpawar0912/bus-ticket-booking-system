@@ -51,13 +51,6 @@ public class RouteController {
         return routeService.update(id, route);
     }
 
-    @DeleteMapping("/api/routes/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> deleteRoute(@PathVariable Integer id) {
-        routeService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/api/routes/search")
     @ResponseBody
     public List<Route> searchRoutes(@RequestParam String from, @RequestParam String to) {
@@ -118,14 +111,4 @@ public class RouteController {
         return "route/search-routes";
     }
 
-    @GetMapping("/view/routes/delete/{id}")
-    public String deleteRouteView(@PathVariable Integer id, RedirectAttributes ra) {
-        try {
-            routeService.delete(id);
-            ra.addFlashAttribute(ATTR_MESSAGE, "Route deleted successfully!");
-        } catch (Exception ex) {
-            ra.addFlashAttribute(ATTR_ERROR, ex.getMessage());
-        }
-        return REDIRECT_VIEW_ROUTES;
-    }
 }

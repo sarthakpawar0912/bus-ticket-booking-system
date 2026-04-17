@@ -93,12 +93,6 @@ class TripControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteTrip() throws Exception {
-        doNothing().when(tripService).delete(1);
-        mockMvc.perform(delete("/api/trips/1"))
-                .andExpect(status().isNoContent());
-    }
 
     @Test
     void searchTrips() throws Exception {
@@ -144,11 +138,5 @@ class TripControllerTest {
                 .andExpect(redirectedUrl("/view/trips"));
     }
 
-    @Test
-    void deleteTripView() throws Exception {
-        doNothing().when(tripService).delete(1);
-        mockMvc.perform(get("/view/trips/delete/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view/trips"));
-    }
+
 }

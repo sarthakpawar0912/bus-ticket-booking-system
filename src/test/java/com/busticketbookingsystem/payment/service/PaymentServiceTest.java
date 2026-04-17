@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for PaymentService.
  * Covers processPayment, getPaymentById, getPaymentByBookingId,
- * getPaymentsByCustomerId, refundPayment, getAllPayments.
+ * getPaymentsByCustomerId, getAllPayments.
  */
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
@@ -188,48 +188,6 @@ class PaymentServiceTest {
             when(paymentRepository.findByCustomer_CustomerId(99)).thenReturn(Collections.emptyList());
 
             assertTrue(paymentService.getPaymentsByCustomerId(99).isEmpty());
-        }
-    }
-
-    @Nested
-    @DisplayName("refundPayment() Tests")
-    class RefundPaymentTests {
-
-        @Test
-        @DisplayName("POSITIVE: Should refund a successful payment")
-        void refundPayment_Success() {
-            when(paymentRepository.findById(1)).thenReturn(Optional.of(payment));
-            when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
-
-            PaymentResponseDTO result = paymentService.refundPayment(1);
-
-            assertEquals("Refund processed successfully", result.getMessage());
-            // Status should change to Failed (as per the service logic)
-            assertEquals(PaymentStatus.Failed, payment.getPaymentStatus());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw BadRequestException when payment status is not Success")
-        void refundPayment_NotSuccessStatus_Throws() {
-            // Change payment status to Failed (already refunded)
-            payment.setPaymentStatus(PaymentStatus.Failed);
-
-            when(paymentRepository.findById(1)).thenReturn(Optional.of(payment));
-
-            BadRequestException ex = assertThrows(BadRequestException.class,
-                    () -> paymentService.refundPayment(1));
-
-            assertTrue(ex.getMessage().contains("Refund not allowed"));
-            verify(paymentRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException for non-existent payment")
-        void refundPayment_NotFound() {
-            when(paymentRepository.findById(999)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> paymentService.refundPayment(999));
         }
     }
 

@@ -93,13 +93,6 @@ public class BookingController {
         return map;
     }
 
-    @PostMapping("/api/bookings/{id}/cancel")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> cancelBooking(@PathVariable Integer id) {
-        String message = bookingService.cancelBooking(id);
-        return ResponseEntity.ok(Map.of("message", message));
-    }
-
     @GetMapping("/api/bookings/{id}/ticket")
     @ResponseBody
     public ResponseEntity<byte[]> downloadTicketPdf(@PathVariable Integer id) {
@@ -189,24 +182,6 @@ public class BookingController {
             ra.addFlashAttribute("error", ex.getMessage());
             return "redirect:/view/bookings/trip/" + tripId;
         }
-    }
-
-    // ---- Cancel Booking (UI flow, delegates to REST cancel) ----
-
-    @GetMapping("/view/bookings/cancel")
-    public String showCancelForm(Model model) {
-        return "booking/cancel-booking";
-    }
-
-    @PostMapping("/view/bookings/cancel")
-    public String cancelBookingView(@RequestParam Integer bookingId, RedirectAttributes ra) {
-        try {
-            String msg = bookingService.cancelBooking(bookingId);
-            ra.addFlashAttribute("message", msg);
-        } catch (Exception ex) {
-            ra.addFlashAttribute("error", ex.getMessage());
-        }
-        return "redirect:/view/bookings/cancel";
     }
 
     // ---- Single Ticket Download page (UI wrapper around /api/bookings/{id}/ticket) ----

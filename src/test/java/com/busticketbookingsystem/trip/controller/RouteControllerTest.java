@@ -73,12 +73,7 @@ class RouteControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteRoute() throws Exception {
-        doNothing().when(routeService).delete(1);
-        mockMvc.perform(delete("/api/routes/1"))
-                .andExpect(status().isNoContent());
-    }
+
 
     @Test
     void searchRoutes() throws Exception {
@@ -114,11 +109,5 @@ class RouteControllerTest {
                 .andExpect(redirectedUrl("/view/routes"));
     }
 
-    @Test
-    void deleteRouteView() throws Exception {
-        doNothing().when(routeService).delete(1);
-        mockMvc.perform(get("/view/routes/delete/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view/routes"));
-    }
+
 }

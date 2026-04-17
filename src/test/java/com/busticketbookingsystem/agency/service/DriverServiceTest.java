@@ -263,28 +263,7 @@ class DriverServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("deleteDriver() Tests")
-    class DeleteDriverTests {
 
-        @Test
-        @DisplayName("POSITIVE: Should delete driver when exists")
-        void deleteDriver_Success() {
-            when(driverRepository.existsById(1)).thenReturn(true);
-
-            driverService.deleteDriver(1);
-
-            verify(driverRepository).deleteById(1);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException when driver not found")
-        void deleteDriver_NotFound() {
-            when(driverRepository.existsById(999)).thenReturn(false);
-
-            assertThrows(ResourceNotFoundException.class, () -> driverService.deleteDriver(999));
-        }
-    }
 
     @Nested
     @DisplayName("getDriversByOfficeId() Tests")

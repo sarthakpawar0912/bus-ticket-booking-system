@@ -56,13 +56,6 @@ public class CustomerController {
         return customerService.patch(id, dto);
     }
 
-    @DeleteMapping("/api/customers/{id}")
-    @ResponseBody
-    public String delete(@PathVariable Integer id) {
-        customerService.delete(id);
-        return "Customer deleted";
-    }
-
     // ======================== THYMELEAF VIEWS ========================
 
     @GetMapping("/view/customers")
@@ -74,13 +67,43 @@ public class CustomerController {
     @GetMapping("/view/customers/add")
     public String showAddForm(Model model) {
         model.addAttribute("customer", new CustomerRequestDTO());
-        model.addAttribute("addresses", addressService.getAll());
         return "customer/add-customer";
     }
 
+    /**
+     * Creates a new Address first from the inline form fields, then a Customer
+     * pointing to that brand-new Address. This way every customer enters their
+     * OWN address rather than picking from other customers' existing addresses.
+     */
     @PostMapping("/view/customers/save")
-    public String saveCustomer(@ModelAttribute CustomerRequestDTO dto) {
-        customerService.create(dto);
+    public String saveCustomer(@RequestParam String name,
+                               @RequestParam String email,
+                               @RequestParam String phone,
+                               @RequestParam String address,
+                               @RequestParam String city,
+                               @RequestParam String state,
+                               @RequestParam String zipCode,
+                               org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
+        try {
+            com.busticketbookingsystem.customer.entity.Address addr =
+                    new com.busticketbookingsystem.customer.entity.Address();
+            addr.setAddress(address);
+            addr.setCity(city);
+            addr.setState(state);
+            addr.setZipCode(zipCode);
+            com.busticketbookingsystem.customer.entity.Address savedAddr = addressService.create(addr);
+
+            CustomerRequestDTO dto = new CustomerRequestDTO();
+            dto.setName(name);
+            dto.setEmail(email);
+            dto.setPhone(phone);
+            dto.setAddressId(savedAddr.getAddressId());
+            customerService.create(dto);
+
+            ra.addFlashAttribute("message", "Customer added successfully.");
+        } catch (Exception ex) {
+            ra.addFlashAttribute("error", ex.getMessage());
+        }
         return "redirect:/view/customers";
     }
 

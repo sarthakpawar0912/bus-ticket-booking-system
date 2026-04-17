@@ -112,15 +112,4 @@ public class AgencyOfficeService {
         return mapToDTO(agencyOfficeRepository.save(office));
     }
 
-    @Transactional
-    public void delete(Integer id) {
-        AgencyOffice office = agencyOfficeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(AGENCY_OFFICE_NOT_FOUND + id));
-
-        if (busRepository.existsByOffice_OfficeId(id)) {
-            throw new BadRequestException("Office has buses assigned. Cannot delete.");
-        }
-
-        agencyOfficeRepository.delete(office);
-    }
 }

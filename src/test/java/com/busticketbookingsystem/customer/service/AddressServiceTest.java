@@ -185,41 +185,5 @@ class AddressServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("delete() Tests")
-    class DeleteTests {
 
-        @Test
-        @DisplayName("POSITIVE: Should delete address when not linked to any customer")
-        void delete_Success() {
-            when(addressRepository.findById(1)).thenReturn(Optional.of(address));
-            when(customerRepository.existsByAddress_AddressId(1)).thenReturn(false);
-
-            addressService.delete(1);
-
-            verify(addressRepository).delete(address);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw BadRequestException when address is assigned to customers")
-        void delete_AddressInUse_Throws() {
-            when(addressRepository.findById(1)).thenReturn(Optional.of(address));
-            when(customerRepository.existsByAddress_AddressId(1)).thenReturn(true);
-
-            BadRequestException ex = assertThrows(BadRequestException.class,
-                    () -> addressService.delete(1));
-
-            assertEquals("Address is assigned to customers. Cannot delete.", ex.getMessage());
-            verify(addressRepository, never()).delete(any());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException when address not found")
-        void delete_NotFound() {
-            when(addressRepository.findById(999)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> addressService.delete(999));
-        }
-    }
 }

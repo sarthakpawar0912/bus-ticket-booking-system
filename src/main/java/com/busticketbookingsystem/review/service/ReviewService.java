@@ -62,9 +62,4 @@ public class ReviewService {
         return reviewRepository.findAllWithDetails();
     }
 
-    public void deleteReview(Integer id) {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
-        reviewRepository.delete(review);
-    }
 }

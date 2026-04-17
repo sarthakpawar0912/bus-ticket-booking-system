@@ -202,27 +202,6 @@ class ReviewServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("deleteReview() Tests")
-    class DeleteReviewTests {
 
-        @Test
-        @DisplayName("POSITIVE: Should delete review when it exists")
-        void deleteReview_Success() {
-            when(reviewRepository.findById(1)).thenReturn(Optional.of(review));
 
-            reviewService.deleteReview(1);
-
-            verify(reviewRepository).delete(review);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException for non-existent review")
-        void deleteReview_NotFound() {
-            when(reviewRepository.findById(999)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> reviewService.deleteReview(999));
-        }
-    }
 }

@@ -41,15 +41,6 @@ public class RouteService {
         return routeRepository.save(route);
     }
 
-    @Transactional
-    public void delete(Integer id) {
-        Route route = getById(id);
-        if (tripRepository.existsByRoute_RouteId(id)) {
-            throw new BadRequestException("Cannot delete route - it is used by existing trips.");
-        }
-        routeRepository.delete(route);
-    }
-
     public List<Route> searchRoutes(String fromCity, String toCity) {
         return routeRepository.findByFromCityIgnoreCaseAndToCityIgnoreCase(fromCity, toCity);
     }

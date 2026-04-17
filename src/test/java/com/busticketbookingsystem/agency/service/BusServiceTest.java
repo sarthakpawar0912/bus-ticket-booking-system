@@ -233,30 +233,6 @@ class BusServiceTest {
     }
 
     @Nested
-    @DisplayName("deleteBus() Tests")
-    class DeleteBusTests {
-
-        @Test
-        @DisplayName("POSITIVE: Should delete bus when it exists")
-        void deleteBus_Success() {
-            when(busRepository.existsById(1)).thenReturn(true);
-
-            busService.deleteBus(1);
-
-            verify(busRepository).deleteById(1);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException for non-existent bus")
-        void deleteBus_NotFound() {
-            when(busRepository.existsById(999)).thenReturn(false);
-
-            assertThrows(ResourceNotFoundException.class, () -> busService.deleteBus(999));
-            verify(busRepository, never()).deleteById(anyInt());
-        }
-    }
-
-    @Nested
     @DisplayName("getBusesByOfficeId() Tests")
     class GetBusesByOfficeIdTests {
 

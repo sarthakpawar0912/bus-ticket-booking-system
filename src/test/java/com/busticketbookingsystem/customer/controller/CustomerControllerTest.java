@@ -97,13 +97,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteCustomer() throws Exception {
-        doNothing().when(customerService).delete(1);
-        mockMvc.perform(delete("/api/customers/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Customer deleted"));
-    }
+
 
     @Test
     void listCustomersView() throws Exception {
@@ -116,19 +110,26 @@ class CustomerControllerTest {
 
     @Test
     void showAddCustomerForm() throws Exception {
-        when(addressService.getAll()).thenReturn(Collections.emptyList());
         mockMvc.perform(get("/view/customers/add"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("customer/add-customer"))
-                .andExpect(model().attributeExists("customer", "addresses"));
+                .andExpect(model().attributeExists("customer"));
     }
 
     @Test
     void saveCustomerView() throws Exception {
+        com.busticketbookingsystem.customer.entity.Address savedAddr =
+                com.busticketbookingsystem.customer.entity.Address.builder()
+                        .addressId(1).address("Station Rd").city("Mumbai")
+                        .state("MH").zipCode("400001").build();
+        when(addressService.create(any())).thenReturn(savedAddr);
         when(customerService.create(any())).thenReturn(response);
+
         mockMvc.perform(post("/view/customers/save")
                         .param("name", "Sarthak").param("email", "s@e.com")
-                        .param("phone", "9876543210").param("addressId", "1"))
+                        .param("phone", "9876543210")
+                        .param("address", "Station Rd").param("city", "Mumbai")
+                        .param("state", "MH").param("zipCode", "400001"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/view/customers"));
     }

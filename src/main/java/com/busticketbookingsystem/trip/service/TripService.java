@@ -76,13 +76,6 @@ public class TripService {
         return tripRepository.save(trip);
     }
 
-    @Transactional
-    public void delete(Integer id) {
-        Trip trip = tripRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(TRIP_NOT_FOUND + id));
-        tripRepository.delete(trip);
-    }
-
     @Transactional(readOnly = true)
     public List<Trip> searchTrips(String fromCity, String toCity) {
         return tripRepository.searchTrips(fromCity, toCity);

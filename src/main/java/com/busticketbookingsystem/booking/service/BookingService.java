@@ -70,25 +70,6 @@ public class BookingService {
                 .build();
     }
 
-    @Transactional
-    public String cancelBooking(Integer bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
-
-        if (booking.getStatus() == BookingStatus.Available) {
-            throw new BadRequestException("Booking is already available (not booked).");
-        }
-
-        booking.setStatus(BookingStatus.Available);
-        bookingRepository.save(booking);
-
-        Trip trip = booking.getTrip();
-        trip.setAvailableSeats(trip.getAvailableSeats() + 1);
-        tripRepository.save(trip);
-
-        return "Booking with id " + bookingId + " has been cancelled successfully.";
-    }
-
     @Transactional(readOnly = true)
     public List<Booking> getBookingsForTrip(Integer tripId) {
         return bookingRepository.findByTrip_TripId(tripId);

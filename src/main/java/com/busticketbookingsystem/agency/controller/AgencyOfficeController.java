@@ -43,9 +43,4 @@ public class AgencyOfficeController {
         return agencyOfficeService.update(id, officeDTO);
     }
 
-    @DeleteMapping("/api/offices/{id}")
-    public ResponseEntity<Map<String, String>> deleteOffice(@PathVariable Integer id) {
-        agencyOfficeService.delete(id);
-        return ResponseEntity.ok(Map.of("message", "Agency office deleted successfully"));
-    }
 }

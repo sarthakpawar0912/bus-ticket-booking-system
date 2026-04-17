@@ -164,28 +164,22 @@ public class TeamRegistry {
                 .role("Payment Module Developer")
                 .photo("https://api.dicebear.com/7.x/initials/svg?seed=Anushka+Bankar&backgroundColor=6f42c1")
                 .initials("AB").color("#6f42c1")
-                .modules(List.of("Payments", "Refund", "Ticket Download", "Group Ticket Download"))
+                .modules(List.of("Payments", "Ticket Download"))
                 .responsibilities(List.of(
                         "Design and maintain the Payment module",
-                        "Implement payment processing and refund flows",
-                        "Wire up PDF ticket download and group-ticket download UIs",
+                        "Implement payment processing flows with one-payment-per-transaction semantics",
+                        "Wire up the unified PDF ticket download UI (auto-handles single + group)",
                         "Build the payment checkout and success-page Thymeleaf views"))
                 .endpoints(List.of(
                         ep("GET ALL", "/api/payments", "List every payment", "/view/payments", "Open List"),
                         ep("POST", "/api/payments", "Process a new payment (via checkout)",
                                 "/view/payments", "Open Payments"),
-                        ep("POST", "/api/payments/{id}/refund", "Refund an existing payment",
-                                "/view/payments/refund", "Open Refund"),
-                        ep("DOWNLOAD", "/api/payments/{id}/ticket", "Download a payment ticket PDF",
-                                "/view/payments/ticket", "Download Ticket"),
-                        ep("DOWNLOAD", "/api/payments/group-ticket",
-                                "Download group ticket PDF for multiple payments",
-                                "/view/payments/group-ticket", "Download Group Ticket")))
+                        ep("DOWNLOAD", "/api/payments/{id}/ticket",
+                                "Download a payment ticket PDF (auto-generates group ticket when the payment is part of a multi-seat transaction)",
+                                "/view/payments/ticket", "Download Ticket")))
                 .screens(List.of(
                         sc("Payments List", "/view/payments", "bi-credit-card"),
-                        sc("Refund Confirmation", "/view/payments/refund", "bi-arrow-counterclockwise"),
-                        sc("Ticket Download", "/view/payments/ticket", "bi-file-earmark-pdf"),
-                        sc("Group Ticket Download", "/view/payments/group-ticket", "bi-files")))
+                        sc("Download Ticket", "/view/payments/ticket", "bi-file-earmark-pdf")))
                 .build();
     }
 
@@ -198,12 +192,11 @@ public class TeamRegistry {
                 .role("Booking Developer")
                 .photo("https://api.dicebear.com/7.x/initials/svg?seed=Kedar+Mahadik&backgroundColor=dc3545")
                 .initials("KM").color("#dc3545")
-                .modules(List.of("Bookings", "Cancel Booking", "Ticket Download",
-                        "Group Booking Ticket", "Reviews"))
+                .modules(List.of("Bookings", "Ticket Download", "Group Booking Ticket", "Reviews"))
                 .responsibilities(List.of(
                         "Design and maintain the Booking + Reviews modules",
                         "Build the full end-user booking flow: search, seat selection, confirmation",
-                        "Implement atomic multi-seat booking with safe cancellation",
+                        "Implement atomic multi-seat booking",
                         "Wire up the PDF ticket flow and the group-ticket download",
                         "Expose review creation UI and review listing"))
                 .endpoints(List.of(
@@ -211,8 +204,6 @@ public class TeamRegistry {
                                 "/view/bookings", "Open Booking Flow"),
                         ep("POST", "/api/bookings", "Book one or more seats on a trip",
                                 "/view/bookings", "Open Booking Flow"),
-                        ep("POST", "/api/bookings/{id}/cancel", "Cancel an existing booking",
-                                "/view/bookings/cancel", "Open Cancel"),
                         ep("DOWNLOAD", "/api/bookings/{id}/ticket", "Download a booking ticket PDF",
                                 "/view/bookings/ticket", "Download Ticket"),
                         ep("DOWNLOAD", "/api/bookings/group-ticket",
@@ -223,7 +214,6 @@ public class TeamRegistry {
                                 "/view/reviews/add", "Open Add Form")))
                 .screens(List.of(
                         sc("Booking Flow (Trip List)", "/view/bookings", "bi-ticket-perforated"),
-                        sc("Cancel Booking", "/view/bookings/cancel", "bi-x-circle"),
                         sc("Booking Ticket Download", "/view/bookings/ticket", "bi-file-earmark-pdf"),
                         sc("Group Booking Ticket", "/view/bookings/group-ticket", "bi-files"),
                         sc("Reviews List", "/view/reviews", "bi-star-fill"),

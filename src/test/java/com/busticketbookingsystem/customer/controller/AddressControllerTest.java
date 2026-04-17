@@ -70,13 +70,7 @@ class AddressControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteAddress() throws Exception {
-        doNothing().when(addressService).delete(1);
-        mockMvc.perform(delete("/api/addresses/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Address deleted successfully"));
-    }
+
 
     @Test
     void listAddressesView() throws Exception {

@@ -99,13 +99,7 @@ class BusControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteBus() throws Exception {
-        doNothing().when(busService).deleteBus(1);
-        mockMvc.perform(delete("/api/buses/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Bus deleted successfully."));
-    }
+
 
     @Test
     void listBusesView() throws Exception {

@@ -298,29 +298,6 @@ class TripServiceTest {
     }
 
     @Nested
-    @DisplayName("delete() Tests")
-    class DeleteTests {
-
-        @Test
-        @DisplayName("POSITIVE: Should delete trip when it exists")
-        void delete_Success() {
-            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
-
-            tripService.delete(1);
-
-            verify(tripRepository).delete(trip);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw when trip not found for deletion")
-        void delete_NotFound() {
-            when(tripRepository.findById(999)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class, () -> tripService.delete(999));
-        }
-    }
-
-    @Nested
     @DisplayName("searchTrips() Tests")
     class SearchTripsTests {
 

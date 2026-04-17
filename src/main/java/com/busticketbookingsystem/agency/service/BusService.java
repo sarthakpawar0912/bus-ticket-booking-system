@@ -85,15 +85,6 @@ public class BusService {
         return mapToBusResponseDTO(busRepository.save(bus));
     }
 
-    @Transactional
-    public void deleteBus(Integer id) {
-        if (!busRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Bus not found with ID: " + id);
-        }
-        // Note: If Member 3's "Trips" rely on this bus, you might need a check here later!
-        busRepository.deleteById(id);
-    }
-
     public List<BusResponseDTO> getBusesByOfficeId(Integer officeId) {
         return busRepository.findByOffice_OfficeId(officeId)
                 .stream()

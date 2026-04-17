@@ -94,15 +94,7 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.bookingId").value(101));
     }
 
-    @Test
-    void cancelBooking() throws Exception {
-        when(bookingService.cancelBooking(101))
-                .thenReturn("Booking with id 101 has been cancelled successfully.");
-        mockMvc.perform(post("/api/bookings/101/cancel"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(
-                        "Booking with id 101 has been cancelled successfully."));
-    }
+
 
     @Test
     void downloadTicketPdf() throws Exception {

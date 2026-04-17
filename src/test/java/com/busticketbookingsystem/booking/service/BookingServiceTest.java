@@ -161,50 +161,6 @@ class BookingServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("cancelBooking() Tests")
-    class CancelBookingTests {
-
-        @Test
-        @DisplayName("POSITIVE: Should cancel a booked booking successfully")
-        void cancelBooking_Success() {
-            when(bookingRepository.findById(1)).thenReturn(Optional.of(booking));
-            when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
-            when(tripRepository.save(any(Trip.class))).thenReturn(trip);
-
-            String result = bookingService.cancelBooking(1);
-
-            assertEquals("Booking with id 1 has been cancelled successfully.", result);
-            // Status should change to Available
-            assertEquals(BookingStatus.Available, booking.getStatus());
-            // Available seats should be incremented
-            assertEquals(31, trip.getAvailableSeats());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw when trying to cancel an already available booking")
-        void cancelBooking_AlreadyAvailable_Throws() {
-            Booking availableBooking = Booking.builder()
-                    .bookingId(2).trip(trip).seatNumber(10)
-                    .status(BookingStatus.Available).build();
-
-            when(bookingRepository.findById(2)).thenReturn(Optional.of(availableBooking));
-
-            BadRequestException ex = assertThrows(BadRequestException.class,
-                    () -> bookingService.cancelBooking(2));
-
-            assertEquals("Booking is already available (not booked).", ex.getMessage());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException for non-existent booking")
-        void cancelBooking_NotFound() {
-            when(bookingRepository.findById(999)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> bookingService.cancelBooking(999));
-        }
-    }
 
     @Nested
     @DisplayName("getBookingsForTrip() Tests")

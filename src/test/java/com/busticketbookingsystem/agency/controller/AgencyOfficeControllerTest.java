@@ -79,13 +79,7 @@ class AgencyOfficeControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void deleteOffice() throws Exception {
-        doNothing().when(agencyOfficeService).delete(1);
-        mockMvc.perform(delete("/api/offices/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Agency office deleted successfully"));
-    }
+
 
     @Test
     void createOffice_validationFails() throws Exception {

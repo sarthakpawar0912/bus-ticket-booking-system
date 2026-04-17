@@ -73,19 +73,36 @@ public class PaymentController {
         return paymentService.getPaymentsByCustomerId(customerId);
     }
 
-    @PostMapping("/api/payments/{id}/refund")
-    @ResponseBody
-    public PaymentResponseDTO refundPayment(@PathVariable Integer id) {
-        return paymentService.refundPayment(id);
-    }
-
+    /**
+     * Download ticket by payment ID. If the payment belongs to a multi-seat group
+     * (same customer + same second-level timestamp), auto-generates a consolidated
+     * group ticket covering every seat in that transaction. Otherwise generates a
+     * single ticket. This is the ONLY download entry point the user needs.
+     */
     @GetMapping("/api/payments/{id}/ticket")
     @ResponseBody
     public ResponseEntity<byte[]> downloadTicketByPayment(@PathVariable Integer id) {
-        byte[] pdfBytes = ticketPdfService.generateTicketByPaymentId(id);
+        PaymentResponseDTO target = paymentService.getPaymentById(id);
+        List<Integer> sibling = paymentService.getAllPayments().stream()
+                .filter(p -> java.util.Objects.equals(p.getCustomerId(), target.getCustomerId())
+                        && p.getPaymentDate() != null && target.getPaymentDate() != null
+                        && p.getPaymentDate().withNano(0).equals(target.getPaymentDate().withNano(0))
+                        && p.getPaymentStatus() == target.getPaymentStatus())
+                .map(PaymentResponseDTO::getPaymentId)
+                .toList();
+
+        byte[] pdfBytes;
+        String filename;
+        if (sibling.size() > 1) {
+            pdfBytes = ticketPdfService.generateGroupTicket(sibling);
+            filename = "ticket-group-" + id + ".pdf";
+        } else {
+            pdfBytes = ticketPdfService.generateTicketByPaymentId(id);
+            filename = "ticket-payment-" + id + ".pdf";
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "ticket-payment-" + id + ".pdf");
+        headers.setContentDispositionFormData("attachment", filename);
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 
@@ -106,8 +123,52 @@ public class PaymentController {
 
     @GetMapping("/view/payments")
     public String listPayments(Model model) {
-        model.addAttribute("payments", paymentService.getAllPayments());
+        List<PaymentResponseDTO> all = paymentService.getAllPayments();
+        model.addAttribute("payments", all);
+        model.addAttribute("paymentGroups", groupRelatedPayments(all));
         return "payment/payments";
+    }
+
+    /**
+     * Groups payments that were processed together (same customer, same
+     * second-level timestamp). A 10-seat booking creates 10 Payment rows;
+     * we collapse them to ONE group so the UI shows one row with a single
+     * "Download Group Ticket" action instead of 10 separate ticket buttons.
+     */
+    private List<com.busticketbookingsystem.payment.dto.PaymentGroup> groupRelatedPayments(
+            List<PaymentResponseDTO> all) {
+        java.util.Map<String, List<PaymentResponseDTO>> buckets = new java.util.LinkedHashMap<>();
+        for (PaymentResponseDTO p : all) {
+            String ts = p.getPaymentDate() == null ? "null"
+                    : p.getPaymentDate().withNano(0).toString();
+            String key = p.getCustomerId() + "|" + ts + "|" + p.getPaymentStatus();
+            buckets.computeIfAbsent(key, k -> new java.util.ArrayList<>()).add(p);
+        }
+        List<com.busticketbookingsystem.payment.dto.PaymentGroup> result = new java.util.ArrayList<>();
+        for (List<PaymentResponseDTO> bucket : buckets.values()) {
+            PaymentResponseDTO first = bucket.get(0);
+            BigDecimal total = bucket.stream()
+                    .map(PaymentResponseDTO::getAmount)
+                    .filter(java.util.Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            result.add(com.busticketbookingsystem.payment.dto.PaymentGroup.builder()
+                    .paymentIds(bucket.stream().map(PaymentResponseDTO::getPaymentId).toList())
+                    .bookingIds(bucket.stream().map(PaymentResponseDTO::getBookingId).toList())
+                    .customerId(first.getCustomerId())
+                    .totalAmount(total)
+                    .paymentStatus(first.getPaymentStatus())
+                    .paymentDate(first.getPaymentDate())
+                    .seatCount(bucket.size())
+                    .build());
+        }
+        // Sort newest first so the most recent booking always shows up on top
+        result.sort((a, b) -> {
+            if (a.getPaymentDate() == null && b.getPaymentDate() == null) return 0;
+            if (a.getPaymentDate() == null) return 1;
+            if (b.getPaymentDate() == null) return -1;
+            return b.getPaymentDate().compareTo(a.getPaymentDate());
+        });
+        return result;
     }
 
     @GetMapping("/view/payments/pay/{bookingId}")
@@ -143,6 +204,12 @@ public class PaymentController {
         return "payment/checkout";
     }
 
+    /**
+     * Creates ONE Payment row per transaction, regardless of how many seats
+     * were booked. Amount = total for all seats; booking_id = first booking
+     * (representative). Payment IDs therefore increment by exactly 1 between
+     * transactions, not by N.
+     */
     @PostMapping("/view/payments/process")
     public String processPaymentView(@RequestParam String bookingIds,
                                      @RequestParam Integer customerId,
@@ -150,57 +217,27 @@ public class PaymentController {
                                      RedirectAttributes ra) {
         try {
             String[] ids = bookingIds.split(",");
-            BigDecimal perBookingAmount = amount.divide(BigDecimal.valueOf(ids.length), 2, java.math.RoundingMode.HALF_UP);
-            List<Integer> paymentIds = new java.util.ArrayList<>();
+            Integer firstBookingId = Integer.parseInt(ids[0].trim());
 
-            for (String idStr : ids) {
-                Integer bookingId = Integer.parseInt(idStr.trim());
-                PaymentRequestDTO request = new PaymentRequestDTO(bookingId, customerId, perBookingAmount);
-                PaymentResponseDTO response = paymentService.processPayment(request);
-                paymentIds.add(response.getPaymentId());
-            }
+            PaymentRequestDTO request = new PaymentRequestDTO(firstBookingId, customerId, amount);
+            PaymentResponseDTO response = paymentService.processPayment(request);
 
-            ra.addFlashAttribute(ATTR_ALL_PAYMENT_IDS, paymentIds);
+            ra.addFlashAttribute(ATTR_ALL_PAYMENT_IDS, List.of(response.getPaymentId()));
             ra.addFlashAttribute("totalAmount", amount);
             ra.addFlashAttribute(ATTR_SEAT_COUNT, ids.length);
-            return "redirect:/view/payments/success/" + paymentIds.get(0);
+            ra.addFlashAttribute("allBookingIds", bookingIds);
+            return "redirect:/view/payments/success/" + response.getPaymentId();
         } catch (Exception ex) {
             ra.addFlashAttribute("error", ex.getMessage());
             return "redirect:/view/payments/pay-all?bookingIds=" + bookingIds;
         }
     }
 
-    // ---- Refund (UI flow, delegates to REST refund) ----
-
-    @GetMapping("/view/payments/refund")
-    public String showRefundForm(Model model) {
-        return "payment/refund";
-    }
-
-    @PostMapping("/view/payments/refund")
-    public String processRefundView(@RequestParam Integer paymentId, RedirectAttributes ra) {
-        try {
-            PaymentResponseDTO refunded = paymentService.refundPayment(paymentId);
-            ra.addFlashAttribute("message",
-                    "Payment #" + paymentId + " refunded successfully. Status: " + refunded.getPaymentStatus());
-        } catch (Exception ex) {
-            ra.addFlashAttribute("error", ex.getMessage());
-        }
-        return "redirect:/view/payments/refund";
-    }
-
-    // ---- Payment Ticket Download page ----
+    // ---- Payment Ticket Download page (one unified download page) ----
 
     @GetMapping("/view/payments/ticket")
     public String showPaymentTicketForm() {
         return "payment/ticket-download";
-    }
-
-    // ---- Group Ticket Download page ----
-
-    @GetMapping("/view/payments/group-ticket")
-    public String showGroupPaymentTicketForm() {
-        return "payment/group-ticket-download";
     }
 
     @GetMapping("/view/payments/success/{paymentId}")

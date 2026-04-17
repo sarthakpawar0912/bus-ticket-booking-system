@@ -50,13 +50,6 @@ public class AgencyController {
         return ResponseEntity.ok(agencyService.updateAgency(id, requestDTO));
     }
 
-    @DeleteMapping("/api/agencies/{id}")
-    @ResponseBody
-    public ResponseEntity<String> deleteAgency(@PathVariable Integer id) {
-        agencyService.deleteAgency(id);
-        return ResponseEntity.ok("Agency deleted successfully.");
-    }
-
     // ======================== REST API - OFFICES ========================
 
     @GetMapping("/api/agencies/offices")
@@ -82,13 +75,6 @@ public class AgencyController {
     public ResponseEntity<OfficeResponseDTO> updateOffice(@PathVariable Integer id,
                                                           @Valid @RequestBody OfficeRequestDTO requestDTO) {
         return ResponseEntity.ok(agencyService.updateOffice(id, requestDTO));
-    }
-
-    @DeleteMapping("/api/agencies/offices/{id}")
-    @ResponseBody
-    public ResponseEntity<String> deleteOffice(@PathVariable Integer id) {
-        agencyService.deleteOffice(id);
-        return ResponseEntity.ok("Office deleted successfully.");
     }
 
     // ======================== THYMELEAF VIEWS ========================

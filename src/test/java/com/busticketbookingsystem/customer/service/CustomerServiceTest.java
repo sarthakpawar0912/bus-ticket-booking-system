@@ -265,29 +265,5 @@ class CustomerServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("delete() Tests")
-    class DeleteTests {
 
-        @Test
-        @DisplayName("POSITIVE: Should delete customer when exists")
-        void delete_Success() {
-            when(customerRepository.existsById(1)).thenReturn(true);
-
-            customerService.delete(1);
-
-            verify(customerRepository).deleteById(1);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw ResourceNotFoundException when customer not found")
-        void delete_NotFound() {
-            when(customerRepository.existsById(999)).thenReturn(false);
-
-            assertThrows(ResourceNotFoundException.class,
-                    () -> customerService.delete(999));
-
-            verify(customerRepository, never()).deleteById(anyInt());
-        }
-    }
 }

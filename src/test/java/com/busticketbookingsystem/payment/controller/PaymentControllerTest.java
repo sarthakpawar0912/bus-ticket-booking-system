@@ -95,17 +95,10 @@ class PaymentControllerTest {
     }
 
     @Test
-    void refundPayment() throws Exception {
-        PaymentResponseDTO refunded = PaymentResponseDTO.builder()
-                .paymentId(201).paymentStatus(PaymentStatus.Failed).build();
-        when(paymentService.refundPayment(201)).thenReturn(refunded);
-        mockMvc.perform(post("/api/payments/201/refund"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.paymentStatus").value("Failed"));
-    }
-
-    @Test
     void downloadTicketByPayment() throws Exception {
+        // The controller checks siblings; mock getAllPayments to return a single payment.
+        when(paymentService.getPaymentById(201)).thenReturn(response);
+        when(paymentService.getAllPayments()).thenReturn(List.of(response));
         when(ticketPdfService.generateTicketByPaymentId(201)).thenReturn(new byte[]{1, 2, 3});
         mockMvc.perform(get("/api/payments/201/ticket"))
                 .andExpect(status().isOk())

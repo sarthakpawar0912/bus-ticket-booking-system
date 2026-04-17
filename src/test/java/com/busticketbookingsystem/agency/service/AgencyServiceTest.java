@@ -282,35 +282,7 @@ class AgencyServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("deleteAgency() Tests")
-    class DeleteAgencyTests {
 
-        @Test
-        @DisplayName("POSITIVE: Should delete agency when no offices exist")
-        void deleteAgency_Success() {
-            // Arrange: agency has no offices
-            when(officeRepository.existsByAgency_AgencyId(1)).thenReturn(false);
-
-            // Act
-            agencyService.deleteAgency(1);
-
-            // Assert: deleteById was called
-            verify(agencyRepository).deleteById(1);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw BadRequestException when agency still has offices")
-        void deleteAgency_HasOffices_ThrowsBadRequest() {
-            when(officeRepository.existsByAgency_AgencyId(1)).thenReturn(true);
-
-            BadRequestException exception = assertThrows(BadRequestException.class,
-                    () -> agencyService.deleteAgency(1));
-
-            assertEquals("Cannot delete Agency. Remove all Offices first.", exception.getMessage());
-            verify(agencyRepository, never()).deleteById(anyInt());
-        }
-    }
 
     // ========================================================
     // OFFICE CRUD TESTS (inside AgencyService)
@@ -477,49 +449,6 @@ class AgencyServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("deleteOffice() Tests")
-    class DeleteOfficeTests {
-
-        @Test
-        @DisplayName("POSITIVE: Should delete office when no buses or drivers linked")
-        void deleteOffice_Success() {
-            when(busRepository.existsByOffice_OfficeId(1)).thenReturn(false);
-            when(driverRepository.existsByOffice_OfficeId(1)).thenReturn(false);
-
-            agencyService.deleteOffice(1);
-
-            verify(officeRepository).deleteById(1);
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw BadRequestException when buses are linked to office")
-        void deleteOffice_HasBuses_ThrowsBadRequest() {
-            when(busRepository.existsByOffice_OfficeId(1)).thenReturn(true);
-
-            BadRequestException exception = assertThrows(BadRequestException.class,
-                    () -> agencyService.deleteOffice(1));
-
-            assertEquals("Cannot delete Office. Move or delete registered Buses first.",
-                    exception.getMessage());
-            verify(officeRepository, never()).deleteById(anyInt());
-        }
-
-        @Test
-        @DisplayName("NEGATIVE: Should throw BadRequestException when drivers are linked to office")
-        void deleteOffice_HasDrivers_ThrowsBadRequest() {
-            // No buses, but drivers exist
-            when(busRepository.existsByOffice_OfficeId(1)).thenReturn(false);
-            when(driverRepository.existsByOffice_OfficeId(1)).thenReturn(true);
-
-            BadRequestException exception = assertThrows(BadRequestException.class,
-                    () -> agencyService.deleteOffice(1));
-
-            assertEquals("Cannot delete Office. Reassign active Drivers first.",
-                    exception.getMessage());
-            verify(officeRepository, never()).deleteById(anyInt());
-        }
-    }
 
     // ========================================================
     // EDGE CASE: Mapping helper with null officeAddress

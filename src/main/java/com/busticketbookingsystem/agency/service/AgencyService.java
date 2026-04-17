@@ -65,15 +65,6 @@ public class AgencyService {
         return mapToAgencyResponseDTO(agency);
     }
 
-    @Transactional
-    public void deleteAgency(Integer id) {
-        // ✅ Safety Check: Cannot delete if offices exist [cite: 4]
-        if (officeRepository.existsByAgency_AgencyId(id)) {
-            throw new BadRequestException("Cannot delete Agency. Remove all Offices first.");
-        }
-        agencyRepository.deleteById(id);
-    }
-
     // ==========================================
     // OFFICE BUSINESS LOGIC [cite: 4]
     // ==========================================
@@ -101,18 +92,6 @@ public class AgencyService {
         return officeRepository.findAllWithDetails().stream()
                 .map(this::mapToOfficeResponseDTO)
                 .toList();
-    }
-
-    @Transactional
-    public void deleteOffice(Integer officeId) {
-        // ✅ Safety Check: Prevents crashing if Buses or Drivers are linked [cite: 6, 7]
-        if (busRepository.existsByOffice_OfficeId(officeId)) {
-            throw new BadRequestException("Cannot delete Office. Move or delete registered Buses first.");
-        }
-        if (driverRepository.existsByOffice_OfficeId(officeId)) {
-            throw new BadRequestException("Cannot delete Office. Reassign active Drivers first.");
-        }
-        officeRepository.deleteById(officeId);
     }
 
     // ==========================================

@@ -106,13 +106,6 @@ public class TripController {
         return mapToDTO(tripService.update(id, trip));
     }
 
-    @DeleteMapping("/api/trips/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> deleteTrip(@PathVariable Integer id) {
-        tripService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/api/trips/search")
     @ResponseBody
     public List<TripDTO> searchTrips(@RequestParam String from, @RequestParam String to) {
@@ -226,14 +219,4 @@ public class TripController {
         return "trip/search-trips";
     }
 
-    @GetMapping("/view/trips/delete/{id}")
-    public String deleteTripView(@PathVariable Integer id, RedirectAttributes ra) {
-        try {
-            tripService.delete(id);
-            ra.addFlashAttribute(ATTR_MESSAGE, "Trip deleted successfully!");
-        } catch (Exception ex) {
-            ra.addFlashAttribute(ATTR_ERROR, ex.getMessage());
-        }
-        return REDIRECT_VIEW_TRIPS;
-    }
 }
