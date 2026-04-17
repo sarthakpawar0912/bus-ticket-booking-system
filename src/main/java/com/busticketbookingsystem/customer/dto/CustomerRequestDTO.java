@@ -14,7 +14,7 @@ public class CustomerRequestDTO {
     @NotBlank(message = "Invalid Email")
     private String email;
 
-    @Pattern(regexp ="^[0-9]{10}$" ,message = "Phone must be 10 digit")
+    @Pattern(regexp ="^\\d{10}$" ,message = "Phone must be 10 digit")
     private String phone;
 
     @NotNull

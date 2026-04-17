@@ -114,7 +114,7 @@ public class BookingController {
     @ResponseBody
     public ResponseEntity<byte[]> downloadGroupBookingTicket(@RequestParam String bookingIds) {
         String[] ids = bookingIds.split(",");
-        List<Integer> bidList = new java.util.ArrayList<>();
+        List<Integer> bidList = new ArrayList<>();
         for (String s : ids) bidList.add(Integer.parseInt(s.trim()));
         byte[] pdfBytes = ticketPdfService.generateGroupBookingTicket(bidList);
         HttpHeaders headers = new HttpHeaders();
@@ -189,6 +189,38 @@ public class BookingController {
             ra.addFlashAttribute("error", ex.getMessage());
             return "redirect:/view/bookings/trip/" + tripId;
         }
+    }
+
+    // ---- Cancel Booking (UI flow, delegates to REST cancel) ----
+
+    @GetMapping("/view/bookings/cancel")
+    public String showCancelForm(Model model) {
+        return "booking/cancel-booking";
+    }
+
+    @PostMapping("/view/bookings/cancel")
+    public String cancelBookingView(@RequestParam Integer bookingId, RedirectAttributes ra) {
+        try {
+            String msg = bookingService.cancelBooking(bookingId);
+            ra.addFlashAttribute("message", msg);
+        } catch (Exception ex) {
+            ra.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/view/bookings/cancel";
+    }
+
+    // ---- Single Ticket Download page (UI wrapper around /api/bookings/{id}/ticket) ----
+
+    @GetMapping("/view/bookings/ticket")
+    public String showTicketDownloadForm() {
+        return "booking/ticket-download";
+    }
+
+    // ---- Group Ticket Download page (UI wrapper around /api/bookings/group-ticket) ----
+
+    @GetMapping("/view/bookings/group-ticket")
+    public String showGroupTicketDownloadForm() {
+        return "booking/group-ticket-download";
     }
 
     @GetMapping("/view/bookings/confirmation/{bookingId}")

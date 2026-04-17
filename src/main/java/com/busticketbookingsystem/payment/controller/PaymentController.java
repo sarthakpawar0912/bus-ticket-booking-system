@@ -170,6 +170,39 @@ public class PaymentController {
         }
     }
 
+    // ---- Refund (UI flow, delegates to REST refund) ----
+
+    @GetMapping("/view/payments/refund")
+    public String showRefundForm(Model model) {
+        return "payment/refund";
+    }
+
+    @PostMapping("/view/payments/refund")
+    public String processRefundView(@RequestParam Integer paymentId, RedirectAttributes ra) {
+        try {
+            PaymentResponseDTO refunded = paymentService.refundPayment(paymentId);
+            ra.addFlashAttribute("message",
+                    "Payment #" + paymentId + " refunded successfully. Status: " + refunded.getPaymentStatus());
+        } catch (Exception ex) {
+            ra.addFlashAttribute("error", ex.getMessage());
+        }
+        return "redirect:/view/payments/refund";
+    }
+
+    // ---- Payment Ticket Download page ----
+
+    @GetMapping("/view/payments/ticket")
+    public String showPaymentTicketForm() {
+        return "payment/ticket-download";
+    }
+
+    // ---- Group Ticket Download page ----
+
+    @GetMapping("/view/payments/group-ticket")
+    public String showGroupPaymentTicketForm() {
+        return "payment/group-ticket-download";
+    }
+
     @GetMapping("/view/payments/success/{paymentId}")
     public String showSuccess(@PathVariable Integer paymentId, Model model) {
         PaymentResponseDTO payment = paymentService.getPaymentById(paymentId);

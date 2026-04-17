@@ -25,6 +25,6 @@ public class AddressDTO {
     private String state;
 
     @NotBlank(message = "Zip code is required")
-    @Pattern(regexp = "^[0-9]{6}$", message = "Zip code must be 6 digits")
+    @Pattern(regexp = "^\\d{6}$", message = "Zip code must be 6 digits")
     private String zipCode;
 }

@@ -15,12 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 public class BookingRequestDTO {
 
-        @NotNull(message = "Trip ID cannot be null")
-        private Integer tripId;
+    @NotNull(message = "Trip ID cannot be null")
+    private Integer tripId;
 
-        @NotEmpty(message = "Seat numbers cannot be empty")
-        private List<Integer> seatNumbers;
+    @NotEmpty(message = "Seat numbers cannot be empty")
+    private List<Integer> seatNumbers;
 
-        @NotNull(message = "Customer ID cannot be null")
-        private Integer customerId;
+    @NotNull(message = "Customer ID cannot be null")
+    private Integer customerId;
 }

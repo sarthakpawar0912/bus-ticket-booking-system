@@ -21,11 +21,11 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Optional<Booking> findByTrip_TripIdAndSeatNumber(Integer tripId, Integer seatNumber);
 
     @Query("SELECT b FROM Booking b " +
-            "LEFT JOIN FETCH b.trip t " +
-            "LEFT JOIN FETCH t.route " +
-            "LEFT JOIN FETCH t.bus " +
-            "LEFT JOIN FETCH t.boardingAddress " +
-            "LEFT JOIN FETCH t.droppingAddress " +
-            "WHERE b.bookingId = :bookingId")
+           "LEFT JOIN FETCH b.trip t " +
+           "LEFT JOIN FETCH t.route " +
+           "LEFT JOIN FETCH t.bus " +
+           "LEFT JOIN FETCH t.boardingAddress " +
+           "LEFT JOIN FETCH t.droppingAddress " +
+           "WHERE b.bookingId = :bookingId")
     Optional<Booking> findByIdWithTripDetails(@Param("bookingId") Integer bookingId);
 }

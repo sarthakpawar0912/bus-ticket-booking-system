@@ -106,6 +106,18 @@ public class RouteController {
         return REDIRECT_VIEW_ROUTES;
     }
 
+    @GetMapping("/view/routes/search")
+    public String searchRoutesView(@RequestParam(required = false) String from,
+                                   @RequestParam(required = false) String to,
+                                   Model model) {
+        if (from != null && !from.isBlank() && to != null && !to.isBlank()) {
+            model.addAttribute("results", routeService.searchRoutes(from.trim(), to.trim()));
+            model.addAttribute("from", from);
+            model.addAttribute("to", to);
+        }
+        return "route/search-routes";
+    }
+
     @GetMapping("/view/routes/delete/{id}")
     public String deleteRouteView(@PathVariable Integer id, RedirectAttributes ra) {
         try {

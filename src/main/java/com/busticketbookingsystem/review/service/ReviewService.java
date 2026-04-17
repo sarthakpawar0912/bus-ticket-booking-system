@@ -50,15 +50,16 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsByTrip(Integer tripId) {
-        return reviewRepository.findByTrip_TripId(tripId);
+        return reviewRepository.findByTripIdWithDetails(tripId);
     }
 
     public List<Review> getReviewsByCustomer(Integer customerId) {
-        return reviewRepository.findByCustomer_CustomerId(customerId);
+        return reviewRepository.findByCustomerIdWithDetails(customerId);
     }
 
+    @Transactional(readOnly = true)
     public List<Review> getAllReviews() {
-        return reviewRepository.findAll();
+        return reviewRepository.findAllWithDetails();
     }
 
     public void deleteReview(Integer id) {

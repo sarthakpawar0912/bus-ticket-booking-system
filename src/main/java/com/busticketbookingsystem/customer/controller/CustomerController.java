@@ -97,5 +97,4 @@ public class CustomerController {
         customerService.update(id, dto);
         return "redirect:/view/customers";
     }
-
 }

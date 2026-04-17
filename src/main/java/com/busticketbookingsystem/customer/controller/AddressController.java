@@ -1,9 +1,7 @@
 package com.busticketbookingsystem.customer.controller;
 
-import com.busticketbookingsystem.customer.dto.AddressDTO;
 import com.busticketbookingsystem.customer.entity.Address;
 import com.busticketbookingsystem.customer.service.AddressService;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,21 +20,12 @@ public class AddressController {
         this.addressService = addressService;
     }
 
+    // ======================== REST API ========================
 
     @PostMapping("/api/addresses")
     @ResponseBody
-    public Address create(@Valid @RequestBody AddressDTO addressDTO) {
-        Address address = mapToEntity(addressDTO);
+    public Address create(@RequestBody Address address) {
         return addressService.create(address);
-    }
-
-    private Address mapToEntity(AddressDTO dto) {
-        return Address.builder()
-                .address(dto.getAddress())
-                .city(dto.getCity())
-                .state(dto.getState())
-                .zipCode(dto.getZipCode())
-                .build();
     }
 
     @GetMapping("/api/addresses")
@@ -53,10 +42,7 @@ public class AddressController {
 
     @PutMapping("/api/addresses/{id}")
     @ResponseBody
-    public Address update(@PathVariable Integer id,
-                          @Valid @RequestBody AddressDTO addressDTO) {
-
-        Address address = mapToEntity(addressDTO);
+    public Address update(@PathVariable Integer id, @RequestBody Address address) {
         return addressService.update(id, address);
     }
 
@@ -113,12 +99,6 @@ public class AddressController {
         addr.setState(state);
         addr.setZipCode(zipCode);
         addressService.update(id, addr);
-        return REDIRECT_VIEW_ADDRESSES;
-    }
-
-    @GetMapping("/view/addresses/delete/{id}")
-    public String deleteAddress(@PathVariable Integer id) {
-        addressService.delete(id);
         return REDIRECT_VIEW_ADDRESSES;
     }
 }

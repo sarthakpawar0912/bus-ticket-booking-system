@@ -211,6 +211,21 @@ public class TripController {
         return REDIRECT_VIEW_TRIPS;
     }
 
+    @GetMapping("/view/trips/search")
+    public String searchTripsView(@RequestParam(required = false) String from,
+                                  @RequestParam(required = false) String to,
+                                  Model model) {
+        if (from != null && !from.isBlank() && to != null && !to.isBlank()) {
+            List<TripDTO> results = tripService.searchTrips(from.trim(), to.trim()).stream()
+                    .map(this::mapToDTO)
+                    .toList();
+            model.addAttribute("results", results);
+            model.addAttribute("from", from);
+            model.addAttribute("to", to);
+        }
+        return "trip/search-trips";
+    }
+
     @GetMapping("/view/trips/delete/{id}")
     public String deleteTripView(@PathVariable Integer id, RedirectAttributes ra) {
         try {

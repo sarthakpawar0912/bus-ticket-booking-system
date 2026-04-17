@@ -21,13 +21,13 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     List<Payment> findAllWithDetails();
 
     @Query("SELECT p FROM Payment p " +
-            "LEFT JOIN FETCH p.booking b " +
-            "LEFT JOIN FETCH b.trip t " +
-            "LEFT JOIN FETCH t.route " +
-            "LEFT JOIN FETCH t.bus " +
-            "LEFT JOIN FETCH t.boardingAddress " +
-            "LEFT JOIN FETCH t.droppingAddress " +
-            "LEFT JOIN FETCH p.customer " +
-            "WHERE p.paymentId = :paymentId")
+           "LEFT JOIN FETCH p.booking b " +
+           "LEFT JOIN FETCH b.trip t " +
+           "LEFT JOIN FETCH t.route " +
+           "LEFT JOIN FETCH t.bus " +
+           "LEFT JOIN FETCH t.boardingAddress " +
+           "LEFT JOIN FETCH t.droppingAddress " +
+           "LEFT JOIN FETCH p.customer " +
+           "WHERE p.paymentId = :paymentId")
     Optional<Payment> findByIdWithAllDetails(@Param("paymentId") Integer paymentId);
 }
