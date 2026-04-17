@@ -105,11 +105,4 @@ class AddressControllerTest {
                 .andExpect(redirectedUrl("/view/addresses"));
     }
 
-    @Test
-    void deleteAddressView() throws Exception {
-        doNothing().when(addressService).delete(1);
-        mockMvc.perform(get("/view/addresses/delete/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view/addresses"));
-    }
 }

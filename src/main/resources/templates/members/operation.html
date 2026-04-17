@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body class="bg-light">
+
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<main class="container py-4">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/members}" class="text-decoration-none">Members</a></li>
+            <li class="breadcrumb-item">
+                <a th:href="@{/members/{id}(id=${member.id})}" class="text-decoration-none"
+                   th:text="${member.name}">Member</a>
+            </li>
+            <li class="breadcrumb-item active" th:text="${operation.name}">Operation</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <span class="badge fs-6 px-3 py-2"
+                      th:classappend="${operation.method == 'GET'} ? 'bg-success' :
+                                     (${operation.method == 'POST'} ? 'bg-primary' :
+                                     (${operation.method == 'PUT'} ? 'bg-warning text-dark' :
+                                     (${operation.method == 'DELETE'} ? 'bg-danger' : 'bg-secondary')))"
+                      th:text="${operation.method}">GET</span>
+                <code class="fs-6" th:text="${operation.endpoint}">/api/...</code>
+                <h4 class="mb-0 ms-auto fw-semibold" th:text="${operation.name}">Operation</h4>
+            </div>
+            <p class="text-muted small mb-0 mt-2" th:text="${operation.description}">Description</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Left: form -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="bi bi-pencil-square me-2 text-primary"></i>Request</h5>
+                </div>
+                <div class="card-body p-4">
+
+                    <!-- PDF Download -->
+                    <form th:if="${operation.inputKind == 'PDF_DOWNLOAD'}"
+                          th:action="@{/members/{id}/operation/download(id=${member.id}, service=${serviceKey}, operation=${operation.name})}"
+                          method="get" class="vstack gap-3">
+                        <div>
+                            <label class="form-label fw-semibold">Record ID</label>
+                            <input type="number" name="pathId" class="form-control" required
+                                   placeholder="Enter the booking or payment ID"/>
+                            <div class="form-text">A PDF boarding pass will be generated and downloaded.</div>
+                        </div>
+                        <input type="hidden" name="service" th:value="${serviceKey}"/>
+                        <input type="hidden" name="operation" th:value="${operation.name}"/>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-download me-1"></i>Download PDF
+                        </button>
+                    </form>
+
+                    <!-- Standard CRUD form -->
+                    <form th:unless="${operation.inputKind == 'PDF_DOWNLOAD'}"
+                          th:action="@{/members/{id}/operation/execute(id=${member.id})}"
+                          method="post" class="vstack gap-3">
+
+                        <input type="hidden" name="service" th:value="${serviceKey}"/>
+                        <input type="hidden" name="operation" th:value="${operation.name}"/>
+
+                        <!-- ID input for operations that need it -->
+                        <div th:if="${operation.inputKind == 'ID' or operation.inputKind == 'ID_AND_BODY'}">
+                            <label class="form-label fw-semibold">Record ID</label>
+                            <input type="number" name="pathId" class="form-control"
+                                   th:value="${submittedPathId}" required placeholder="Enter the ID"/>
+                            <div class="form-text">Used for path variable <code>{id}</code>.</div>
+                        </div>
+
+                        <!-- DTO body fields -->
+                        <div th:if="${operation.inputKind == 'BODY' or operation.inputKind == 'ID_AND_BODY'}"
+                             class="vstack gap-3">
+                            <h6 class="text-muted mt-2 mb-0">
+                                <i class="bi bi-braces me-1"></i>Request Body
+                            </h6>
+                            <div th:each="field : ${operation.fields}">
+                                <label class="form-label"
+                                       th:text="${field.label}">Label</label>
+                                <textarea th:if="${field.type == 'textarea'}"
+                                          th:name="${field.name}" class="form-control" rows="3"
+                                          th:required="${field.required}"
+                                          th:placeholder="${field.placeholder}"
+                                          th:text="${submittedForm != null} ? ${submittedForm.get(field.name)} : ''"></textarea>
+                                <input th:unless="${field.type == 'textarea'}"
+                                       th:type="${field.type}"
+                                       th:name="${field.name}"
+                                       class="form-control"
+                                       th:required="${field.required}"
+                                       th:placeholder="${field.placeholder}"
+                                       th:value="${submittedForm != null} ? ${submittedForm.get(field.name)} : ''"/>
+                                <div class="form-text" th:if="${field.helpText != null}" th:text="${field.helpText}"></div>
+                            </div>
+                        </div>
+
+                        <!-- No input hint for GET All -->
+                        <div th:if="${operation.inputKind == 'NONE'}" class="alert alert-secondary mb-0 small">
+                            <i class="bi bi-info-circle me-1"></i>This operation requires no input. Click Execute to fetch all records.
+                        </div>
+
+                        <div class="d-flex gap-2 pt-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-play-circle me-1"></i>Execute
+                            </button>
+                            <a th:href="@{/members/{id}(id=${member.id})}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Back
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: response -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom d-flex align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-arrow-return-right me-2 text-primary"></i>Response</h5>
+                    <span th:if="${result != null}"
+                          class="badge ms-auto"
+                          th:classappend="${result.success} ? 'bg-success' : 'bg-danger'"
+                          th:text="${result.statusCode}">200</span>
+                </div>
+                <div class="card-body p-4">
+
+                    <div th:if="${result == null}" class="text-center text-muted py-5">
+                        <i class="bi bi-hourglass-split fs-1 text-secondary d-block mb-2"></i>
+                        <p class="mb-0">Waiting for execution. Response will appear here.</p>
+                    </div>
+
+                    <div th:if="${result != null and result.success}"
+                         class="alert alert-success">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        <span th:text="${result.message}">OK</span>
+                    </div>
+                    <div th:if="${result != null and !result.success}"
+                         class="alert alert-danger">
+                        <i class="bi bi-x-circle-fill me-1"></i>
+                        <span th:text="${result.message}">Error</span>
+                    </div>
+
+                    <div th:if="${result != null}" class="mb-3">
+                        <strong class="small text-muted">Endpoint</strong>
+                        <div>
+              <span class="badge bg-dark me-2"
+                    th:text="${result.httpMethod != null ? result.httpMethod : operation.method}">GET</span>
+                            <code th:text="${result.url}">/api/...</code>
+                        </div>
+                    </div>
+
+                    <div th:if="${result != null and result.requestBody != null}" class="mb-3">
+                        <strong class="small text-muted">Request Body</strong>
+                        <pre class="bg-light border rounded p-3 small mb-0"
+                             th:text="${result.requestBody}">{}</pre>
+                    </div>
+
+                    <div th:if="${result != null and result.responseBody != null and !#strings.isEmpty(result.responseBody)}">
+                        <strong class="small text-muted">Response Body</strong>
+                        <pre class="bg-light border rounded p-3 small mb-0"
+                             style="max-height:450px; overflow:auto"
+                             th:text="${result.responseBody}">{}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="fw-bold mb-0"><i class="bi bi-file-earmark-pdf me-2 text-primary"></i>Download Payment Ticket</h2>
+        <a th:href="@{/view/payments}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <p class="text-muted">
+                Enter a payment ID to generate and download the boarding-pass PDF for that
+                payment. Uses the real <code>/api/payments/{id}/ticket</code> endpoint.
+            </p>
+            <form method="get" onsubmit="event.preventDefault();
+                        const id = this.paymentId.value;
+                        window.location.href = '/api/payments/' + id + '/ticket';" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Payment ID</label>
+                    <input type="number" name="paymentId" class="form-control" required
+                           placeholder="201" min="1"/>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-download me-1"></i>Download PDF
+                    </button>
+                    <a th:href="@{/view/payments}" class="btn btn-outline-secondary">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

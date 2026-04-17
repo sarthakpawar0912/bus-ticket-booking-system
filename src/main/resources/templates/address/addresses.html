@@ -42,15 +42,9 @@
                         <td th:text="${a.state}"></td>
                         <td th:text="${a.zipCode}"></td>
                         <td>
-                            <a th:href="@{/view/addresses/edit/{id}(id=${a.addressId})}" class="btn btn-sm btn-outline-primary btn-action me-1">
+                            <a th:href="@{/view/addresses/edit/{id}(id=${a.addressId})}" class="btn btn-sm btn-outline-primary btn-action">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                            <form th:action="@{/view/addresses/delete/{id}(id=${a.addressId})}" method="get" style="display:inline;"
-                                  onsubmit="return confirm('Are you sure you want to delete this address?')">
-                                <button type="submit" class="btn btn-sm btn-outline-danger btn-action">
-                                    <i class="bi bi-trash"></i> Delete
-                                </button>
-                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(addresses)}">

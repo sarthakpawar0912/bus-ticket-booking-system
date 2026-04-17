@@ -1,20 +1,54 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Add Customer</title>
-</head>
-<body>
+<head th:replace="~{fragments/header :: header}"><title>Add Customer</title></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<h2>Add Customer</h2>
+<main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="fw-bold mb-0"><i class="bi bi-person-plus-fill me-2 text-primary"></i>Add Customer</h2>
+        <a th:href="@{/view/customers}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
 
-<form th:action="@{/view/customers/save}" method="post">
-    Name: <input type="text" th:field="*{name}" /><br>
-    Email: <input type="text" th:field="*{email}" /><br>
-    Phone: <input type="text" th:field="*{phone}" /><br>
-    Address ID: <input type="number" th:field="*{addressId}" /><br>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form th:action="@{/view/customers/save}" th:object="${customer}" method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Full Name</label>
+                    <input type="text" class="form-control" th:field="*{name}" required
+                           placeholder="Sarthak Pawar"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" class="form-control" th:field="*{email}" required
+                           placeholder="sarthak@example.com"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Phone (10 digits)</label>
+                    <input type="tel" class="form-control" th:field="*{phone}" required
+                           pattern="^\d{10}$" placeholder="9876543210"/>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Address</label>
+                    <select class="form-select" th:field="*{addressId}" required>
+                        <option value="">-- Select Address --</option>
+                        <option th:each="a : ${addresses}" th:value="${a.addressId}"
+                                th:text="${a.address + ', ' + a.city + ' - ' + a.zipCode}"></option>
+                    </select>
+                </div>
+                <div class="col-12 d-flex gap-2 pt-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Save Customer
+                    </button>
+                    <a th:href="@{/view/customers}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
 
-    <button type="submit">Save</button>
-</form>
-
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

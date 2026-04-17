@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="fw-bold mb-0"><i class="bi bi-x-circle me-2 text-danger"></i>Cancel Booking</h2>
+        <a th:href="@{/view/bookings}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success">
+        <i class="bi bi-check-circle me-1"></i><span th:text="${message}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-1"></i><span th:text="${error}"></span>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <p class="text-muted">
+                Enter the booking ID you want to cancel. The seat will be released and made available
+                again for other customers. The linked payment (if any) stays untouched - use the
+                Refund flow separately.
+            </p>
+            <form th:action="@{/view/bookings/cancel}" method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Booking ID</label>
+                    <input type="number" name="bookingId" class="form-control" required
+                           placeholder="101" min="1"/>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle me-1"></i>Cancel Booking
+                    </button>
+                    <a th:href="@{/view/bookings}" class="btn btn-outline-secondary">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
