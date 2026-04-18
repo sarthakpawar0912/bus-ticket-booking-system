@@ -141,14 +141,11 @@ class PaymentControllerTest {
     }
 
     @Test
-    void showCheckoutAll_empty() throws Exception {
-        // No bookings supplied - will still run, but customerService mocked
+    void showCheckoutAll_whenBookingLookupFails_returns5xx() throws Exception {
         when(customerService.getAll()).thenReturn(Collections.emptyList());
-        // with empty list split yields [""], causing error — so use valid single booking flow:
         when(bookingService.getBookingById(any())).thenThrow(new RuntimeException("skip"));
-        // we expect this to propagate (no try-catch in controller for this method):
-        try {
-            mockMvc.perform(get("/view/payments/pay-all").param("bookingIds", "1"));
-        } catch (Exception ignored) {}
+        // Controller has no try/catch — MockMvc surfaces the failure as a 5xx status.
+        mockMvc.perform(get("/view/payments/pay-all").param("bookingIds", "1"))
+                .andExpect(status().is5xxServerError());
     }
 }

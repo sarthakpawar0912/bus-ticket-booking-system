@@ -243,9 +243,10 @@ class CustomerServiceTest {
         @DisplayName("NEGATIVE: Should throw when customer not found for patch")
         void patch_CustomerNotFound() {
             when(customerRepository.findById(999)).thenReturn(Optional.empty());
+            CustomerRequestDTO empty = new CustomerRequestDTO();
 
             assertThrows(ResourceNotFoundException.class,
-                    () -> customerService.patch(999, new CustomerRequestDTO()));
+                    () -> customerService.patch(999, empty));
         }
 
         @Test

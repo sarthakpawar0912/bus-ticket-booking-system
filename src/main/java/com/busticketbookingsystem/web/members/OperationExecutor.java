@@ -99,7 +99,7 @@ public class OperationExecutor {
         for (Map.Entry<String, String> e : params.entrySet()) {
             String v = e.getValue();
             if (v == null || v.isBlank()) continue;
-            if (sb.length() > 0) sb.append('&');
+            if (!sb.isEmpty()) sb.append('&');
             sb.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
               .append('=')
               .append(URLEncoder.encode(v, StandardCharsets.UTF_8));

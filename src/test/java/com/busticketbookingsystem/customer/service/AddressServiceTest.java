@@ -3,7 +3,6 @@ package com.busticketbookingsystem.customer.service;
 import com.busticketbookingsystem.customer.entity.Address;
 import com.busticketbookingsystem.customer.repository.AddressRepository;
 import com.busticketbookingsystem.customer.repository.CustomerRepository;
-import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -179,9 +178,10 @@ class AddressServiceTest {
         @DisplayName("NEGATIVE: Should throw ResourceNotFoundException when address not found")
         void update_NotFound() {
             when(addressRepository.findById(999)).thenReturn(Optional.empty());
+            Address empty = new Address();
 
             assertThrows(ResourceNotFoundException.class,
-                    () -> addressService.update(999, new Address()));
+                    () -> addressService.update(999, empty));
         }
     }
 

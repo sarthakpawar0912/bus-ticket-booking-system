@@ -17,19 +17,13 @@ public class AgencyService {
 
     private final AgencyRepository agencyRepository;
     private final AgencyOfficeRepository officeRepository;
-    private final BusRepository busRepository;
-    private final DriverRepository driverRepository;
     private final AddressRepository addressRepository;
 
     public AgencyService(AgencyRepository agencyRepository,
                          AgencyOfficeRepository officeRepository,
-                         BusRepository busRepository,
-                         DriverRepository driverRepository,
                          AddressRepository addressRepository) {
         this.agencyRepository = agencyRepository;
         this.officeRepository = officeRepository;
-        this.busRepository = busRepository;
-        this.driverRepository = driverRepository;
         this.addressRepository = addressRepository;
     }
 

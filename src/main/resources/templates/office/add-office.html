@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body class="bg-light">
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
@@ -16,35 +16,45 @@
         <div class="card-body p-4">
             <form th:action="@{/view/offices/save}" th:object="${office}" method="post" class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Parent Agency</label>
+                    <label class="form-label fw-semibold">
+                        <span>Parent Agency</span>
                     <select class="form-select" th:field="*{agencyId}" required>
                         <option value="">-- Select Agency --</option>
                         <option th:each="a : ${agencies}" th:value="${a.agencyId}"
                                 th:text="${a.name + ' (' + a.email + ')'}"></option>
                     </select>
+                    </label>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Office Email</label>
+                    <label class="form-label fw-semibold">
+                        <span>Office Email</span>
                     <input type="email" class="form-control" th:field="*{officeMail}" required
                            placeholder="mumbai@red.com"/>
+                    </label>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Contact Person Name</label>
+                    <label class="form-label fw-semibold">
+                        <span>Contact Person Name</span>
                     <input type="text" class="form-control" th:field="*{officeContactPersonName}" required
                            placeholder="Amit"/>
+                    </label>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Contact Number (10 digits)</label>
+                    <label class="form-label fw-semibold">
+                        <span>Contact Number (10 digits)</span>
                     <input type="tel" class="form-control" th:field="*{officeContactNumber}" required
                            pattern="^\d{10}$" placeholder="9876543210"/>
+                    </label>
                 </div>
                 <div class="col-12">
-                    <label class="form-label fw-semibold">Office Address</label>
+                    <label class="form-label fw-semibold">
+                        <span>Office Address</span>
                     <select class="form-select" th:field="*{officeAddressId}" required>
                         <option value="">-- Select Address --</option>
                         <option th:each="a : ${addresses}" th:value="${a.addressId}"
                                 th:text="${a.address + ', ' + a.city + ' - ' + a.zipCode}"></option>
                     </select>
+                    </label>
                 </div>
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">

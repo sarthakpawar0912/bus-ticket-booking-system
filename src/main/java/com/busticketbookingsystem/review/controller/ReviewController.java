@@ -8,7 +8,6 @@ import com.busticketbookingsystem.trip.dto.TripDTO;
 import com.busticketbookingsystem.trip.entity.Trip;
 import com.busticketbookingsystem.trip.service.TripService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

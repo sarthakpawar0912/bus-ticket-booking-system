@@ -1,6 +1,5 @@
 package com.busticketbookingsystem.trip.service;
 
-import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.trip.entity.Route;
 import com.busticketbookingsystem.trip.repository.RouteRepository;
@@ -159,9 +158,10 @@ class RouteServiceTest {
         @DisplayName("NEGATIVE: Should throw ResourceNotFoundException when route not found")
         void update_NotFound() {
             when(routeRepository.findById(999)).thenReturn(Optional.empty());
+            Route empty = new Route();
 
             assertThrows(ResourceNotFoundException.class,
-                    () -> routeService.update(999, new Route()));
+                    () -> routeService.update(999, empty));
         }
     }
 

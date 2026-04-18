@@ -133,7 +133,10 @@ class BookingControllerTest {
 
     @Test
     void showConfirmation_withoutFlash() throws Exception {
-        when(bookingService.getBookingById(101)).thenReturn(booking);
+        BookingService.ConfirmationContext ctx = new BookingService.ConfirmationContext(
+                List.of(101), List.of(5), new BigDecimal("500.00"),
+                null, null, "Mumbai", "Pune", "2026-05-01");
+        when(bookingService.buildConfirmationContext(101)).thenReturn(ctx);
         mockMvc.perform(get("/view/bookings/confirmation/101"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("booking/confirmation"))

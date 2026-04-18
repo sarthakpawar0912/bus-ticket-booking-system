@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body class="bg-light">
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
@@ -16,14 +16,14 @@
         <div class="card-body p-4">
             <form th:action="@{/view/routes/search}" method="get" class="row g-3">
                 <div class="col-md-5">
-                    <label class="form-label fw-semibold">From City</label>
-                    <input type="text" name="from" class="form-control" required
-                           th:value="${from}" placeholder="Mumbai"/>
+                    <label for="searchroutes_from" class="form-label fw-semibold">From City</label>
+                    <input type="text" name="from" id="searchroutes_from" class="form-control" required
+                           th:value="${from}" placeholder="Mumbai" aria-label="from"/>
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label fw-semibold">To City</label>
-                    <input type="text" name="to" class="form-control" required
-                           th:value="${to}" placeholder="Pune"/>
+                    <label for="searchroutes_to" class="form-label fw-semibold">To City</label>
+                    <input type="text" name="to" id="searchroutes_to" class="form-control" required
+                           th:value="${to}" placeholder="Pune" aria-label="to"/>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">

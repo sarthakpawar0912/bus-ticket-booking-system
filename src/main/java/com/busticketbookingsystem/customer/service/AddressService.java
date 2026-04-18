@@ -4,7 +4,6 @@ import com.busticketbookingsystem.customer.entity.Address;
 import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.customer.repository.AddressRepository;
-import com.busticketbookingsystem.customer.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +13,9 @@ import java.util.List;
 public class AddressService {
 
     private final AddressRepository addressRepository;
-    private final CustomerRepository customerRepository;
 
-    public AddressService(AddressRepository addressRepository, CustomerRepository customerRepository) {
+    public AddressService(AddressRepository addressRepository) {
         this.addressRepository = addressRepository;
-        this.customerRepository = customerRepository;
     }
 
     // ✅ CREATE

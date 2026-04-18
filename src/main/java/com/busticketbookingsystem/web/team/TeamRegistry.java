@@ -12,6 +12,24 @@ import java.util.Optional;
 @Component
 public class TeamRegistry {
 
+    // Shared literal constants (SonarQube S1192)
+    private static final String M_GET_ALL = "GET ALL";
+    private static final String M_DOWNLOAD = "DOWNLOAD";
+    private static final String LBL_OPEN_LIST = "Open List";
+    private static final String LBL_OPEN_ADD = "Open Add Form";
+    private static final String LBL_OPEN_EDIT = "Open List to Edit";
+    private static final String LBL_DOWNLOAD_TICKET = "Download Ticket";
+    private static final String URL_CUSTOMERS = "/view/customers";
+    private static final String URL_ADDRESSES = "/view/addresses";
+    private static final String URL_AGENCIES = "/view/agencies";
+    private static final String URL_OFFICES = "/view/offices";
+    private static final String URL_BUSES = "/view/buses";
+    private static final String URL_DRIVERS = "/view/drivers";
+    private static final String URL_ROUTES = "/view/routes";
+    private static final String URL_TRIPS = "/view/trips";
+    private static final String URL_PAYMENTS = "/view/payments";
+    private static final String URL_BOOKINGS = "/view/bookings";
+
     private final List<TeamMember> members = buildMembers();
 
     public List<TeamMember> getAll() { return members; }
@@ -46,22 +64,22 @@ public class TeamRegistry {
                         "Expose REST APIs and Thymeleaf UI screens for customer lifecycle",
                         "Ensure addresses can be safely linked to customers, drivers and offices"))
                 .endpoints(List.of(
-                        ep("GET ALL", "/api/customers", "List every registered customer",
-                                "/view/customers", "Open List"),
+                        ep(M_GET_ALL, "/api/customers", "List every registered customer",
+                                URL_CUSTOMERS, LBL_OPEN_LIST),
                         ep("POST", "/api/customers", "Register a new customer",
-                                "/view/customers/add", "Open Add Form"),
+                                "/view/customers/add", LBL_OPEN_ADD),
                         ep("PUT", "/api/customers/{id}", "Edit an existing customer",
-                                "/view/customers", "Open List to Edit"),
-                        ep("GET ALL", "/api/addresses", "List every saved address",
-                                "/view/addresses", "Open List"),
+                                URL_CUSTOMERS, LBL_OPEN_EDIT),
+                        ep(M_GET_ALL, "/api/addresses", "List every saved address",
+                                URL_ADDRESSES, LBL_OPEN_LIST),
                         ep("POST", "/api/addresses", "Register a new address",
-                                "/view/addresses/add", "Open Add Form"),
+                                "/view/addresses/add", LBL_OPEN_ADD),
                         ep("PUT", "/api/addresses/{id}", "Edit an existing address",
-                                "/view/addresses", "Open List to Edit")))
+                                URL_ADDRESSES, LBL_OPEN_EDIT)))
                 .screens(List.of(
-                        sc("Customers List", "/view/customers", "bi-people-fill"),
+                        sc("Customers List", URL_CUSTOMERS, "bi-people-fill"),
                         sc("Add Customer", "/view/customers/add", "bi-person-plus-fill"),
-                        sc("Addresses List", "/view/addresses", "bi-geo-alt-fill"),
+                        sc("Addresses List", URL_ADDRESSES, "bi-geo-alt-fill"),
                         sc("Add Address", "/view/addresses/add", "bi-pin-map-fill")))
                 .build();
     }
@@ -82,38 +100,38 @@ public class TeamRegistry {
                         "Expose REST APIs and Thymeleaf UIs for bus and driver lifecycle",
                         "Coordinate the safe-delete safety checks across agencies, offices, buses and drivers"))
                 .endpoints(List.of(
-                        ep("GET ALL", "/api/agencies", "List every registered agency",
-                                "/view/agencies", "Open List"),
+                        ep(M_GET_ALL, "/api/agencies", "List every registered agency",
+                                URL_AGENCIES, LBL_OPEN_LIST),
                         ep("POST", "/api/agencies", "Register a new agency",
-                                "/view/agencies/add", "Open Add Form"),
+                                "/view/agencies/add", LBL_OPEN_ADD),
                         ep("PUT", "/api/agencies/{id}", "Edit an existing agency",
-                                "/view/agencies", "Open List to Edit"),
-                        ep("GET ALL", "/api/offices", "List every office",
-                                "/view/offices", "Open List"),
+                                URL_AGENCIES, LBL_OPEN_EDIT),
+                        ep(M_GET_ALL, "/api/offices", "List every office",
+                                URL_OFFICES, LBL_OPEN_LIST),
                         ep("POST", "/api/offices", "Register a new office",
-                                "/view/offices/add", "Open Add Form"),
+                                "/view/offices/add", LBL_OPEN_ADD),
                         ep("PUT", "/api/offices/{id}", "Edit an existing office",
-                                "/view/offices", "Open List to Edit"),
-                        ep("GET ALL", "/api/buses", "List every registered bus",
-                                "/view/buses", "Open List"),
+                                URL_OFFICES, LBL_OPEN_EDIT),
+                        ep(M_GET_ALL, "/api/buses", "List every registered bus",
+                                URL_BUSES, LBL_OPEN_LIST),
                         ep("POST", "/api/buses", "Register a new bus",
-                                "/view/buses/add", "Open Add Form"),
+                                "/view/buses/add", LBL_OPEN_ADD),
                         ep("PUT", "/api/buses/{id}", "Edit an existing bus",
-                                "/view/buses", "Open List to Edit"),
-                        ep("GET ALL", "/api/drivers", "List every registered driver",
-                                "/view/drivers", "Open List"),
+                                URL_BUSES, LBL_OPEN_EDIT),
+                        ep(M_GET_ALL, "/api/drivers", "List every registered driver",
+                                URL_DRIVERS, LBL_OPEN_LIST),
                         ep("POST", "/api/drivers", "Register a new driver",
-                                "/view/drivers/add", "Open Add Form"),
+                                "/view/drivers/add", LBL_OPEN_ADD),
                         ep("PUT", "/api/drivers/{id}", "Edit an existing driver",
-                                "/view/drivers", "Open List to Edit")))
+                                URL_DRIVERS, LBL_OPEN_EDIT)))
                 .screens(List.of(
-                        sc("Agencies List", "/view/agencies", "bi-building"),
+                        sc("Agencies List", URL_AGENCIES, "bi-building"),
                         sc("Add Agency", "/view/agencies/add", "bi-building-add"),
-                        sc("Offices List", "/view/offices", "bi-shop"),
+                        sc("Offices List", URL_OFFICES, "bi-shop"),
                         sc("Add Office", "/view/offices/add", "bi-shop-window"),
-                        sc("Buses List", "/view/buses", "bi-bus-front-fill"),
+                        sc("Buses List", URL_BUSES, "bi-bus-front-fill"),
                         sc("Add Bus", "/view/buses/add", "bi-bus-front"),
-                        sc("Drivers List", "/view/drivers", "bi-person-badge"),
+                        sc("Drivers List", URL_DRIVERS, "bi-person-badge"),
                         sc("Add Driver", "/view/drivers/add", "bi-person-badge-fill")))
                 .build();
     }
@@ -134,22 +152,22 @@ public class TeamRegistry {
                         "Wire up trip creation with 6 foreign keys (route, bus, 2 drivers, 2 addresses)",
                         "Expose Thymeleaf UIs that let the operator schedule and search journeys"))
                 .endpoints(List.of(
-                        ep("GET ALL", "/api/routes", "List every route", "/view/routes", "Open List"),
-                        ep("POST", "/api/routes", "Add a new route", "/view/routes/add", "Open Add Form"),
-                        ep("PUT", "/api/routes/{id}", "Edit a route", "/view/routes", "Open List to Edit"),
+                        ep(M_GET_ALL, "/api/routes", "List every route", URL_ROUTES, LBL_OPEN_LIST),
+                        ep("POST", "/api/routes", "Add a new route", "/view/routes/add", LBL_OPEN_ADD),
+                        ep("PUT", "/api/routes/{id}", "Edit a route", URL_ROUTES, LBL_OPEN_EDIT),
                         ep("SEARCH", "/api/routes/search", "Search routes by from/to city",
                                 "/view/routes/search", "Open Search"),
-                        ep("GET ALL", "/api/trips", "List every scheduled trip", "/view/trips", "Open List"),
-                        ep("POST", "/api/trips", "Schedule a new trip", "/view/trips/add", "Open Add Form"),
+                        ep(M_GET_ALL, "/api/trips", "List every scheduled trip", URL_TRIPS, LBL_OPEN_LIST),
+                        ep("POST", "/api/trips", "Schedule a new trip", "/view/trips/add", LBL_OPEN_ADD),
                         ep("PUT", "/api/trips/{id}", "Edit an existing trip",
-                                "/view/trips", "Open List to Edit"),
+                                URL_TRIPS, LBL_OPEN_EDIT),
                         ep("SEARCH", "/api/trips/search", "Search trips by from/to city",
                                 "/view/trips/search", "Open Search")))
                 .screens(List.of(
-                        sc("Routes List", "/view/routes", "bi-signpost-split"),
+                        sc("Routes List", URL_ROUTES, "bi-signpost-split"),
                         sc("Add Route", "/view/routes/add", "bi-signpost-2"),
                         sc("Search Routes", "/view/routes/search", "bi-search"),
-                        sc("Trips List", "/view/trips", "bi-calendar-event"),
+                        sc("Trips List", URL_TRIPS, "bi-calendar-event"),
                         sc("Add Trip", "/view/trips/add", "bi-calendar-plus"),
                         sc("Search Trips", "/view/trips/search", "bi-search-heart")))
                 .build();
@@ -171,15 +189,15 @@ public class TeamRegistry {
                         "Wire up the unified PDF ticket download UI (auto-handles single + group)",
                         "Build the payment checkout and success-page Thymeleaf views"))
                 .endpoints(List.of(
-                        ep("GET ALL", "/api/payments", "List every payment", "/view/payments", "Open List"),
+                        ep(M_GET_ALL, "/api/payments", "List every payment", URL_PAYMENTS, LBL_OPEN_LIST),
                         ep("POST", "/api/payments", "Process a new payment (via checkout)",
-                                "/view/payments", "Open Payments"),
-                        ep("DOWNLOAD", "/api/payments/{id}/ticket",
+                                URL_PAYMENTS, "Open Payments"),
+                        ep(M_DOWNLOAD, "/api/payments/{id}/ticket",
                                 "Download a payment ticket PDF (auto-generates group ticket when the payment is part of a multi-seat transaction)",
-                                "/view/payments/ticket", "Download Ticket")))
+                                "/view/payments/ticket", LBL_DOWNLOAD_TICKET)))
                 .screens(List.of(
-                        sc("Payments List", "/view/payments", "bi-credit-card"),
-                        sc("Download Ticket", "/view/payments/ticket", "bi-file-earmark-pdf")))
+                        sc("Payments List", URL_PAYMENTS, "bi-credit-card"),
+                        sc(LBL_DOWNLOAD_TICKET, "/view/payments/ticket", "bi-file-earmark-pdf")))
                 .build();
     }
 
@@ -200,20 +218,20 @@ public class TeamRegistry {
                         "Wire up the PDF ticket flow and the group-ticket download",
                         "Expose review creation UI and review listing"))
                 .endpoints(List.of(
-                        ep("GET ALL", "/api/bookings/trip/{tripId}", "List seats/bookings for a trip",
-                                "/view/bookings", "Open Booking Flow"),
+                        ep(M_GET_ALL, "/api/bookings/trip/{tripId}", "List seats/bookings for a trip",
+                                URL_BOOKINGS, "Open Booking Flow"),
                         ep("POST", "/api/bookings", "Book one or more seats on a trip",
-                                "/view/bookings", "Open Booking Flow"),
-                        ep("DOWNLOAD", "/api/bookings/{id}/ticket", "Download a booking ticket PDF",
-                                "/view/bookings/ticket", "Download Ticket"),
-                        ep("DOWNLOAD", "/api/bookings/group-ticket",
+                                URL_BOOKINGS, "Open Booking Flow"),
+                        ep(M_DOWNLOAD, "/api/bookings/{id}/ticket", "Download a booking ticket PDF",
+                                "/view/bookings/ticket", LBL_DOWNLOAD_TICKET),
+                        ep(M_DOWNLOAD, "/api/bookings/group-ticket",
                                 "Download group booking ticket PDF",
                                 "/view/bookings/group-ticket", "Download Group Ticket"),
-                        ep("GET ALL", "/api/reviews", "List every review", "/view/reviews", "Open List"),
+                        ep(M_GET_ALL, "/api/reviews", "List every review", "/view/reviews", LBL_OPEN_LIST),
                         ep("POST", "/api/reviews", "Post a new review",
-                                "/view/reviews/add", "Open Add Form")))
+                                "/view/reviews/add", LBL_OPEN_ADD)))
                 .screens(List.of(
-                        sc("Booking Flow (Trip List)", "/view/bookings", "bi-ticket-perforated"),
+                        sc("Booking Flow (Trip List)", URL_BOOKINGS, "bi-ticket-perforated"),
                         sc("Booking Ticket Download", "/view/bookings/ticket", "bi-file-earmark-pdf"),
                         sc("Group Booking Ticket", "/view/bookings/group-ticket", "bi-files"),
                         sc("Reviews List", "/view/reviews", "bi-star-fill"),

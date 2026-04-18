@@ -291,9 +291,10 @@ class TripServiceTest {
         @DisplayName("NEGATIVE: Should throw when trip not found for update")
         void update_NotFound() {
             when(tripRepository.findById(999)).thenReturn(Optional.empty());
+            Trip empty = new Trip();
 
             assertThrows(ResourceNotFoundException.class,
-                    () -> tripService.update(999, new Trip()));
+                    () -> tripService.update(999, empty));
         }
     }
 

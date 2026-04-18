@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body class="bg-light">
 <nav th:replace="~{fragments/header :: navbar}"></nav>
 
@@ -22,9 +22,9 @@
                         const id = this.bookingId.value;
                         window.location.href = '/api/bookings/' + id + '/ticket';" class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Booking ID</label>
-                    <input type="number" name="bookingId" class="form-control" required
-                           placeholder="101" min="1"/>
+                    <label for="ticketdownload_bookingId" class="form-label fw-semibold">Booking ID</label>
+                    <input type="number" name="bookingId" id="ticketdownload_bookingId" class="form-control" required
+                           placeholder="101" min="1" aria-label="bookingId"/>
                 </div>
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body class="bg-light">
 
-<nav th:replace="~{fragments/header :: navbar}"></nav>
+<nav th:replace="~{fragments/header :: navbar}" aria-label="Main navigation"></nav>
 
 <main class="container py-4">
 
@@ -108,7 +108,7 @@
         object-fit: cover;
         box-shadow: 0 4px 12px rgba(0,0,0,.15);
     }
-    .accordion-button:not(.collapsed) { background-color: #eff6ff; color: #0d6efd; }
+    .accordion-button:not(.collapsed) { background-color: #e8f0fe; color: #0a3d91; }
 </style>
 
 </body>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}"></head>
+<head th:replace="~{fragments/header :: header}"><title>BusBooking</title></head>
 <body class="bg-light">
 
-<nav th:replace="~{fragments/header :: navbar}"></nav>
+<nav th:replace="~{fragments/header :: navbar}" aria-label="Main navigation"></nav>
 
 <main class="container py-4">
 
@@ -66,13 +66,13 @@
                           th:action="@{/members/{id}/operation/download(id=${member.id}, service=${serviceKey}, operation=${operation.name})}"
                           method="get" class="vstack gap-3">
                         <div>
-                            <label class="form-label fw-semibold">Record ID</label>
-                            <input type="number" name="pathId" class="form-control" required
-                                   placeholder="Enter the booking or payment ID"/>
+                            <label for="pdfPathId" class="form-label fw-semibold">Record ID</label>
+                            <input type="number" name="pathId" id="pdfPathId" class="form-control" required
+                                   placeholder="Enter the booking or payment ID" aria-label="pathId"/>
                             <div class="form-text">A PDF boarding pass will be generated and downloaded.</div>
                         </div>
-                        <input type="hidden" name="service" th:value="${serviceKey}"/>
-                        <input type="hidden" name="operation" th:value="${operation.name}"/>
+                        <input type="hidden" name="service" th:value="${serviceKey}" aria-label="service"/>
+                        <input type="hidden" name="operation" th:value="${operation.name}" aria-label="operation"/>
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-download me-1"></i>Download PDF
                         </button>
@@ -86,12 +86,14 @@
                             <i class="bi bi-funnel me-1"></i>Query Parameters
                         </h6>
                         <div th:each="field : ${operation.fields}">
-                            <label class="form-label" th:text="${field.label}">Label</label>
-                            <input th:type="${field.type}"
-                                   th:name="${field.name}"
-                                   class="form-control"
-                                   th:required="${field.required}"
-                                   th:placeholder="${field.placeholder}"/>
+                            <label class="form-label">
+                                <span th:text="${field.label}">Label</span>
+                                <input th:type="${field.type}"
+                                       th:name="${field.name}"
+                                       class="form-control"
+                                       th:required="${field.required}"
+                                       th:placeholder="${field.placeholder}" th:aria-label="${field.name}"/>
+                            </label>
                             <div class="form-text" th:if="${field.helpText != null}" th:text="${field.helpText}"></div>
                         </div>
                         <button type="submit" class="btn btn-primary">
@@ -104,14 +106,14 @@
                           th:action="@{/members/{id}/operation/execute(id=${member.id})}"
                           method="post" class="vstack gap-3" id="opForm">
 
-                        <input type="hidden" name="service" th:value="${serviceKey}"/>
-                        <input type="hidden" name="operation" th:value="${operation.name}"/>
+                        <input type="hidden" name="service" th:value="${serviceKey}" aria-label="service"/>
+                        <input type="hidden" name="operation" th:value="${operation.name}" aria-label="operation"/>
 
                         <!-- ID input for operations that need it -->
                         <div th:if="${operation.inputKind == 'ID' or operation.inputKind == 'ID_AND_BODY'}">
-                            <label class="form-label fw-semibold">Record ID</label>
-                            <input type="number" name="pathId" class="form-control"
-                                   th:value="${submittedPathId}" required placeholder="Enter the ID"/>
+                            <label for="execPathId" class="form-label fw-semibold">Record ID</label>
+                            <input type="number" name="pathId" id="execPathId" class="form-control"
+                                   th:value="${submittedPathId}" required placeholder="Enter the ID" aria-label="pathId"/>
                             <div class="form-text">Used for path variable <code>{id}</code>.</div>
                         </div>
 
@@ -127,20 +129,21 @@
                                 <i class="bi bi-braces me-1"></i>Request Body
                             </h6>
                             <div th:each="field : ${operation.fields}">
-                                <label class="form-label"
-                                       th:text="${field.label}">Label</label>
-                                <textarea th:if="${field.type == 'textarea'}"
-                                          th:name="${field.name}" class="form-control" rows="3"
-                                          th:required="${field.required}"
-                                          th:placeholder="${field.placeholder}"
-                                          th:text="${submittedForm != null} ? ${submittedForm.get(field.name)} : ''"></textarea>
-                                <input th:unless="${field.type == 'textarea'}"
-                                       th:type="${field.type}"
-                                       th:name="${field.name}"
-                                       class="form-control"
-                                       th:required="${field.required}"
-                                       th:placeholder="${field.placeholder}"
-                                       th:value="${submittedForm != null} ? ${submittedForm.get(field.name)} : ''"/>
+                                <label class="form-label">
+                                    <span th:text="${field.label}">Label</span>
+                                    <textarea th:if="${field.type == 'textarea'}"
+                                              th:name="${field.name}" class="form-control" rows="3"
+                                              th:required="${field.required}"
+                                              th:placeholder="${field.placeholder}"
+                                              th:text="${submittedForm != null} ? ${submittedForm.get(field.name)} : ''" th:aria-label="${field.name}"></textarea>
+                                    <input th:unless="${field.type == 'textarea'}"
+                                           th:type="${field.type}"
+                                           th:name="${field.name}"
+                                           class="form-control"
+                                           th:required="${field.required}"
+                                           th:placeholder="${field.placeholder}"
+                                           th:value="${submittedForm != null} ? ${submittedForm.get(field.name)} : ''" th:aria-label="${field.name}"/>
+                                </label>
                                 <div class="form-text" th:if="${field.helpText != null}" th:text="${field.helpText}"></div>
                             </div>
                         </div>
@@ -209,14 +212,14 @@
                     <div th:if="${result != null and result.responseBody != null and !#strings.isEmpty(result.responseBody)}">
                         <div class="d-flex align-items-center mb-2">
                             <strong class="small text-muted">Response Body</strong>
-                            <div class="ms-auto btn-group btn-group-sm" role="group">
+                            <fieldset class="ms-auto btn-group btn-group-sm border-0 p-0 m-0" aria-label="Response view toggle">
                                 <button type="button" class="btn btn-outline-primary active" id="viewTableBtn">
                                     <i class="bi bi-table me-1"></i>Table
                                 </button>
                                 <button type="button" class="btn btn-outline-secondary" id="viewRawBtn">
                                     <i class="bi bi-braces me-1"></i>Raw JSON
                                 </button>
-                            </div>
+                            </fieldset>
                         </div>
                         <textarea id="rawResponse" hidden th:text="${result.responseBody}"></textarea>
                         <div id="tableOutput" class="border rounded bg-white"
@@ -240,8 +243,8 @@
     function esc(s) {
         if (s === null || s === undefined) return '';
         return String(s)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
     }
 
     function formatCell(v) {
@@ -348,14 +351,15 @@
 
         if (raw && out) {
             var text = (raw.value || '').trim();
-            if (!text) {
-                out.innerHTML = '<div class="p-3 text-muted small">Empty response</div>';
-            } else {
+            if (text) {
                 try {
                     renderJson(JSON.parse(text), out);
                 } catch (e) {
+                    console.warn('Response is not valid JSON, rendering as text.', e);
                     out.innerHTML = '<pre class="p-3 mb-0 small">' + esc(text) + '</pre>';
                 }
+            } else {
+                out.innerHTML = '<div class="p-3 text-muted small">Empty response</div>';
             }
         }
 

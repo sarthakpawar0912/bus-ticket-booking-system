@@ -24,19 +24,19 @@
                     <hr class="mt-1"/>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Full Name</label>
-                    <input type="text" class="form-control" name="name" required
-                           placeholder="Sarthak Pawar"/>
+                    <label for="addcustomer_name" class="form-label fw-semibold">Full Name</label>
+                    <input type="text" class="form-control" name="name" id="addcustomer_name" required
+                           placeholder="Sarthak Pawar" aria-label="name"/>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Email</label>
-                    <input type="email" class="form-control" name="email" required
-                           placeholder="sarthak@example.com"/>
+                    <label for="addcustomer_email" class="form-label fw-semibold">Email</label>
+                    <input type="email" class="form-control" name="email" id="addcustomer_email" required
+                           placeholder="sarthak@example.com" aria-label="email"/>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Phone (10 digits)</label>
-                    <input type="tel" class="form-control" name="phone" required
-                           pattern="^\d{10}$" placeholder="9876543210"/>
+                    <label for="addcustomer_phone" class="form-label fw-semibold">Phone (10 digits)</label>
+                    <input type="tel" class="form-control" name="phone" id="addcustomer_phone" required
+                           pattern="^\d{10}$" placeholder="9876543210" aria-label="phone"/>
                 </div>
 
                 <!-- Address details -->
@@ -49,24 +49,24 @@
                     <hr class="mt-1"/>
                 </div>
                 <div class="col-12">
-                    <label class="form-label fw-semibold">Street Address</label>
-                    <input type="text" class="form-control" name="address" required
-                           placeholder="Flat 4B, Station Road"/>
+                    <label for="addcustomer_address" class="form-label fw-semibold">Street Address</label>
+                    <input type="text" class="form-control" name="address" id="addcustomer_address" required
+                           placeholder="Flat 4B, Station Road" aria-label="address"/>
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label fw-semibold">City</label>
-                    <input type="text" class="form-control" name="city" required
-                           placeholder="Mumbai"/>
+                    <label for="addcustomer_city" class="form-label fw-semibold">City</label>
+                    <input type="text" class="form-control" name="city" id="addcustomer_city" required
+                           placeholder="Mumbai" aria-label="city"/>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-semibold">State</label>
-                    <input type="text" class="form-control" name="state" required
-                           placeholder="Maharashtra"/>
+                    <label for="addcustomer_state" class="form-label fw-semibold">State</label>
+                    <input type="text" class="form-control" name="state" id="addcustomer_state" required
+                           placeholder="Maharashtra" aria-label="state"/>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold">Zip Code (6 digits)</label>
-                    <input type="text" class="form-control" name="zipCode" required
-                           pattern="^\d{6}$" placeholder="400001"/>
+                    <label for="addcustomer_zipCode" class="form-label fw-semibold">Zip Code (6 digits)</label>
+                    <input type="text" class="form-control" name="zipCode" id="addcustomer_zipCode" required
+                           pattern="^\d{6}$" placeholder="400001" aria-label="zipCode"/>
                 </div>
 
                 <div class="col-12 d-flex gap-2 pt-3">

@@ -33,6 +33,22 @@ public class MemberRegistry {
                         .findFirst()));
     }
 
+    // ---------- Shared literal constants (SonarQube S1192) ----------
+
+    private static final String T_STRING = "string";
+    private static final String T_INTEGER = "integer";
+    private static final String T_NUMBER = "number";
+    private static final String T_EMAIL_IN = "email";
+    private static final String T_DATETIME = "datetime-local";
+    private static final String F_EMAIL = "email";
+    private static final String F_PHONE = "phone";
+    private static final String F_PHONE_LABEL = "Phone (10 digits)";
+    private static final String F_CUSTOMER_ID = "customerId";
+    private static final String F_CUSTOMER_ID_LABEL = "Customer ID";
+    private static final String CITY_MUMBAI = "Mumbai";
+    private static final String OP_GET_ALL = "Get All";
+    private static final String OP_CREATE = "Create";
+
     // ---------- Field builders ----------
 
     private static FieldDef f(String name, String label, String type, String placeholder, boolean required, String valueType) {
@@ -43,86 +59,86 @@ public class MemberRegistry {
     // ---------- DTO field definitions ----------
 
     private static final List<FieldDef> CUSTOMER_FIELDS = List.of(
-            f("name", "Full Name", "text", "Sarthak Pawar", true, "string"),
-            f("email", "Email", "email", "sarthak@example.com", true, "string"),
-            f("phone", "Phone (10 digits)", "tel", "9876543210", true, "string"),
-            f("addressId", "Address ID", "number", "1", true, "integer"));
+            f("name", "Full Name", "text", "Sarthak Pawar", true, T_STRING),
+            f(F_EMAIL, "Email", T_EMAIL_IN, "sarthak@example.com", true, T_STRING),
+            f(F_PHONE, F_PHONE_LABEL, "tel", "9876543210", true, T_STRING),
+            f("addressId", "Address ID", T_NUMBER, "1", true, T_INTEGER));
 
     private static final List<FieldDef> ADDRESS_FIELDS = List.of(
-            f("address", "Street Address", "text", "Station Road", true, "string"),
-            f("city", "City", "text", "Mumbai", true, "string"),
-            f("state", "State", "text", "Maharashtra", true, "string"),
-            f("zipCode", "Zip Code (6 digits)", "text", "400001", true, "string"));
+            f("address", "Street Address", "text", "Station Road", true, T_STRING),
+            f("city", "City", "text", CITY_MUMBAI, true, T_STRING),
+            f("state", "State", "text", "Maharashtra", true, T_STRING),
+            f("zipCode", "Zip Code (6 digits)", "text", "400001", true, T_STRING));
 
     private static final List<FieldDef> AGENCY_FIELDS = List.of(
-            f("name", "Agency Name", "text", "Red Bus Agency", true, "string"),
-            f("contactPersonName", "Contact Person Name", "text", "Sarthak", true, "string"),
-            f("email", "Email", "email", "red@bus.com", true, "string"),
-            f("phone", "Phone (10 digits)", "tel", "9876543210", true, "string"));
+            f("name", "Agency Name", "text", "Red Bus Agency", true, T_STRING),
+            f("contactPersonName", "Contact Person Name", "text", "Sarthak", true, T_STRING),
+            f(F_EMAIL, "Email", T_EMAIL_IN, "red@bus.com", true, T_STRING),
+            f(F_PHONE, F_PHONE_LABEL, "tel", "9876543210", true, T_STRING));
 
     private static final List<FieldDef> OFFICE_FIELDS = List.of(
-            f("agencyId", "Agency ID", "number", "1", true, "integer"),
-            f("officeMail", "Office Email", "email", "mumbai@red.com", true, "string"),
-            f("officeContactPersonName", "Office Contact Person", "text", "Amit", true, "string"),
-            f("officeContactNumber", "Office Phone (10 digits)", "tel", "9999999999", true, "string"),
-            f("officeAddressId", "Office Address ID", "number", "1", true, "integer"));
+            f("agencyId", "Agency ID", T_NUMBER, "1", true, T_INTEGER),
+            f("officeMail", "Office Email", T_EMAIL_IN, "mumbai@red.com", true, T_STRING),
+            f("officeContactPersonName", "Office Contact Person", "text", "Amit", true, T_STRING),
+            f("officeContactNumber", "Office Phone (10 digits)", "tel", "9999999999", true, T_STRING),
+            f("officeAddressId", "Office Address ID", T_NUMBER, "1", true, T_INTEGER));
 
     private static final List<FieldDef> BUS_FIELDS = List.of(
-            f("officeId", "Office ID", "number", "1", true, "integer"),
-            f("registrationNumber", "Registration Number", "text", "MH01AB1234", true, "string"),
-            f("capacity", "Capacity (min 10)", "number", "40", true, "integer"),
-            f("type", "Bus Type", "text", "AC Sleeper", true, "string"));
+            f("officeId", "Office ID", T_NUMBER, "1", true, T_INTEGER),
+            f("registrationNumber", "Registration Number", "text", "MH01AB1234", true, T_STRING),
+            f("capacity", "Capacity (min 10)", T_NUMBER, "40", true, T_INTEGER),
+            f("type", "Bus Type", "text", "AC Sleeper", true, T_STRING));
 
     private static final List<FieldDef> DRIVER_FIELDS = List.of(
-            f("licenseNumber", "License Number", "text", "DL001", true, "string"),
-            f("name", "Driver Name", "text", "Ramesh", true, "string"),
-            f("phone", "Phone (10 digits)", "tel", "7777777777", true, "string"),
-            f("officeId", "Office ID", "number", "1", true, "integer"),
-            f("addressId", "Address ID", "number", "1", true, "integer"));
+            f("licenseNumber", "License Number", "text", "DL001", true, T_STRING),
+            f("name", "Driver Name", "text", "Ramesh", true, T_STRING),
+            f(F_PHONE, F_PHONE_LABEL, "tel", "7777777777", true, T_STRING),
+            f("officeId", "Office ID", T_NUMBER, "1", true, T_INTEGER),
+            f("addressId", "Address ID", T_NUMBER, "1", true, T_INTEGER));
 
     private static final List<FieldDef> ROUTE_FIELDS = List.of(
-            f("fromCity", "From City", "text", "Mumbai", true, "string"),
-            f("toCity", "To City", "text", "Pune", true, "string"),
-            f("breakPoints", "Break Points", "number", "1", false, "integer"),
-            f("duration", "Duration (minutes)", "number", "180", false, "integer"));
+            f("fromCity", "From City", "text", CITY_MUMBAI, true, T_STRING),
+            f("toCity", "To City", "text", "Pune", true, T_STRING),
+            f("breakPoints", "Break Points", T_NUMBER, "1", false, T_INTEGER),
+            f("duration", "Duration (minutes)", T_NUMBER, "180", false, T_INTEGER));
 
     private static final List<FieldDef> ROUTE_SEARCH_FIELDS = List.of(
-            f("from", "From City", "text", "Mumbai", true, "string"),
-            f("to", "To City", "text", "Pune", true, "string"));
+            f("from", "From City", "text", CITY_MUMBAI, true, T_STRING),
+            f("to", "To City", "text", "Pune", true, T_STRING));
 
     private static final List<FieldDef> TRIP_FIELDS = List.of(
-            f("routeId", "Route ID", "number", "1", true, "integer"),
-            f("busId", "Bus ID", "number", "1", true, "integer"),
-            f("boardingAddressId", "Boarding Address ID", "number", "1", true, "integer"),
-            f("droppingAddressId", "Dropping Address ID", "number", "2", true, "integer"),
-            f("departureTime", "Departure Time", "datetime-local", "", true, "string"),
-            f("arrivalTime", "Arrival Time", "datetime-local", "", true, "string"),
-            f("driver1Id", "Driver 1 ID", "number", "1", true, "integer"),
-            f("driver2Id", "Driver 2 ID (optional)", "number", "2", false, "integer"),
-            f("availableSeats", "Available Seats", "number", "40", true, "integer"),
-            f("fare", "Fare (Rs.)", "number", "500", true, "number"),
-            f("tripDate", "Trip Date", "datetime-local", "", true, "string"));
+            f("routeId", "Route ID", T_NUMBER, "1", true, T_INTEGER),
+            f("busId", "Bus ID", T_NUMBER, "1", true, T_INTEGER),
+            f("boardingAddressId", "Boarding Address ID", T_NUMBER, "1", true, T_INTEGER),
+            f("droppingAddressId", "Dropping Address ID", T_NUMBER, "2", true, T_INTEGER),
+            f("departureTime", "Departure Time", T_DATETIME, "", true, T_STRING),
+            f("arrivalTime", "Arrival Time", T_DATETIME, "", true, T_STRING),
+            f("driver1Id", "Driver 1 ID", T_NUMBER, "1", true, T_INTEGER),
+            f("driver2Id", "Driver 2 ID (optional)", T_NUMBER, "2", false, T_INTEGER),
+            f("availableSeats", "Available Seats", T_NUMBER, "40", true, T_INTEGER),
+            f("fare", "Fare (Rs.)", T_NUMBER, "500", true, T_NUMBER),
+            f("tripDate", "Trip Date", T_DATETIME, "", true, T_STRING));
 
     private static final List<FieldDef> TRIP_SEARCH_FIELDS = ROUTE_SEARCH_FIELDS;
 
     private static final List<FieldDef> PAYMENT_FIELDS = List.of(
-            f("bookingId", "Booking ID", "number", "1", true, "integer"),
-            f("customerId", "Customer ID", "number", "10", true, "integer"),
-            f("amount", "Amount (Rs.)", "number", "500", true, "number"));
+            f("bookingId", "Booking ID", T_NUMBER, "1", true, T_INTEGER),
+            f(F_CUSTOMER_ID, F_CUSTOMER_ID_LABEL, T_NUMBER, "10", true, T_INTEGER),
+            f("amount", "Amount (Rs.)", T_NUMBER, "500", true, T_NUMBER));
 
     private static final List<FieldDef> REVIEW_FIELDS = List.of(
-            f("customerId", "Customer ID", "number", "1", true, "integer"),
-            f("tripId", "Trip ID", "number", "1", true, "integer"),
-            f("rating", "Rating (1-5)", "number", "5", true, "integer"),
-            f("comment", "Comment", "textarea", "Great experience!", false, "string"));
+            f(F_CUSTOMER_ID, F_CUSTOMER_ID_LABEL, T_NUMBER, "1", true, T_INTEGER),
+            f("tripId", "Trip ID", T_NUMBER, "1", true, T_INTEGER),
+            f("rating", "Rating (1-5)", T_NUMBER, "5", true, T_INTEGER),
+            f("comment", "Comment", "textarea", "Great experience!", false, T_STRING));
 
     private static final List<FieldDef> BOOKING_FIELDS = List.of(
-            f("tripId", "Trip ID", "number", "1", true, "integer"),
+            f("tripId", "Trip ID", T_NUMBER, "1", true, T_INTEGER),
             f("seatNumbers", "Seat Numbers (comma-separated)", "text", "1,2,3", true, "integer-list"),
-            f("customerId", "Customer ID", "number", "10", true, "integer"));
+            f(F_CUSTOMER_ID, F_CUSTOMER_ID_LABEL, T_NUMBER, "10", true, T_INTEGER));
 
     private static final List<FieldDef> GROUP_TICKET_FIELDS = List.of(
-            f("bookingIds", "Booking IDs (comma-separated)", "text", "1,2,3", true, "string"));
+            f("bookingIds", "Booking IDs (comma-separated)", "text", "1,2,3", true, T_STRING));
 
     // ---------- CRUD builders (matches team page: Get All, Create, Update) ----------
 
@@ -133,8 +149,8 @@ public class MemberRegistry {
 
     private static List<Operation> crudOps(String base, List<FieldDef> fields) {
         return List.of(
-                op("Get All", "GET", base, "NONE", "Fetch all records", List.of()),
-                op("Create", "POST", base, "BODY", "Create a new record", fields),
+                op(OP_GET_ALL, "GET", base, "NONE", "Fetch all records", List.of()),
+                op(OP_CREATE, "POST", base, "BODY", "Create a new record", fields),
                 op("Update", "PUT", base + "/{id}", "ID_AND_BODY", "Update an existing record", fields)
         );
     }
@@ -199,8 +215,8 @@ public class MemberRegistry {
 
     private static ServiceInfo paymentService() {
         List<Operation> ops = List.of(
-                op("Get All", "GET", "/api/payments", "NONE", "Fetch all payments", List.of()),
-                op("Create", "POST", "/api/payments", "BODY", "Process a new payment", PAYMENT_FIELDS)
+                op(OP_GET_ALL, "GET", "/api/payments", "NONE", "Fetch all payments", List.of()),
+                op(OP_CREATE, "POST", "/api/payments", "BODY", "Process a new payment", PAYMENT_FIELDS)
         );
         return ServiceInfo.builder().key("payments").name("Payments").icon("bi-credit-card")
                 .description("Process payments and lookups")
@@ -224,7 +240,7 @@ public class MemberRegistry {
         List<Operation> ops = List.of(
                 op("Get By Trip", "GET", "/api/bookings/trip/{id}", "ID",
                         "List seats/bookings for a trip", List.of()),
-                op("Create", "POST", "/api/bookings", "BODY", "Book one or more seats", BOOKING_FIELDS)
+                op(OP_CREATE, "POST", "/api/bookings", "BODY", "Book one or more seats", BOOKING_FIELDS)
         );
         return ServiceInfo.builder().key("bookings").name("Bookings").icon("bi-ticket-perforated")
                 .description("Reserve seats and view booking status")
@@ -245,8 +261,8 @@ public class MemberRegistry {
 
     private static ServiceInfo reviewService() {
         List<Operation> ops = List.of(
-                op("Get All", "GET", "/api/reviews", "NONE", "Fetch all reviews", List.of()),
-                op("Create", "POST", "/api/reviews", "BODY", "Post a new review", REVIEW_FIELDS)
+                op(OP_GET_ALL, "GET", "/api/reviews", "NONE", "Fetch all reviews", List.of()),
+                op(OP_CREATE, "POST", "/api/reviews", "BODY", "Post a new review", REVIEW_FIELDS)
         );
         return ServiceInfo.builder().key("reviews").name("Reviews").icon("bi-star-fill")
                 .description("Customer feedback and ratings for trips")

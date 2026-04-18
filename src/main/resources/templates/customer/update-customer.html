@@ -16,23 +16,23 @@
         <div class="card-body p-4">
             <form th:action="@{/view/customers/update/{id}(id=${customer.id})}" method="post" class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Full Name</label>
-                    <input type="text" class="form-control" name="name" required
-                           th:value="${customer.name}" placeholder="Sarthak Pawar"/>
+                    <label for="updatecustomer_name" class="form-label fw-semibold">Full Name</label>
+                    <input type="text" class="form-control" name="name" id="updatecustomer_name" required
+                           th:value="${customer.name}" placeholder="Sarthak Pawar" aria-label="name"/>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Email</label>
-                    <input type="email" class="form-control" name="email" required
-                           th:value="${customer.email}" placeholder="sarthak@example.com"/>
+                    <label for="updatecustomer_email" class="form-label fw-semibold">Email</label>
+                    <input type="email" class="form-control" name="email" id="updatecustomer_email" required
+                           th:value="${customer.email}" placeholder="sarthak@example.com" aria-label="email"/>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Phone (10 digits)</label>
-                    <input type="tel" class="form-control" name="phone" required
-                           pattern="^\d{10}$" th:value="${customer.phone}" placeholder="9876543210"/>
+                    <label for="updatecustomer_phone" class="form-label fw-semibold">Phone (10 digits)</label>
+                    <input type="tel" class="form-control" name="phone" id="updatecustomer_phone" required
+                           pattern="^\d{10}$" th:value="${customer.phone}" placeholder="9876543210" aria-label="phone"/>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">Address</label>
-                    <select class="form-select" name="addressId">
+                    <label for="updatecustomer_addressId" class="form-label fw-semibold">Address</label>
+                    <select class="form-select" name="addressId" id="updatecustomer_addressId" aria-label="addressId">
                         <option value="">-- Keep Existing / Select New --</option>
                         <option th:each="a : ${addresses}" th:value="${a.addressId}"
                                 th:text="${a.address + ', ' + a.city + ' - ' + a.zipCode}"></option>

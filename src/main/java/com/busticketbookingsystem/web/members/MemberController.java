@@ -20,6 +20,12 @@ import java.util.Map;
 @RequestMapping("/members")
 public class MemberController {
 
+    private static final String ATTR_MEMBER = "member";
+    private static final String ATTR_ERROR = "error";
+    private static final String PARAM_SERVICE = "serviceKey";
+    private static final String PARAM_OPERATION = "operation";
+    private static final String VIEW_OPERATION = "members/operation";
+
     private final MemberRegistry registry;
     private final OperationExecutor executor;
     private final RestTemplate restTemplate = new RestTemplate();
@@ -45,10 +51,10 @@ public class MemberController {
     @GetMapping("/{id}")
     public String memberDetail(@PathVariable Integer id, Model model, RedirectAttributes ra) {
         return registry.findById(id).map(m -> {
-            model.addAttribute("member", m);
+            model.addAttribute(ATTR_MEMBER, m);
             return "members/member-detail";
         }).orElseGet(() -> {
-            ra.addFlashAttribute("error", "Member not found with id " + id);
+            ra.addFlashAttribute(ATTR_ERROR, "Member not found with id " + id);
             return "redirect:/members";
         });
     }
@@ -64,13 +70,13 @@ public class MemberController {
         Member member = registry.findById(id).orElse(null);
         Operation op = registry.findOperation(id, service, operation).orElse(null);
         if (member == null || op == null) {
-            ra.addFlashAttribute("error", "Operation not found.");
+            ra.addFlashAttribute(ATTR_ERROR, "Operation not found.");
             return "redirect:/members/" + id;
         }
-        model.addAttribute("member", member);
-        model.addAttribute("serviceKey", service);
-        model.addAttribute("operation", op);
-        return "members/operation";
+        model.addAttribute(ATTR_MEMBER, member);
+        model.addAttribute(PARAM_SERVICE, service);
+        model.addAttribute(PARAM_OPERATION, op);
+        return VIEW_OPERATION;
     }
 
     // ---------- Execute operation ----------
@@ -86,55 +92,62 @@ public class MemberController {
         Member member = registry.findById(id).orElse(null);
         Operation op = registry.findOperation(id, service, operation).orElse(null);
         if (member == null || op == null) {
-            ra.addFlashAttribute("error", "Operation not found.");
+            ra.addFlashAttribute(ATTR_ERROR, "Operation not found.");
             return "redirect:/members/" + id;
         }
 
-        // PDF download requires a direct link (not a form submit), but handle defensively:
-        if ("PDF_DOWNLOAD".equals(op.getInputKind())) {
-            if (pathId == null || pathId.isBlank()) {
-                model.addAttribute("error", "ID is required to download the PDF.");
-                model.addAttribute("member", member);
-                model.addAttribute("serviceKey", service);
-                model.addAttribute("operation", op);
-                return "members/operation";
-            }
-            return "redirect:" + op.getEndpoint().replace("{id}", pathId.trim());
+        String kind = op.getInputKind();
+        if ("PDF_DOWNLOAD".equals(kind)) {
+            return handlePdfDownload(op, pathId, member, service, model);
+        }
+        if ("PDF_DOWNLOAD_QUERY".equals(kind)) {
+            return handlePdfDownloadQuery(op, allParams);
         }
 
-        // PDF download with query params (e.g. group ticket)
-        if ("PDF_DOWNLOAD_QUERY".equals(op.getInputKind())) {
-            Map<String, String> q = new HashMap<>(allParams);
-            q.remove("service");
-            q.remove("operation");
-            q.remove("pathId");
-            StringBuilder qs = new StringBuilder();
-            for (Map.Entry<String, String> e : q.entrySet()) {
-                String v = e.getValue();
-                if (v == null || v.isBlank()) continue;
-                if (qs.length() > 0) qs.append('&');
-                qs.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
-                  .append('=')
-                  .append(URLEncoder.encode(v, StandardCharsets.UTF_8));
-            }
-            return "redirect:" + op.getEndpoint() + (qs.length() > 0 ? "?" + qs : "");
-        }
-
-        // Strip out routing params from the form data so only DTO fields remain
-        Map<String, String> formData = new HashMap<>(allParams);
-        formData.remove("service");
-        formData.remove("operation");
-        formData.remove("pathId");
-
+        Map<String, String> formData = stripRoutingParams(allParams);
         OperationExecutor.ExecutionResult result = executor.execute(op, pathId, formData);
 
-        model.addAttribute("member", member);
-        model.addAttribute("serviceKey", service);
-        model.addAttribute("operation", op);
+        model.addAttribute(ATTR_MEMBER, member);
+        model.addAttribute(PARAM_SERVICE, service);
+        model.addAttribute(PARAM_OPERATION, op);
         model.addAttribute("submittedPathId", pathId);
         model.addAttribute("submittedForm", formData);
         model.addAttribute("result", result);
-        return "members/operation";
+        return VIEW_OPERATION;
+    }
+
+    private String handlePdfDownload(Operation op, String pathId, Member member,
+                                     String service, Model model) {
+        if (pathId == null || pathId.isBlank()) {
+            model.addAttribute(ATTR_ERROR, "ID is required to download the PDF.");
+            model.addAttribute(ATTR_MEMBER, member);
+            model.addAttribute(PARAM_SERVICE, service);
+            model.addAttribute(PARAM_OPERATION, op);
+            return VIEW_OPERATION;
+        }
+        return "redirect:" + op.getEndpoint().replace("{id}", pathId.trim());
+    }
+
+    private String handlePdfDownloadQuery(Operation op, Map<String, String> allParams) {
+        Map<String, String> q = stripRoutingParams(allParams);
+        StringBuilder qs = new StringBuilder();
+        for (Map.Entry<String, String> e : q.entrySet()) {
+            String v = e.getValue();
+            if (v == null || v.isBlank()) continue;
+            if (!qs.isEmpty()) qs.append('&');
+            qs.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
+              .append('=')
+              .append(URLEncoder.encode(v, StandardCharsets.UTF_8));
+        }
+        return "redirect:" + op.getEndpoint() + (!qs.isEmpty() ? "?" + qs : "");
+    }
+
+    private Map<String, String> stripRoutingParams(Map<String, String> allParams) {
+        Map<String, String> m = new HashMap<>(allParams);
+        m.remove("service");
+        m.remove(PARAM_OPERATION);
+        m.remove("pathId");
+        return m;
     }
 
     // ---------- Quick PDF download proxy (for the direct Download button) ----------

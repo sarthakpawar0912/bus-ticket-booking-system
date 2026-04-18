@@ -9,7 +9,6 @@ import com.busticketbookingsystem.agency.repository.BusRepository;
 import com.busticketbookingsystem.agency.repository.DriverRepository;
 import com.busticketbookingsystem.customer.entity.Address;
 import com.busticketbookingsystem.customer.repository.AddressRepository;
-import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

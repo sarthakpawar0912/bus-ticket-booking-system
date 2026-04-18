@@ -30,7 +30,12 @@ public class BookingService {
         Trip trip = tripRepository.findById(request.getTripId())
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + request.getTripId()));
 
+        if (trip.getFare() == null) {
+            throw new BadRequestException("Trip " + trip.getTripId() + " has no fare configured.");
+        }
+
         List<Integer> bookingIds = new ArrayList<>();
+        BigDecimal perSeatFare = trip.getFare();
         BigDecimal totalFare = BigDecimal.ZERO;
 
         for (Integer seatNumber : request.getSeatNumbers()) {
@@ -55,7 +60,7 @@ public class BookingService {
 
             Booking saved = bookingRepository.save(booking);
             bookingIds.add(saved.getBookingId());
-            totalFare = totalFare.add(trip.getFare());
+            totalFare = totalFare.add(perSeatFare);
 
             trip.setAvailableSeats(trip.getAvailableSeats() - 1);
         }
@@ -80,4 +85,45 @@ public class BookingService {
         return bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
     }
+
+    /**
+     * Rebuild the confirmation page context from the database when the original
+     * POST flash attributes are gone (e.g. user opens the confirmation URL
+     * directly). The schema does not link bookings to customers, so only the
+     * single requested booking is represented here.
+     */
+    @Transactional(readOnly = true)
+    public ConfirmationContext buildConfirmationContext(Integer bookingId) {
+        Booking b = bookingRepository.findByIdWithTripDetails(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        BigDecimal totalFare = b.getTrip() != null ? b.getTrip().getFare() : null;
+        String fromCity = (b.getTrip() != null && b.getTrip().getRoute() != null)
+                ? b.getTrip().getRoute().getFromCity() : null;
+        String toCity = (b.getTrip() != null && b.getTrip().getRoute() != null)
+                ? b.getTrip().getRoute().getToCity() : null;
+        String tripDate = (b.getTrip() != null && b.getTrip().getTripDate() != null)
+                ? b.getTrip().getTripDate().toLocalDate().toString() : null;
+
+        return new ConfirmationContext(
+                List.of(b.getBookingId()),
+                List.of(b.getSeatNumber()),
+                totalFare,
+                null,
+                null,
+                fromCity,
+                toCity,
+                tripDate);
+    }
+
+    public record ConfirmationContext(
+            List<Integer> bookingIds,
+            List<Integer> seatNumbers,
+            BigDecimal totalFare,
+            Integer customerId,
+            String customerName,
+            String fromCity,
+            String toCity,
+            String tripDate
+    ) {}
 }

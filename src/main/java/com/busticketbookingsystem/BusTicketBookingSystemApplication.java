@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling; // <-- Import this
 
 @SpringBootApplication
-@EnableScheduling
+@EnableScheduling // <-- Add this annotation here!
 public class BusTicketBookingSystemApplication {
 
 	public static void main(String[] args) {

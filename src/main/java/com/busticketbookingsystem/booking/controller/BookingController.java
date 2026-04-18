@@ -201,21 +201,19 @@ public class BookingController {
     @GetMapping("/view/bookings/confirmation/{bookingId}")
     public String showConfirmation(@PathVariable Integer bookingId, Model model) {
         if (!model.containsAttribute(ATTR_BOOKING)) {
-            Booking b = bookingService.getBookingById(bookingId);
+            BookingService.ConfirmationContext ctx = bookingService.buildConfirmationContext(bookingId);
             BookingResponseDTO dto = BookingResponseDTO.builder()
-                    .bookingIds(List.of(bookingId))
-                    .message("Booking #" + bookingId + " confirmed")
-                    .totalFare(b.getTrip() != null ? b.getTrip().getFare() : null)
+                    .bookingIds(ctx.bookingIds())
+                    .message("Booking confirmed for " + ctx.bookingIds().size() + " seat(s)")
+                    .totalFare(ctx.totalFare())
+                    .customerId(ctx.customerId())
                     .build();
             model.addAttribute(ATTR_BOOKING, dto);
-            model.addAttribute("seatNumbers", List.of(b.getSeatNumber()));
-            if (b.getTrip() != null && b.getTrip().getRoute() != null) {
-                model.addAttribute("fromCity", b.getTrip().getRoute().getFromCity());
-                model.addAttribute("toCity", b.getTrip().getRoute().getToCity());
-            }
-            if (b.getTrip() != null && b.getTrip().getTripDate() != null) {
-                model.addAttribute("tripDate", b.getTrip().getTripDate().toLocalDate().toString());
-            }
+            model.addAttribute("seatNumbers", ctx.seatNumbers());
+            if (ctx.customerName() != null) model.addAttribute("customerName", ctx.customerName());
+            if (ctx.fromCity() != null) model.addAttribute("fromCity", ctx.fromCity());
+            if (ctx.toCity() != null) model.addAttribute("toCity", ctx.toCity());
+            if (ctx.tripDate() != null) model.addAttribute("tripDate", ctx.tripDate());
         }
         return "booking/confirmation";
     }

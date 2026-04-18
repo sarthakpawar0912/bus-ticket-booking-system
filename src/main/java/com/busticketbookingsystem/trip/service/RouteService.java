@@ -1,6 +1,5 @@
 package com.busticketbookingsystem.trip.service;
 
-import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.trip.entity.Route;
 import com.busticketbookingsystem.trip.repository.RouteRepository;

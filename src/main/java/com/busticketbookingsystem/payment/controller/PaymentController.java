@@ -205,10 +205,9 @@ public class PaymentController {
     }
 
     /**
-     * Creates ONE Payment row per transaction, regardless of how many seats
-     * were booked. Amount = total for all seats; booking_id = first booking
-     * (representative). Payment IDs therefore increment by exactly 1 between
-     * transactions, not by N.
+     * Creates ONE Payment row per Booking, sharing a single paymentDate so the
+     * group is re-detectable. Total charged = sum of per-seat fares; mismatches
+     * are rejected. After success every booking is marked PAID.
      */
     @PostMapping("/view/payments/process")
     public String processPaymentView(@RequestParam String bookingIds,
@@ -216,17 +215,25 @@ public class PaymentController {
                                      @RequestParam BigDecimal amount,
                                      RedirectAttributes ra) {
         try {
-            String[] ids = bookingIds.split(",");
-            Integer firstBookingId = Integer.parseInt(ids[0].trim());
+            String[] idStrs = bookingIds.split(",");
+            List<Integer> bookingIdList = new java.util.ArrayList<>();
+            for (String s : idStrs) bookingIdList.add(Integer.parseInt(s.trim()));
 
-            PaymentRequestDTO request = new PaymentRequestDTO(firstBookingId, customerId, amount);
-            PaymentResponseDTO response = paymentService.processPayment(request);
+            List<PaymentResponseDTO> responses =
+                    paymentService.processPaymentsForBookings(bookingIdList, customerId, amount);
 
-            ra.addFlashAttribute(ATTR_ALL_PAYMENT_IDS, List.of(response.getPaymentId()));
+            List<Integer> paymentIds = responses.stream()
+                    .map(PaymentResponseDTO::getPaymentId)
+                    .toList();
+            Integer firstPaymentId = paymentIds.get(0);
+            BigDecimal perSeatFare = responses.get(0).getAmount();
+
+            ra.addFlashAttribute(ATTR_ALL_PAYMENT_IDS, paymentIds);
             ra.addFlashAttribute("totalAmount", amount);
-            ra.addFlashAttribute(ATTR_SEAT_COUNT, ids.length);
+            ra.addFlashAttribute("perSeatFare", perSeatFare);
+            ra.addFlashAttribute(ATTR_SEAT_COUNT, bookingIdList.size());
             ra.addFlashAttribute("allBookingIds", bookingIds);
-            return "redirect:/view/payments/success/" + response.getPaymentId();
+            return "redirect:/view/payments/success/" + firstPaymentId;
         } catch (Exception ex) {
             ra.addFlashAttribute("error", ex.getMessage());
             return "redirect:/view/payments/pay-all?bookingIds=" + bookingIds;
@@ -245,11 +252,25 @@ public class PaymentController {
         PaymentResponseDTO payment = paymentService.getPaymentById(paymentId);
         model.addAttribute("payment", payment);
 
-        // If allPaymentIds was passed via flash, use it; otherwise single payment
+        // If flash is empty (direct URL access), reconstruct the group from
+        // sibling payments (same customer + same paymentDate).
         if (!model.containsAttribute(ATTR_ALL_PAYMENT_IDS)) {
-            model.addAttribute(ATTR_ALL_PAYMENT_IDS, List.of(paymentId));
-            model.addAttribute("totalAmount", payment.getAmount());
-            model.addAttribute(ATTR_SEAT_COUNT, 1);
+            List<PaymentResponseDTO> siblings = paymentService.getAllPayments().stream()
+                    .filter(p -> java.util.Objects.equals(p.getCustomerId(), payment.getCustomerId())
+                            && p.getPaymentDate() != null && payment.getPaymentDate() != null
+                            && p.getPaymentDate().withNano(0).equals(payment.getPaymentDate().withNano(0))
+                            && p.getPaymentStatus() == payment.getPaymentStatus())
+                    .toList();
+            List<Integer> paymentIds = siblings.stream().map(PaymentResponseDTO::getPaymentId).toList();
+            BigDecimal total = siblings.stream()
+                    .map(PaymentResponseDTO::getAmount)
+                    .filter(java.util.Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            model.addAttribute(ATTR_ALL_PAYMENT_IDS, paymentIds.isEmpty() ? List.of(paymentId) : paymentIds);
+            model.addAttribute("totalAmount", total.signum() > 0 ? total : payment.getAmount());
+            model.addAttribute("perSeatFare", payment.getAmount());
+            model.addAttribute(ATTR_SEAT_COUNT, Math.max(1, siblings.size()));
         }
         return "payment/success";
     }
