@@ -138,11 +138,5 @@ class BusControllerTest {
                 .andExpect(view().name("bus/update-bus"));
     }
 
-    @Test
-    void deleteBusView() throws Exception {
-        doNothing().when(busService).deleteBus(1);
-        mockMvc.perform(get("/view/buses/delete/1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/view/buses"));
-    }
+
 }

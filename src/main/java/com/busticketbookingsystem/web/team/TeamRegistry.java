@@ -37,7 +37,7 @@ public class TeamRegistry {
         return TeamMember.builder()
                 .slug("sarthak-pawar").name("Sarthak Pawar")
                 .role("Customer Module Developer")
-                .photo("https://api.dicebear.com/7.x/initials/svg?seed=Sarthak+Pawar&backgroundColor=0d6efd")
+                .photo("/images/Sarthak.png")
                 .initials("SP").color("#0d6efd")
                 .modules(List.of("Customers", "Addresses"))
                 .responsibilities(List.of(
@@ -73,7 +73,7 @@ public class TeamRegistry {
         return TeamMember.builder()
                 .slug("atharv-kadam").name("Atharv Kadam")
                 .role("Agency Module Developer")
-                .photo("https://api.dicebear.com/7.x/initials/svg?seed=Atharv+Kadam&backgroundColor=198754")
+                .photo("/images/Atharv.png")
                 .initials("AK").color("#198754")
                 .modules(List.of("Agencies", "Offices", "Buses", "Drivers"))
                 .responsibilities(List.of(
@@ -125,7 +125,7 @@ public class TeamRegistry {
         return TeamMember.builder()
                 .slug("atharva-pawar").name("Atharva Pawar")
                 .role("Trip Module Developer")
-                .photo("https://api.dicebear.com/7.x/initials/svg?seed=Atharva+Pawar&backgroundColor=fd7e14")
+                .photo("/images/Atharva.jpeg")
                 .initials("AP").color("#fd7e14")
                 .modules(List.of("Routes", "Trips", "Search Routes", "Search Trips"))
                 .responsibilities(List.of(
@@ -162,7 +162,7 @@ public class TeamRegistry {
         return TeamMember.builder()
                 .slug("anushka-bankar").name("Anushka Bankar")
                 .role("Payment Module Developer")
-                .photo("https://api.dicebear.com/7.x/initials/svg?seed=Anushka+Bankar&backgroundColor=6f42c1")
+                .photo("/images/Anushka.png")
                 .initials("AB").color("#6f42c1")
                 .modules(List.of("Payments", "Ticket Download"))
                 .responsibilities(List.of(
@@ -190,7 +190,7 @@ public class TeamRegistry {
         return TeamMember.builder()
                 .slug("kedar-mahadik").name("Kedar Mahadik")
                 .role("Booking Developer")
-                .photo("https://api.dicebear.com/7.x/initials/svg?seed=Kedar+Mahadik&backgroundColor=dc3545")
+                .photo("/images/Kedar.jpg")
                 .initials("KM").color("#dc3545")
                 .modules(List.of("Bookings", "Ticket Download", "Group Booking Ticket", "Reviews"))
                 .responsibilities(List.of(

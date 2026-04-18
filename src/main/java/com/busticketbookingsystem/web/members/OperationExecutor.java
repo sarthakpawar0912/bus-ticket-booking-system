@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -45,6 +47,14 @@ public class OperationExecutor {
         String url = baseUrl() + endpoint;
         HttpMethod httpMethod = HttpMethod.valueOf(operation.getMethod().toUpperCase());
 
+        // For QUERY operations, append form fields as query string
+        if ("QUERY".equals(operation.getInputKind())) {
+            String qs = buildQueryString(formData);
+            if (!qs.isEmpty()) {
+                url = url + (url.contains("?") ? "&" : "?") + qs;
+            }
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON, MediaType.ALL));
@@ -81,6 +91,20 @@ public class OperationExecutor {
 
     private boolean needsBody(String kind) {
         return "BODY".equals(kind) || "ID_AND_BODY".equals(kind);
+    }
+
+    private String buildQueryString(Map<String, String> params) {
+        if (params == null || params.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> e : params.entrySet()) {
+            String v = e.getValue();
+            if (v == null || v.isBlank()) continue;
+            if (sb.length() > 0) sb.append('&');
+            sb.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
+              .append('=')
+              .append(URLEncoder.encode(v, StandardCharsets.UTF_8));
+        }
+        return sb.toString();
     }
 
     private Map<String, Object> buildBody(List<FieldDef> fields, Map<String, String> formData) {

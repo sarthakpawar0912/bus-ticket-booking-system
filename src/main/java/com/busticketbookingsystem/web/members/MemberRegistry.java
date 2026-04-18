@@ -2,14 +2,14 @@ package com.busticketbookingsystem.web.members;
 
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * In-memory registry describing the 5 team members, their owned services,
- * and every operation each service exposes. Operations carry enough metadata
- * (DTO field definitions) for the UI to render dynamic forms that map 1:1
- * to the existing backend REST endpoints.
+ * Member -> Service -> Operation allocation. Mirrors the team page
+ * (see {@link com.busticketbookingsystem.web.team.TeamRegistry}) so the
+ * two views stay in sync.
  */
 @Component
 public class MemberRegistry {
@@ -86,6 +86,10 @@ public class MemberRegistry {
             f("breakPoints", "Break Points", "number", "1", false, "integer"),
             f("duration", "Duration (minutes)", "number", "180", false, "integer"));
 
+    private static final List<FieldDef> ROUTE_SEARCH_FIELDS = List.of(
+            f("from", "From City", "text", "Mumbai", true, "string"),
+            f("to", "To City", "text", "Pune", true, "string"));
+
     private static final List<FieldDef> TRIP_FIELDS = List.of(
             f("routeId", "Route ID", "number", "1", true, "integer"),
             f("busId", "Bus ID", "number", "1", true, "integer"),
@@ -98,6 +102,8 @@ public class MemberRegistry {
             f("availableSeats", "Available Seats", "number", "40", true, "integer"),
             f("fare", "Fare (Rs.)", "number", "500", true, "number"),
             f("tripDate", "Trip Date", "datetime-local", "", true, "string"));
+
+    private static final List<FieldDef> TRIP_SEARCH_FIELDS = ROUTE_SEARCH_FIELDS;
 
     private static final List<FieldDef> PAYMENT_FIELDS = List.of(
             f("bookingId", "Booking ID", "number", "1", true, "integer"),
@@ -115,7 +121,10 @@ public class MemberRegistry {
             f("seatNumbers", "Seat Numbers (comma-separated)", "text", "1,2,3", true, "integer-list"),
             f("customerId", "Customer ID", "number", "10", true, "integer"));
 
-    // ---------- CRUD builders ----------
+    private static final List<FieldDef> GROUP_TICKET_FIELDS = List.of(
+            f("bookingIds", "Booking IDs (comma-separated)", "text", "1,2,3", true, "string"));
+
+    // ---------- CRUD builders (matches team page: Get All, Create, Update) ----------
 
     private static Operation op(String name, String method, String endpoint, String inputKind, String desc, List<FieldDef> fields) {
         return Operation.builder().name(name).method(method).endpoint(endpoint)
@@ -125,7 +134,6 @@ public class MemberRegistry {
     private static List<Operation> crudOps(String base, List<FieldDef> fields) {
         return List.of(
                 op("Get All", "GET", base, "NONE", "Fetch all records", List.of()),
-                op("Get By ID", "GET", base + "/{id}", "ID", "Fetch one record by ID", List.of()),
                 op("Create", "POST", base, "BODY", "Create a new record", fields),
                 op("Update", "PUT", base + "/{id}", "ID_AND_BODY", "Update an existing record", fields)
         );
@@ -170,60 +178,78 @@ public class MemberRegistry {
     }
 
     private static ServiceInfo routeService() {
+        List<Operation> ops = new ArrayList<>(crudOps("/api/routes", ROUTE_FIELDS));
+        ops.add(op("Search", "GET", "/api/routes/search", "QUERY",
+                "Search routes by from/to city", ROUTE_SEARCH_FIELDS));
         return ServiceInfo.builder().key("routes").name("Routes").icon("bi-signpost-split")
                 .description("Manage from-city -> to-city routes")
-                .operations(crudOps("/api/routes", ROUTE_FIELDS)).build();
+                .operations(ops).build();
     }
 
     private static ServiceInfo tripService() {
+        List<Operation> ops = new ArrayList<>(crudOps("/api/trips", TRIP_FIELDS));
+        ops.add(op("Search", "GET", "/api/trips/search", "QUERY",
+                "Search trips by from/to city", TRIP_SEARCH_FIELDS));
         return ServiceInfo.builder().key("trips").name("Trips").icon("bi-calendar-event")
                 .description("Manage scheduled trips with buses, drivers, fare")
-                .operations(crudOps("/api/trips", TRIP_FIELDS)).build();
+                .operations(ops).build();
     }
 
+    // ---- Member 4: Anushka Bankar — Payment Module ----
+
     private static ServiceInfo paymentService() {
-        List<Operation> ops = new java.util.ArrayList<>(List.of(
+        List<Operation> ops = List.of(
                 op("Get All", "GET", "/api/payments", "NONE", "Fetch all payments", List.of()),
-                op("Get By ID", "GET", "/api/payments/{id}", "ID", "Fetch payment by ID", List.of()),
                 op("Create", "POST", "/api/payments", "BODY", "Process a new payment", PAYMENT_FIELDS)
-        ));
+        );
         return ServiceInfo.builder().key("payments").name("Payments").icon("bi-credit-card")
                 .description("Process payments and lookups")
                 .operations(ops).build();
     }
 
-    private static ServiceInfo reviewService() {
-        List<Operation> ops = new java.util.ArrayList<>(List.of(
-                op("Get All", "GET", "/api/reviews", "NONE", "Fetch all reviews", List.of()),
-                op("Get By Trip", "GET", "/api/reviews/trip/{id}", "ID", "Reviews for a trip", List.of()),
-                op("Get By Customer", "GET", "/api/reviews/customer/{id}", "ID", "Reviews by a customer", List.of()),
-                op("Create", "POST", "/api/reviews", "BODY", "Post a new review", REVIEW_FIELDS)
-        ));
-        return ServiceInfo.builder().key("reviews").name("Reviews").icon("bi-star-fill")
-                .description("Customer feedback and ratings for trips")
+    private static ServiceInfo paymentTicketService() {
+        List<Operation> ops = List.of(
+                op("Download Payment Ticket", "GET", "/api/payments/{id}/ticket", "PDF_DOWNLOAD",
+                        "Download a payment ticket PDF (auto-generates group ticket when the payment is part of a multi-seat transaction)",
+                        List.of())
+        );
+        return ServiceInfo.builder().key("pdf-payment").name("Ticket Download").icon("bi-file-earmark-pdf-fill")
+                .description("Download payment ticket PDFs")
                 .operations(ops).build();
     }
 
+    // ---- Member 5: Kedar Mahadik — Booking + Reviews ----
+
     private static ServiceInfo bookingService() {
-        List<Operation> ops = new java.util.ArrayList<>(List.of(
-                op("Get By Trip", "GET", "/api/bookings/trip/{id}", "ID", "All bookings for a trip", List.of()),
-                op("Get By ID", "GET", "/api/bookings/{id}", "ID", "Fetch one booking by ID", List.of()),
+        List<Operation> ops = List.of(
+                op("Get By Trip", "GET", "/api/bookings/trip/{id}", "ID",
+                        "List seats/bookings for a trip", List.of()),
                 op("Create", "POST", "/api/bookings", "BODY", "Book one or more seats", BOOKING_FIELDS)
-        ));
+        );
         return ServiceInfo.builder().key("bookings").name("Bookings").icon("bi-ticket-perforated")
                 .description("Reserve seats and view booking status")
                 .operations(ops).build();
     }
 
-    private static ServiceInfo pdfService() {
+    private static ServiceInfo bookingTicketService() {
         List<Operation> ops = List.of(
                 op("Download Booking Ticket", "GET", "/api/bookings/{id}/ticket", "PDF_DOWNLOAD",
                         "Generate a boarding-pass PDF for a booking", List.of()),
-                op("Download Payment Ticket", "GET", "/api/payments/{id}/ticket", "PDF_DOWNLOAD",
-                        "Generate a boarding-pass PDF for a payment", List.of())
+                op("Download Group Ticket", "GET", "/api/bookings/group-ticket", "PDF_DOWNLOAD_QUERY",
+                        "Download group booking ticket PDF (multiple bookings)", GROUP_TICKET_FIELDS)
         );
-        return ServiceInfo.builder().key("pdf").name("PDF Service").icon("bi-file-earmark-pdf-fill")
-                .description("Generate downloadable boarding-pass PDFs")
+        return ServiceInfo.builder().key("pdf-booking").name("Ticket Download").icon("bi-file-earmark-pdf-fill")
+                .description("Generate downloadable booking PDFs (single + group)")
+                .operations(ops).build();
+    }
+
+    private static ServiceInfo reviewService() {
+        List<Operation> ops = List.of(
+                op("Get All", "GET", "/api/reviews", "NONE", "Fetch all reviews", List.of()),
+                op("Create", "POST", "/api/reviews", "BODY", "Post a new review", REVIEW_FIELDS)
+        );
+        return ServiceInfo.builder().key("reviews").name("Reviews").icon("bi-star-fill")
+                .description("Customer feedback and ratings for trips")
                 .operations(ops).build();
     }
 
@@ -231,35 +257,35 @@ public class MemberRegistry {
 
     private List<Member> buildMembers() {
         return List.of(
-                Member.builder().id(1).name("Member 1").role("Customer & Address Module")
-                        .initials("M1").color("#0d6efd")
-                        .image("https://api.dicebear.com/7.x/initials/svg?seed=M1&backgroundColor=0d6efd")
+                Member.builder().id(1).name("Sarthak Pawar").role("Customer & Address Module")
+                        .initials("SP").color("#0d6efd")
+                        .image("/images/Sarthak.png")
                         .summary("Customers, Addresses")
                         .services(List.of(customerService(), addressService())).build(),
 
-                Member.builder().id(2).name("Member 2").role("Agency, Bus & Driver Module")
-                        .initials("M2").color("#198754")
-                        .image("https://api.dicebear.com/7.x/initials/svg?seed=M2&backgroundColor=198754")
+                Member.builder().id(2).name("Atharv Kadam").role("Agency, Bus & Driver Module")
+                        .initials("AK").color("#198754")
+                        .image("/images/Atharv.png")
                         .summary("Agencies, Offices, Buses, Drivers")
                         .services(List.of(agencyService(), officeService(), busService(), driverService())).build(),
 
-                Member.builder().id(3).name("Member 3").role("Route & Trip Module")
-                        .initials("M3").color("#fd7e14")
-                        .image("https://api.dicebear.com/7.x/initials/svg?seed=M3&backgroundColor=fd7e14")
-                        .summary("Routes, Trips")
+                Member.builder().id(3).name("Atharva Pawar").role("Route & Trip Module")
+                        .initials("AP").color("#fd7e14")
+                        .image("/images/Atharva.jpeg")
+                        .summary("Routes, Trips, Search")
                         .services(List.of(routeService(), tripService())).build(),
 
-                Member.builder().id(4).name("Member 4").role("Payment & Review Module")
-                        .initials("M4").color("#6f42c1")
-                        .image("https://api.dicebear.com/7.x/initials/svg?seed=M4&backgroundColor=6f42c1")
-                        .summary("Payments, Reviews")
-                        .services(List.of(paymentService(), reviewService())).build(),
+                Member.builder().id(4).name("Anushka Bankar").role("Payment Module")
+                        .initials("AB").color("#6f42c1")
+                        .image("/images/Anushka.png")
+                        .summary("Payments, Ticket Download")
+                        .services(List.of(paymentService(), paymentTicketService())).build(),
 
-                Member.builder().id(5).name("Member 5").role("Booking & PDF Module")
-                        .initials("M5").color("#dc3545")
-                        .image("https://api.dicebear.com/7.x/initials/svg?seed=M5&backgroundColor=dc3545")
-                        .summary("Bookings, PDF Service")
-                        .services(List.of(bookingService(), pdfService())).build()
+                Member.builder().id(5).name("Kedar Mahadik").role("Booking & Reviews Module")
+                        .initials("KM").color("#dc3545")
+                        .image("/images/Kedar.jpg")
+                        .summary("Bookings, Ticket Download, Group Ticket, Reviews")
+                        .services(List.of(bookingService(), bookingTicketService(), reviewService())).build()
         );
     }
 }

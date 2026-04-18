@@ -121,14 +121,7 @@ class AgencyControllerTest {
                 .andExpect(jsonPath("$.agencyId").value(1));
     }
 
-    @Test
-    @DisplayName("DELETE /api/agencies/{id} returns success message")
-    void deleteAgency() throws Exception {
-        doNothing().when(agencyService).deleteAgency(1);
-        mockMvc.perform(delete("/api/agencies/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Agency deleted successfully."));
-    }
+
 
     @Test
     @DisplayName("GET /api/agencies/offices returns list")

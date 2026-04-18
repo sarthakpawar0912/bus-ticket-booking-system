@@ -11,6 +11,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,6 +100,24 @@ public class MemberController {
                 return "members/operation";
             }
             return "redirect:" + op.getEndpoint().replace("{id}", pathId.trim());
+        }
+
+        // PDF download with query params (e.g. group ticket)
+        if ("PDF_DOWNLOAD_QUERY".equals(op.getInputKind())) {
+            Map<String, String> q = new HashMap<>(allParams);
+            q.remove("service");
+            q.remove("operation");
+            q.remove("pathId");
+            StringBuilder qs = new StringBuilder();
+            for (Map.Entry<String, String> e : q.entrySet()) {
+                String v = e.getValue();
+                if (v == null || v.isBlank()) continue;
+                if (qs.length() > 0) qs.append('&');
+                qs.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8))
+                  .append('=')
+                  .append(URLEncoder.encode(v, StandardCharsets.UTF_8));
+            }
+            return "redirect:" + op.getEndpoint() + (qs.length() > 0 ? "?" + qs : "");
         }
 
         // Strip out routing params from the form data so only DTO fields remain
