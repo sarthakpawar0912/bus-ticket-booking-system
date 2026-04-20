@@ -7,6 +7,7 @@ import com.busticketbookingsystem.customer.service.CustomerService;
 import com.busticketbookingsystem.payment.dto.PaymentRequestDTO;
 import com.busticketbookingsystem.payment.dto.PaymentResponseDTO;
 import com.busticketbookingsystem.payment.service.PaymentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,7 +46,7 @@ public class PaymentController {
 
     @PostMapping("/api/payments")
     @ResponseBody
-    public ResponseEntity<PaymentResponseDTO> processPayment(@RequestBody PaymentRequestDTO request) {
+    public ResponseEntity<PaymentResponseDTO> processPayment(@Valid @RequestBody PaymentRequestDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.processPayment(request));
     }
 

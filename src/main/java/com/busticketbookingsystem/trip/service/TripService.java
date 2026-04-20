@@ -59,6 +59,11 @@ public class TripService {
     public List<Trip> getAllTrips() { return tripRepository.findAllWithDetails(); }
 
     @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Trip> getTripsPage(org.springframework.data.domain.Pageable pageable) {
+        return tripRepository.findAllPaged(pageable);
+    }
+
+    @Transactional(readOnly = true)
     public Trip getById(Integer id) {
         return tripRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(TRIP_NOT_FOUND + id));

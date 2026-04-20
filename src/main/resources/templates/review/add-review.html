@@ -7,6 +7,18 @@
 <div class="container my-4">
     <div class="form-container">
         <h2><i class="bi bi-star-fill me-2 text-warning"></i>Add Review</h2>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-info small" role="alert">
+            <i class="bi bi-info-circle me-1"></i>
+            You can only review a trip you have a confirmed paid booking for.
+        </div>
+
         <form th:action="@{/view/reviews/save}" method="post" th:object="${review}">
             <div class="mb-3">
                 <label for="customerId" class="form-label">Customer</label>

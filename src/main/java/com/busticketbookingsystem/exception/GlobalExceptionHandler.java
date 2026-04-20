@@ -1,5 +1,9 @@
 package com.busticketbookingsystem.exception;
 
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PessimisticLockException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -47,8 +52,33 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex, WebRequest request) {
+        log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(), HttpStatus.CONFLICT.value(),
+                "Data Conflict",
+                "Operation conflicts with existing data (duplicate, foreign key, or constraint violation).",
+                request.getDescription(false));
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler({OptimisticLockException.class, PessimisticLockException.class,
+            org.springframework.dao.OptimisticLockingFailureException.class,
+            org.springframework.dao.PessimisticLockingFailureException.class})
+    public ResponseEntity<ErrorResponse> handleLockConflict(Exception ex, WebRequest request) {
+        log.warn("Lock conflict — concurrent modification: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(), HttpStatus.CONFLICT.value(),
+                "Concurrent Modification",
+                "The resource was modified by another request. Please retry.",
+                request.getDescription(false));
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobal(Exception ex, WebRequest request) {
+        log.error("Unhandled exception on {}", request.getDescription(false), ex);
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error", ex.getMessage(), request.getDescription(false));

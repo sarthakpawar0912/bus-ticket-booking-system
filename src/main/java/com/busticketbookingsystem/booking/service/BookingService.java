@@ -10,14 +10,19 @@ import com.busticketbookingsystem.exception.ResourceNotFoundException;
 import com.busticketbookingsystem.trip.entity.Trip;
 import com.busticketbookingsystem.trip.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -27,18 +32,40 @@ public class BookingService {
 
     @Transactional
     public BookingResponseDTO initiateBooking(BookingRequestDTO request) {
-        Trip trip = tripRepository.findById(request.getTripId())
+        List<Integer> seatNumbers = request.getSeatNumbers();
+
+        Set<Integer> uniqueSeats = new HashSet<>(seatNumbers);
+        if (uniqueSeats.size() != seatNumbers.size()) {
+            throw new BadRequestException("Duplicate seat numbers in request.");
+        }
+        for (Integer seat : seatNumbers) {
+            if (seat == null || seat <= 0) {
+                throw new BadRequestException("Seat number must be a positive integer.");
+            }
+        }
+
+        Trip trip = tripRepository.findByIdForUpdate(request.getTripId())
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + request.getTripId()));
+
+        if (trip.getTripDate() != null && trip.getTripDate().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Cannot book a trip that has already departed.");
+        }
 
         if (trip.getFare() == null) {
             throw new BadRequestException("Trip " + trip.getTripId() + " has no fare configured.");
+        }
+
+        Integer available = trip.getAvailableSeats();
+        if (available == null || available < seatNumbers.size()) {
+            throw new BadRequestException("Only " + (available == null ? 0 : available)
+                    + " seat(s) available; cannot book " + seatNumbers.size() + ".");
         }
 
         List<Integer> bookingIds = new ArrayList<>();
         BigDecimal perSeatFare = trip.getFare();
         BigDecimal totalFare = BigDecimal.ZERO;
 
-        for (Integer seatNumber : request.getSeatNumbers()) {
+        for (Integer seatNumber : seatNumbers) {
             Optional<Booking> existingBooking = bookingRepository.findByTrip_TripIdAndSeatNumber(
                     request.getTripId(), seatNumber);
 
@@ -66,6 +93,8 @@ public class BookingService {
         }
 
         tripRepository.save(trip);
+        log.info("Booked {} seat(s) on trip {} for customer {} — booking ids {}",
+                seatNumbers.size(), trip.getTripId(), request.getCustomerId(), bookingIds);
 
         return BookingResponseDTO.builder()
                 .message("Booking successful for " + request.getSeatNumbers().size() + " seat(s)")

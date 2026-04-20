@@ -78,7 +78,7 @@ class BookingServiceTest {
         @Test
         @DisplayName("POSITIVE: books a single new seat and decrements availableSeats")
         void singleNewSeat() {
-            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
             when(bookingRepository.findByTrip_TripIdAndSeatNumber(1, 5)).thenReturn(Optional.empty());
             when(bookingRepository.save(any(Booking.class))).thenReturn(booking);
 
@@ -102,7 +102,7 @@ class BookingServiceTest {
             BookingRequestDTO multi = BookingRequestDTO.builder()
                     .tripId(1).seatNumbers(List.of(1, 2, 3)).customerId(10).build();
 
-            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
             when(bookingRepository.findByTrip_TripIdAndSeatNumber(eq(1), anyInt()))
                     .thenReturn(Optional.empty());
             when(bookingRepository.save(any(Booking.class)))
@@ -127,7 +127,7 @@ class BookingServiceTest {
                     .bookingId(100).trip(trip).seatNumber(5)
                     .status(BookingStatus.Available).build();
 
-            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
             when(bookingRepository.findByTrip_TripIdAndSeatNumber(1, 5))
                     .thenReturn(Optional.of(existing));
             when(bookingRepository.save(existing)).thenReturn(existing);
@@ -141,7 +141,7 @@ class BookingServiceTest {
         @Test
         @DisplayName("NEGATIVE: throws ResourceNotFoundException when trip does not exist")
         void tripNotFound() {
-            when(tripRepository.findById(1)).thenReturn(Optional.empty());
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.empty());
 
             ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class,
                     () -> bookingService.initiateBooking(bookingRequest));
@@ -152,7 +152,7 @@ class BookingServiceTest {
         @DisplayName("NEGATIVE: throws BadRequestException when trip.fare is null")
         void tripFareNull() {
             trip.setFare(null);
-            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
 
             BadRequestException ex = assertThrows(BadRequestException.class,
                     () -> bookingService.initiateBooking(bookingRequest));
@@ -167,7 +167,7 @@ class BookingServiceTest {
                     .bookingId(100).trip(trip).seatNumber(5)
                     .status(BookingStatus.Booked).build();
 
-            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
             when(bookingRepository.findByTrip_TripIdAndSeatNumber(1, 5))
                     .thenReturn(Optional.of(existing));
 
@@ -175,6 +175,65 @@ class BookingServiceTest {
                     () -> bookingService.initiateBooking(bookingRequest));
             assertEquals("Seat 5 is already booked for this trip.", ex.getMessage());
             verify(bookingRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("NEGATIVE: rejects duplicate seat numbers in the request")
+        void duplicateSeats() {
+            BookingRequestDTO dup = BookingRequestDTO.builder()
+                    .tripId(1).seatNumbers(List.of(5, 5)).customerId(10).build();
+
+            BadRequestException ex = assertThrows(BadRequestException.class,
+                    () -> bookingService.initiateBooking(dup));
+            assertTrue(ex.getMessage().contains("Duplicate seat"));
+            verify(tripRepository, never()).findByIdForUpdate(anyInt());
+        }
+
+        @Test
+        @DisplayName("NEGATIVE: rejects zero / negative seat numbers")
+        void nonPositiveSeat() {
+            BookingRequestDTO bad = BookingRequestDTO.builder()
+                    .tripId(1).seatNumbers(List.of(0)).customerId(10).build();
+
+            assertThrows(BadRequestException.class,
+                    () -> bookingService.initiateBooking(bad));
+        }
+
+        @Test
+        @DisplayName("NEGATIVE: rejects booking for a trip that has already departed")
+        void pastTrip() {
+            trip.setTripDate(LocalDateTime.now().minusDays(1));
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
+
+            BadRequestException ex = assertThrows(BadRequestException.class,
+                    () -> bookingService.initiateBooking(bookingRequest));
+            assertTrue(ex.getMessage().contains("already departed"));
+            verify(bookingRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("NEGATIVE: rejects when requested seats exceed availableSeats")
+        void insufficientSeats() {
+            trip.setAvailableSeats(1);
+            BookingRequestDTO multi = BookingRequestDTO.builder()
+                    .tripId(1).seatNumbers(List.of(1, 2, 3)).customerId(10).build();
+
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
+
+            BadRequestException ex = assertThrows(BadRequestException.class,
+                    () -> bookingService.initiateBooking(multi));
+            assertTrue(ex.getMessage().contains("seat(s) available"));
+            verify(bookingRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("NEGATIVE: rejects when availableSeats is null")
+        void availableSeatsNull() {
+            trip.setAvailableSeats(null);
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
+
+            assertThrows(BadRequestException.class,
+                    () -> bookingService.initiateBooking(bookingRequest));
         }
 
         @Test
@@ -187,7 +246,7 @@ class BookingServiceTest {
                     .bookingId(999).trip(trip).seatNumber(2)
                     .status(BookingStatus.Booked).build();
 
-            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(tripRepository.findByIdForUpdate(1)).thenReturn(Optional.of(trip));
             when(bookingRepository.findByTrip_TripIdAndSeatNumber(1, 1)).thenReturn(Optional.empty());
             when(bookingRepository.findByTrip_TripIdAndSeatNumber(1, 2)).thenReturn(Optional.of(seat2Taken));
             when(bookingRepository.save(any(Booking.class)))

@@ -77,7 +77,11 @@ public class ReviewController {
 
     @GetMapping("/view/reviews/add")
     public String showAddReviewForm(Model model) {
-        model.addAttribute("review", new ReviewDTO());
+        // Preserve flashed review (e.g. redirected from /save after a
+        // validation error) so the user's input is not cleared.
+        if (!model.containsAttribute("review")) {
+            model.addAttribute("review", new ReviewDTO());
+        }
         model.addAttribute("customers", customerService.getAll());
         List<TripDTO> trips = tripService.getAllTrips().stream()
                 .map(this::mapTripToDTO)
@@ -88,9 +92,15 @@ public class ReviewController {
 
     @PostMapping("/view/reviews/save")
     public String saveReview(@ModelAttribute("review") ReviewDTO reviewDTO, RedirectAttributes redirectAttributes) {
-        reviewService.createReview(reviewDTO);
-        redirectAttributes.addFlashAttribute("success", "Review created successfully");
-        return "redirect:/view/reviews";
+        try {
+            reviewService.createReview(reviewDTO);
+            redirectAttributes.addFlashAttribute("success", "Review created successfully");
+            return "redirect:/view/reviews";
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            redirectAttributes.addFlashAttribute("review", reviewDTO);
+            return "redirect:/view/reviews/add";
+        }
     }
 
     // ======================== HELPERS ========================

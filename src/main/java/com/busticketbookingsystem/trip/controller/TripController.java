@@ -7,6 +7,8 @@ import com.busticketbookingsystem.trip.dto.TripDTO;
 import com.busticketbookingsystem.trip.entity.Trip;
 import com.busticketbookingsystem.trip.service.RouteService;
 import com.busticketbookingsystem.trip.service.TripService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -92,6 +94,12 @@ public class TripController {
         return tripService.getAllTrips().stream()
                 .map(this::mapToDTO)
                 .toList();
+    }
+
+    @GetMapping("/api/trips/page")
+    @ResponseBody
+    public Page<TripDTO> getTripsPage(Pageable pageable) {
+        return tripService.getTripsPage(pageable).map(this::mapToDTO);
     }
 
     @GetMapping("/api/trips/{id}")

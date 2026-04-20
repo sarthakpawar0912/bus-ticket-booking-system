@@ -11,6 +11,13 @@
 </div>
 
 <div class="container my-4">
+    <!-- Flash error (past trip / duplicate seats / insufficient seats / etc.) -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <!-- Trip Details -->
     <div class="card mb-4">
         <div class="card-body">

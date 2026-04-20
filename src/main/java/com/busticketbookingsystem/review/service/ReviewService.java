@@ -2,19 +2,23 @@ package com.busticketbookingsystem.review.service;
 
 import com.busticketbookingsystem.customer.entity.Customer;
 import com.busticketbookingsystem.customer.repository.CustomerRepository;
+import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.payment.repository.PaymentRepository;
 import com.busticketbookingsystem.review.dto.ReviewDTO;
 import com.busticketbookingsystem.review.entity.Review;
 import com.busticketbookingsystem.review.repository.ReviewRepository;
 import com.busticketbookingsystem.trip.entity.Trip;
 import com.busticketbookingsystem.trip.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -22,6 +26,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final CustomerRepository customerRepository;
     private final TripRepository tripRepository;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     public Review createReview(ReviewDTO dto) {
@@ -30,6 +35,15 @@ public class ReviewService {
 
         Trip trip = tripRepository.findById(dto.getTripId())
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + dto.getTripId()));
+
+        // Proxy for "has this customer travelled on this trip?" — Booking has no
+        // customer FK, so we confirm via a paid Payment on the trip.
+        boolean hasPaidBooking = paymentRepository
+                .existsByCustomer_CustomerIdAndBooking_Trip_TripId(customer.getCustomerId(), trip.getTripId());
+        if (!hasPaidBooking) {
+            throw new BadRequestException(
+                    "Customer " + customer.getCustomerId() + " has no booking on trip " + trip.getTripId() + ".");
+        }
 
         // Generate next reviewId manually (reviews table has no AUTO_INCREMENT)
         Integer maxId = reviewRepository.findAll().stream()
@@ -46,7 +60,10 @@ public class ReviewService {
                 .reviewDate(LocalDateTime.now())
                 .build();
 
-        return reviewRepository.save(review);
+        Review saved = reviewRepository.save(review);
+        log.info("Review {} saved by customer {} for trip {} (rating={})",
+                saved.getReviewId(), customer.getCustomerId(), trip.getTripId(), saved.getRating());
+        return saved;
     }
 
     public List<Review> getReviewsByTrip(Integer tripId) {

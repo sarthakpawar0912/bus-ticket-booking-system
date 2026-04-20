@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -99,6 +102,36 @@ class TripControllerTest {
         when(tripService.searchTrips("Mumbai", "Pune")).thenReturn(List.of(trip));
         mockMvc.perform(get("/api/trips/search").param("from", "Mumbai").param("to", "Pune"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getTripsPage_returnsPaginatedResult() throws Exception {
+        com.busticketbookingsystem.trip.entity.Route route =
+                com.busticketbookingsystem.trip.entity.Route.builder()
+                        .routeId(1).fromCity("Mumbai").toCity("Pune").build();
+        trip.setRoute(route);
+
+        PageImpl<Trip> page = new PageImpl<>(List.of(trip), PageRequest.of(0, 10), 1);
+        when(tripService.getTripsPage(any(Pageable.class))).thenReturn(page);
+
+        mockMvc.perform(get("/api/trips/page").param("page", "0").param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].tripId").value(1))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.number").value(0));
+    }
+
+    @Test
+    void getTripsPage_emptyPage() throws Exception {
+        PageImpl<Trip> empty = new PageImpl<>(List.of(), PageRequest.of(0, 10), 0);
+        when(tripService.getTripsPage(any(Pageable.class))).thenReturn(empty);
+
+        mockMvc.perform(get("/api/trips/page"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(0))
+                .andExpect(jsonPath("$.totalElements").value(0));
     }
 
     @Test

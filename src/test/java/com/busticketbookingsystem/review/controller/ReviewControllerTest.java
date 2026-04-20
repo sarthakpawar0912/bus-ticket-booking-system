@@ -2,11 +2,13 @@ package com.busticketbookingsystem.review.controller;
 
 import com.busticketbookingsystem.customer.entity.Customer;
 import com.busticketbookingsystem.customer.service.CustomerService;
+import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.review.dto.ReviewDTO;
 import com.busticketbookingsystem.review.entity.Review;
 import com.busticketbookingsystem.review.service.ReviewService;
 import com.busticketbookingsystem.trip.service.TripService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.MvcResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,5 +123,43 @@ class ReviewControllerTest {
                 .andExpect(redirectedUrl("/view/reviews"));
     }
 
+    @Test
+    void saveReviewView_errorRedirectsWithFlashAndPreservesReview() throws Exception {
+        when(reviewService.createReview(any()))
+                .thenThrow(new BadRequestException("Customer 1 has no booking on trip 1."));
 
+        MvcResult result = mockMvc.perform(post("/view/reviews/save")
+                        .param("customerId", "1").param("tripId", "1")
+                        .param("rating", "5").param("comment", "Great"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/view/reviews/add"))
+                .andExpect(flash().attributeExists("error"))
+                .andExpect(flash().attributeExists("review"))
+                .andReturn();
+
+        ReviewDTO flashed = (ReviewDTO) result.getFlashMap().get("review");
+        org.junit.jupiter.api.Assertions.assertEquals(5, flashed.getRating());
+        org.junit.jupiter.api.Assertions.assertEquals("Great", flashed.getComment());
+        org.junit.jupiter.api.Assertions.assertTrue(
+                ((String) result.getFlashMap().get("error")).contains("no booking"));
+    }
+
+    @Test
+    void showAddReviewForm_usesFlashedReviewWhenPresent() throws Exception {
+        ReviewDTO flashed = ReviewDTO.builder()
+                .customerId(7).tripId(3).rating(4).comment("retry me").build();
+        when(customerService.getAll()).thenReturn(Collections.emptyList());
+        when(tripService.getAllTrips()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/view/reviews/add")
+                        .flashAttr("review", flashed))
+                .andExpect(status().isOk())
+                .andExpect(view().name("review/add-review"))
+                .andExpect(model().attribute("review",
+                        org.hamcrest.Matchers.hasProperty("comment",
+                                org.hamcrest.Matchers.equalTo("retry me"))))
+                .andExpect(model().attribute("review",
+                        org.hamcrest.Matchers.hasProperty("rating",
+                                org.hamcrest.Matchers.equalTo(4))));
+    }
 }

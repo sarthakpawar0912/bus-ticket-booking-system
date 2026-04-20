@@ -2,7 +2,9 @@ package com.busticketbookingsystem.review.service;
 
 import com.busticketbookingsystem.customer.entity.Customer;
 import com.busticketbookingsystem.customer.repository.CustomerRepository;
+import com.busticketbookingsystem.exception.BadRequestException;
 import com.busticketbookingsystem.exception.ResourceNotFoundException;
+import com.busticketbookingsystem.payment.repository.PaymentRepository;
 import com.busticketbookingsystem.review.dto.ReviewDTO;
 import com.busticketbookingsystem.review.entity.Review;
 import com.busticketbookingsystem.review.repository.ReviewRepository;
@@ -40,6 +42,8 @@ class ReviewServiceTest {
     private CustomerRepository customerRepository;
     @Mock
     private TripRepository tripRepository;
+    @Mock
+    private PaymentRepository paymentRepository;
 
     @InjectMocks
     private ReviewService reviewService;
@@ -76,6 +80,8 @@ class ReviewServiceTest {
         void createReview_Success() {
             when(customerRepository.findById(1)).thenReturn(Optional.of(customer));
             when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(paymentRepository.existsByCustomer_CustomerIdAndBooking_Trip_TripId(1, 1))
+                    .thenReturn(true);
             // No existing reviews, so max ID will be 0
             when(reviewRepository.findAll()).thenReturn(Collections.emptyList());
             when(reviewRepository.save(any(Review.class))).thenReturn(review);
@@ -91,18 +97,17 @@ class ReviewServiceTest {
         @Test
         @DisplayName("POSITIVE: Should auto-increment reviewId from existing reviews")
         void createReview_AutoIncrementId() {
-            // There are already 3 reviews with IDs 1, 2, 3
             Review r1 = Review.builder().reviewId(1).build();
             Review r2 = Review.builder().reviewId(2).build();
             Review r3 = Review.builder().reviewId(3).build();
 
             when(customerRepository.findById(1)).thenReturn(Optional.of(customer));
             when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(paymentRepository.existsByCustomer_CustomerIdAndBooking_Trip_TripId(1, 1))
+                    .thenReturn(true);
             when(reviewRepository.findAll()).thenReturn(List.of(r1, r2, r3));
-            // Capture the saved review to verify the ID
             when(reviewRepository.save(any(Review.class))).thenAnswer(invocation -> {
                 Review saved = invocation.getArgument(0);
-                // The new review should have ID 4 (max 3 + 1)
                 assertEquals(4, saved.getReviewId());
                 return saved;
             });
@@ -110,6 +115,20 @@ class ReviewServiceTest {
             reviewService.createReview(reviewDTO);
 
             verify(reviewRepository).save(any(Review.class));
+        }
+
+        @Test
+        @DisplayName("NEGATIVE: Should throw BadRequestException when customer has no paid booking on the trip")
+        void createReview_NoPaidBooking() {
+            when(customerRepository.findById(1)).thenReturn(Optional.of(customer));
+            when(tripRepository.findById(1)).thenReturn(Optional.of(trip));
+            when(paymentRepository.existsByCustomer_CustomerIdAndBooking_Trip_TripId(1, 1))
+                    .thenReturn(false);
+
+            BadRequestException ex = assertThrows(BadRequestException.class,
+                    () -> reviewService.createReview(reviewDTO));
+            assertTrue(ex.getMessage().contains("no booking on trip"));
+            verify(reviewRepository, never()).save(any());
         }
 
         @Test

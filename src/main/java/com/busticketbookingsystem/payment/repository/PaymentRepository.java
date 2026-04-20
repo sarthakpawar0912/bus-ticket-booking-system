@@ -17,6 +17,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     List<Payment> findByCustomer_CustomerId(Integer customerId);
 
+    boolean existsByCustomer_CustomerIdAndBooking_Trip_TripId(Integer customerId, Integer tripId);
+
     @Query("SELECT p FROM Payment p LEFT JOIN FETCH p.booking LEFT JOIN FETCH p.customer")
     List<Payment> findAllWithDetails();
 

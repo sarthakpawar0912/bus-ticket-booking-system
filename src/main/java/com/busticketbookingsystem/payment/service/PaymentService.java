@@ -11,6 +11,8 @@ import com.busticketbookingsystem.payment.dto.PaymentResponseDTO;
 import com.busticketbookingsystem.payment.entity.Payment;
 import com.busticketbookingsystem.payment.entity.PaymentStatus;
 import com.busticketbookingsystem.payment.repository.PaymentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,8 @@ import java.util.List;
 
 @Service
 public class PaymentService {
+
+    private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
@@ -74,6 +78,8 @@ public class PaymentService {
                 .paymentStatus(PaymentStatus.Success)
                 .build();
         Payment saved = paymentRepository.save(payment);
+        log.info("Payment {} processed for booking {} (amount={})",
+                saved.getPaymentId(), booking.getBookingId(), saved.getAmount());
 
         return mapToResponseDTO(saved, "Payment processed successfully");
     }
@@ -133,6 +139,8 @@ public class PaymentService {
             Payment saved = paymentRepository.save(payment);
             responses.add(mapToResponseDTO(saved, "Payment processed successfully"));
         }
+        log.info("Group payment: {} booking(s) paid by customer {} (total={})",
+                responses.size(), customerId, totalAmount);
         return responses;
     }
 
