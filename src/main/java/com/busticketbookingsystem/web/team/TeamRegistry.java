@@ -29,6 +29,14 @@ public class TeamRegistry {
     private static final String URL_TRIPS = "/view/trips";
     private static final String URL_PAYMENTS = "/view/payments";
     private static final String URL_BOOKINGS = "/view/bookings";
+    private static final String URL_MEMBER_PAYMENT_GET_BY_ID =
+            "/members/4/operation?service=payments&operation=Get%20By%20ID";
+    private static final String URL_MEMBER_PAYMENT_GET_BY_BOOKING =
+            "/members/4/operation?service=payments&operation=Get%20By%20Booking";
+    private static final String URL_MEMBER_PAYMENT_GET_BY_CUSTOMER =
+            "/members/4/operation?service=payments&operation=Get%20By%20Customer";
+    private static final String URL_MEMBER_PAYMENT_GROUP_TICKET =
+            "/members/4/operation?service=pdf-payment&operation=Download%20Group%20Ticket";
 
     private final List<TeamMember> members = buildMembers();
 
@@ -190,11 +198,20 @@ public class TeamRegistry {
                         "Build the payment checkout and success-page Thymeleaf views"))
                 .endpoints(List.of(
                         ep(M_GET_ALL, "/api/payments", "List every payment", URL_PAYMENTS, LBL_OPEN_LIST),
+                        ep("GET", "/api/payments/{id}", "View one payment by payment ID",
+                                URL_MEMBER_PAYMENT_GET_BY_ID, "Open Lookup"),
+                        ep("GET", "/api/payments/booking/{bookingId}", "View the payment for a booking ID",
+                                URL_MEMBER_PAYMENT_GET_BY_BOOKING, "Open Lookup"),
+                        ep("GET", "/api/payments/customer/{customerId}", "View all payments for a customer ID",
+                                URL_MEMBER_PAYMENT_GET_BY_CUSTOMER, "Open Lookup"),
                         ep("POST", "/api/payments", "Process a new payment (via checkout)",
                                 URL_PAYMENTS, "Open Payments"),
                         ep(M_DOWNLOAD, "/api/payments/{id}/ticket",
                                 "Download a payment ticket PDF (auto-generates group ticket when the payment is part of a multi-seat transaction)",
-                                "/view/payments/ticket", LBL_DOWNLOAD_TICKET)))
+                                "/view/payments/ticket", LBL_DOWNLOAD_TICKET),
+                        ep(M_DOWNLOAD, "/api/payments/group-ticket",
+                                "Download a combined payment ticket PDF for multiple payment IDs",
+                                URL_MEMBER_PAYMENT_GROUP_TICKET, "Open Group Ticket")))
                 .screens(List.of(
                         sc("Payments List", URL_PAYMENTS, "bi-credit-card"),
                         sc(LBL_DOWNLOAD_TICKET, "/view/payments/ticket", "bi-file-earmark-pdf")))

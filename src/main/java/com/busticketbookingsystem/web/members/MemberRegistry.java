@@ -140,6 +140,9 @@ public class MemberRegistry {
     private static final List<FieldDef> GROUP_TICKET_FIELDS = List.of(
             f("bookingIds", "Booking IDs (comma-separated)", "text", "1,2,3", true, T_STRING));
 
+    private static final List<FieldDef> PAYMENT_GROUP_TICKET_FIELDS = List.of(
+            f("paymentIds", "Payment IDs (comma-separated)", "text", "1,2,3", true, T_STRING));
+
     // ---------- CRUD builders (matches team page: Get All, Create, Update) ----------
 
     private static Operation op(String name, String method, String endpoint, String inputKind, String desc, List<FieldDef> fields) {
@@ -216,6 +219,11 @@ public class MemberRegistry {
     private static ServiceInfo paymentService() {
         List<Operation> ops = List.of(
                 op(OP_GET_ALL, "GET", "/api/payments", "NONE", "Fetch all payments", List.of()),
+                op("Get By ID", "GET", "/api/payments/{id}", "ID", "Fetch one payment by payment ID", List.of()),
+                op("Get By Booking", "GET", "/api/payments/booking/{id}", "ID",
+                        "Fetch the payment linked to a booking ID", List.of()),
+                op("Get By Customer", "GET", "/api/payments/customer/{id}", "ID",
+                        "Fetch all payments for a customer ID", List.of()),
                 op(OP_CREATE, "POST", "/api/payments", "BODY", "Process a new payment", PAYMENT_FIELDS)
         );
         return ServiceInfo.builder().key("payments").name("Payments").icon("bi-credit-card")
@@ -227,7 +235,10 @@ public class MemberRegistry {
         List<Operation> ops = List.of(
                 op("Download Payment Ticket", "GET", "/api/payments/{id}/ticket", "PDF_DOWNLOAD",
                         "Download a payment ticket PDF (auto-generates group ticket when the payment is part of a multi-seat transaction)",
-                        List.of())
+                        List.of()),
+                op("Download Group Ticket", "GET", "/api/payments/group-ticket", "PDF_DOWNLOAD_QUERY",
+                        "Download a combined payment ticket PDF for multiple payment IDs",
+                        PAYMENT_GROUP_TICKET_FIELDS)
         );
         return ServiceInfo.builder().key("pdf-payment").name("Ticket Download").icon("bi-file-earmark-pdf-fill")
                 .description("Download payment ticket PDFs")
