@@ -13,12 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class ReviewController {
+
+    private static final String REVIEW_BASE_PATH = "/review";
 
     private final ReviewService reviewService;
     private final CustomerService customerService;
@@ -33,14 +33,14 @@ public class ReviewController {
 
     // ======================== REST API ========================
 
-    @PostMapping("/api/reviews")
+    @PostMapping("/api" + REVIEW_BASE_PATH + "s")
     @ResponseBody
     public Map<String, Object> createReview(@Valid @RequestBody ReviewDTO reviewDTO) {
         Review r = reviewService.createReview(reviewDTO);
         return mapReviewToMap(r);
     }
 
-    @GetMapping("/api/reviews")
+    @GetMapping("/api" + REVIEW_BASE_PATH + "s")
     @ResponseBody
     public List<Map<String, Object>> getAllReviews() {
         return reviewService.getAllReviews().stream()
@@ -48,7 +48,7 @@ public class ReviewController {
                 .toList();
     }
 
-    @GetMapping("/api/reviews/trip/{tripId}")
+    @GetMapping("/api" + REVIEW_BASE_PATH + "s/trip/{tripId}")
     @ResponseBody
     public List<Map<String, Object>> getReviewsByTrip(@PathVariable Integer tripId) {
         return reviewService.getReviewsByTrip(tripId).stream()
@@ -56,7 +56,7 @@ public class ReviewController {
                 .toList();
     }
 
-    @GetMapping("/api/reviews/customer/{customerId}")
+    @GetMapping("/api" + REVIEW_BASE_PATH + "s/customer/{customerId}")
     @ResponseBody
     public List<Map<String, Object>> getReviewsByCustomer(@PathVariable Integer customerId) {
         return reviewService.getReviewsByCustomer(customerId).stream()
@@ -66,7 +66,7 @@ public class ReviewController {
 
     // ======================== THYMELEAF VIEWS ========================
 
-    @GetMapping("/view/reviews")
+    @GetMapping("/view" + REVIEW_BASE_PATH + "s")
     public String listReviews(Model model) {
         List<Map<String, Object>> reviews = reviewService.getAllReviews().stream()
                 .map(this::mapReviewToMap)
@@ -75,23 +75,24 @@ public class ReviewController {
         return "review/reviews";
     }
 
-    @GetMapping("/view/reviews/add")
+    @GetMapping("/view" + REVIEW_BASE_PATH + "s/add")
     public String showAddReviewForm(Model model) {
-        // Preserve flashed review (e.g. redirected from /save after a
-        // validation error) so the user's input is not cleared.
         if (!model.containsAttribute("review")) {
             model.addAttribute("review", new ReviewDTO());
         }
         model.addAttribute("customers", customerService.getAll());
+
         List<TripDTO> trips = tripService.getAllTrips().stream()
                 .map(this::mapTripToDTO)
                 .toList();
+
         model.addAttribute("trips", trips);
         return "review/add-review";
     }
 
-    @PostMapping("/view/reviews/save")
-    public String saveReview(@ModelAttribute("review") ReviewDTO reviewDTO, RedirectAttributes redirectAttributes) {
+    @PostMapping("/view" + REVIEW_BASE_PATH + "s/save")
+    public String saveReview(@ModelAttribute("review") ReviewDTO reviewDTO,
+                             RedirectAttributes redirectAttributes) {
         try {
             reviewService.createReview(reviewDTO);
             redirectAttributes.addFlashAttribute("success", "Review created successfully");

@@ -16,11 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -32,20 +28,52 @@ public class BookingService {
 
     @Transactional
     public BookingResponseDTO initiateBooking(BookingRequestDTO request) {
-        List<Integer> seatNumbers = request.getSeatNumbers();
 
+        validateSeatNumbers(request.getSeatNumbers());
+
+        Trip trip = getValidatedTrip(request.getTripId(), request.getSeatNumbers().size());
+
+        List<Integer> bookingIds = new ArrayList<>();
+        BigDecimal totalFare = BigDecimal.ZERO;
+
+        for (Integer seatNumber : request.getSeatNumbers()) {
+            Booking booking = createOrUpdateBooking(request, trip, seatNumber);
+            bookingIds.add(booking.getBookingId());
+            totalFare = totalFare.add(trip.getFare());
+
+            trip.setAvailableSeats(trip.getAvailableSeats() - 1);
+        }
+
+        tripRepository.save(trip);
+
+        log.info("Booked {} seat(s) on trip {} for customer {} — booking ids {}",
+                request.getSeatNumbers().size(),
+                trip.getTripId(),
+                request.getCustomerId(),
+                bookingIds);
+
+        return buildResponse(request, bookingIds, totalFare);
+    }
+
+    // ================== VALIDATION METHODS ==================
+
+    private void validateSeatNumbers(List<Integer> seatNumbers) {
         Set<Integer> uniqueSeats = new HashSet<>(seatNumbers);
+
         if (uniqueSeats.size() != seatNumbers.size()) {
             throw new BadRequestException("Duplicate seat numbers in request.");
         }
+
         for (Integer seat : seatNumbers) {
             if (seat == null || seat <= 0) {
                 throw new BadRequestException("Seat number must be a positive integer.");
             }
         }
+    }
 
-        Trip trip = tripRepository.findByIdForUpdate(request.getTripId())
-                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + request.getTripId()));
+    private Trip getValidatedTrip(Integer tripId, int requestedSeats) {
+        Trip trip = tripRepository.findByIdForUpdate(tripId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
 
         if (trip.getTripDate() != null && trip.getTripDate().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("Cannot book a trip that has already departed.");
@@ -56,45 +84,42 @@ public class BookingService {
         }
 
         Integer available = trip.getAvailableSeats();
-        if (available == null || available < seatNumbers.size()) {
+        if (available == null || available < requestedSeats) {
             throw new BadRequestException("Only " + (available == null ? 0 : available)
-                    + " seat(s) available; cannot book " + seatNumbers.size() + ".");
+                    + " seat(s) available; cannot book " + requestedSeats + ".");
         }
 
-        List<Integer> bookingIds = new ArrayList<>();
-        BigDecimal perSeatFare = trip.getFare();
-        BigDecimal totalFare = BigDecimal.ZERO;
+        return trip;
+    }
 
-        for (Integer seatNumber : seatNumbers) {
-            Optional<Booking> existingBooking = bookingRepository.findByTrip_TripIdAndSeatNumber(
-                    request.getTripId(), seatNumber);
+    // ================== CORE LOGIC ==================
 
-            if (existingBooking.isPresent() && existingBooking.get().getStatus() == BookingStatus.Booked) {
-                throw new BadRequestException("Seat " + seatNumber + " is already booked for this trip.");
-            }
+    private Booking createOrUpdateBooking(BookingRequestDTO request, Trip trip, Integer seatNumber) {
 
-            Booking booking;
-            if (existingBooking.isPresent()) {
-                booking = existingBooking.get();
-                booking.setStatus(BookingStatus.Booked);
-            } else {
-                booking = Booking.builder()
+        Optional<Booking> existingBooking =
+                bookingRepository.findByTrip_TripIdAndSeatNumber(request.getTripId(), seatNumber);
+
+        if (existingBooking.isPresent() &&
+                existingBooking.get().getStatus() == BookingStatus.Booked) {
+            throw new BadRequestException("Seat " + seatNumber + " is already booked for this trip.");
+        }
+
+        Booking booking = existingBooking.orElseGet(() ->
+                Booking.builder()
                         .trip(trip)
                         .seatNumber(seatNumber)
                         .status(BookingStatus.Booked)
-                        .build();
-            }
+                        .build()
+        );
 
-            Booking saved = bookingRepository.save(booking);
-            bookingIds.add(saved.getBookingId());
-            totalFare = totalFare.add(perSeatFare);
+        booking.setStatus(BookingStatus.Booked);
 
-            trip.setAvailableSeats(trip.getAvailableSeats() - 1);
-        }
+        return bookingRepository.save(booking);
+    }
 
-        tripRepository.save(trip);
-        log.info("Booked {} seat(s) on trip {} for customer {} — booking ids {}",
-                seatNumbers.size(), trip.getTripId(), request.getCustomerId(), bookingIds);
+    private BookingResponseDTO buildResponse(BookingRequestDTO request,
+                                             List<Integer> bookingIds,
+                                             BigDecimal totalFare) {
 
         return BookingResponseDTO.builder()
                 .message("Booking successful for " + request.getSeatNumbers().size() + " seat(s)")
@@ -103,6 +128,8 @@ public class BookingService {
                 .customerId(request.getCustomerId())
                 .build();
     }
+
+    // ================== OTHER METHODS (UNCHANGED) ==================
 
     @Transactional(readOnly = true)
     public List<Booking> getBookingsForTrip(Integer tripId) {
@@ -115,12 +142,6 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + id));
     }
 
-    /**
-     * Rebuild the confirmation page context from the database when the original
-     * POST flash attributes are gone (e.g. user opens the confirmation URL
-     * directly). The schema does not link bookings to customers, so only the
-     * single requested booking is represented here.
-     */
     @Transactional(readOnly = true)
     public ConfirmationContext buildConfirmationContext(Integer bookingId) {
         Booking b = bookingRepository.findByIdWithTripDetails(bookingId)
