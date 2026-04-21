@@ -48,6 +48,7 @@ public class MemberRegistry {
     private static final String CITY_MUMBAI = "Mumbai";
     private static final String OP_GET_ALL = "Get All";
     private static final String OP_CREATE = "Create";
+    private static final String SAMPLE_ID_CSV = "1,2,3";
 
     // ---------- Field builders ----------
 
@@ -134,14 +135,14 @@ public class MemberRegistry {
 
     private static final List<FieldDef> BOOKING_FIELDS = List.of(
             f("tripId", "Trip ID", T_NUMBER, "1", true, T_INTEGER),
-            f("seatNumbers", "Seat Numbers (comma-separated)", "text", "1,2,3", true, "integer-list"),
+            f("seatNumbers", "Seat Numbers (comma-separated)", "text", SAMPLE_ID_CSV, true, "integer-list"),
             f(F_CUSTOMER_ID, F_CUSTOMER_ID_LABEL, T_NUMBER, "10", true, T_INTEGER));
 
     private static final List<FieldDef> GROUP_TICKET_FIELDS = List.of(
-            f("bookingIds", "Booking IDs (comma-separated)", "text", "1,2,3", true, T_STRING));
+            f("bookingIds", "Booking IDs (comma-separated)", "text", SAMPLE_ID_CSV, true, T_STRING));
 
     private static final List<FieldDef> PAYMENT_GROUP_TICKET_FIELDS = List.of(
-            f("paymentIds", "Payment IDs (comma-separated)", "text", "1,2,3", true, T_STRING));
+            f("paymentIds", "Payment IDs (comma-separated)", "text", SAMPLE_ID_CSV, true, T_STRING));
 
     // ---------- CRUD builders (matches team page: Get All, Create, Update) ----------
 

@@ -28,32 +28,31 @@ public class BookingService {
 
     @Transactional
     public BookingResponseDTO initiateBooking(BookingRequestDTO request) {
-
         validateSeatNumbers(request.getSeatNumbers());
-
         Trip trip = getValidatedTrip(request.getTripId(), request.getSeatNumbers().size());
-
-        List<Integer> bookingIds = new ArrayList<>();
-        BigDecimal totalFare = BigDecimal.ZERO;
-
-        for (Integer seatNumber : request.getSeatNumbers()) {
-            Booking booking = createOrUpdateBooking(request, trip, seatNumber);
-            bookingIds.add(booking.getBookingId());
-            totalFare = totalFare.add(trip.getFare());
-
-            trip.setAvailableSeats(trip.getAvailableSeats() - 1);
-        }
-
+        SeatBookingResult result = processSeats(request, trip);
         tripRepository.save(trip);
-
         log.info("Booked {} seat(s) on trip {} for customer {} — booking ids {}",
                 request.getSeatNumbers().size(),
                 trip.getTripId(),
                 request.getCustomerId(),
-                bookingIds);
-
-        return buildResponse(request, bookingIds, totalFare);
+                result.bookingIds());
+        return buildResponse(request, result.bookingIds(), result.totalFare());
     }
+
+    private SeatBookingResult processSeats(BookingRequestDTO request, Trip trip) {
+        List<Integer> bookingIds = new ArrayList<>();
+        BigDecimal totalFare = BigDecimal.ZERO;
+        for (Integer seatNumber : request.getSeatNumbers()) {
+            Booking booking = createOrUpdateBooking(request, trip, seatNumber);
+            bookingIds.add(booking.getBookingId());
+            totalFare = totalFare.add(trip.getFare());
+            trip.setAvailableSeats(trip.getAvailableSeats() - 1);
+        }
+        return new SeatBookingResult(bookingIds, totalFare);
+    }
+
+    private record SeatBookingResult(List<Integer> bookingIds, BigDecimal totalFare) {}
 
     // ================== VALIDATION METHODS ==================
 

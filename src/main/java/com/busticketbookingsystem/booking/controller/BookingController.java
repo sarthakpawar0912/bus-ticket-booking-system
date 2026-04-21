@@ -106,9 +106,19 @@ public class BookingController {
     @GetMapping("/api/bookings/group-ticket")
     @ResponseBody
     public ResponseEntity<byte[]> downloadGroupBookingTicket(@RequestParam String bookingIds) {
-        String[] ids = bookingIds.split(",");
         List<Integer> bidList = new ArrayList<>();
-        for (String s : ids) bidList.add(Integer.parseInt(s.trim()));
+        for (String s : bookingIds.split(",")) {
+            s = s.trim();
+            if (s.isEmpty()) continue;
+            try {
+                bidList.add(Integer.parseInt(s));
+            } catch (NumberFormatException ex) {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        if (bidList.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         byte[] pdfBytes = ticketPdfService.generateGroupBookingTicket(bidList);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);

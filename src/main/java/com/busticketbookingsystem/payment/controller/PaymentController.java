@@ -42,6 +42,21 @@ public class PaymentController {
         this.ticketPdfService = ticketPdfService;
     }
 
+    private static List<Integer> parseIdCsv(String csv) {
+        List<Integer> out = new java.util.ArrayList<>();
+        if (csv == null) return out;
+        for (String s : csv.split(",")) {
+            s = s.trim();
+            if (s.isEmpty()) continue;
+            try {
+                out.add(Integer.parseInt(s));
+            } catch (NumberFormatException ex) {
+                return new java.util.ArrayList<>();
+            }
+        }
+        return out;
+    }
+
     // ======================== REST API ========================
 
     @PostMapping("/api/payments")
@@ -110,9 +125,10 @@ public class PaymentController {
     @GetMapping("/api/payments/group-ticket")
     @ResponseBody
     public ResponseEntity<byte[]> downloadGroupTicket(@RequestParam String paymentIds) {
-        String[] ids = paymentIds.split(",");
-        List<Integer> pidList = new java.util.ArrayList<>();
-        for (String s : ids) pidList.add(Integer.parseInt(s.trim()));
+        List<Integer> pidList = parseIdCsv(paymentIds);
+        if (pidList.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         byte[] pdfBytes = ticketPdfService.generateGroupTicket(pidList);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);

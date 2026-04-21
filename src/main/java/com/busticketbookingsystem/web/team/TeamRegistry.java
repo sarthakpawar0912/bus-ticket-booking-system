@@ -18,6 +18,7 @@ public class TeamRegistry {
     private static final String LBL_OPEN_LIST = "Open List";
     private static final String LBL_OPEN_ADD = "Open Add Form";
     private static final String LBL_OPEN_EDIT = "Open List to Edit";
+    private static final String LBL_OPEN_LOOKUP = "Open Lookup";
     private static final String LBL_DOWNLOAD_TICKET = "Download Ticket";
     private static final String URL_CUSTOMERS = "/view/customers";
     private static final String URL_ADDRESSES = "/view/addresses";
@@ -199,11 +200,11 @@ public class TeamRegistry {
                 .endpoints(List.of(
                         ep(M_GET_ALL, "/api/payments", "List every payment", URL_PAYMENTS, LBL_OPEN_LIST),
                         ep("GET", "/api/payments/{id}", "View one payment by payment ID",
-                                URL_MEMBER_PAYMENT_GET_BY_ID, "Open Lookup"),
+                                URL_MEMBER_PAYMENT_GET_BY_ID, LBL_OPEN_LOOKUP),
                         ep("GET", "/api/payments/booking/{bookingId}", "View the payment for a booking ID",
-                                URL_MEMBER_PAYMENT_GET_BY_BOOKING, "Open Lookup"),
+                                URL_MEMBER_PAYMENT_GET_BY_BOOKING, LBL_OPEN_LOOKUP),
                         ep("GET", "/api/payments/customer/{customerId}", "View all payments for a customer ID",
-                                URL_MEMBER_PAYMENT_GET_BY_CUSTOMER, "Open Lookup"),
+                                URL_MEMBER_PAYMENT_GET_BY_CUSTOMER, LBL_OPEN_LOOKUP),
                         ep("POST", "/api/payments", "Process a new payment (via checkout)",
                                 URL_PAYMENTS, "Open Payments"),
                         ep(M_DOWNLOAD, "/api/payments/{id}/ticket",

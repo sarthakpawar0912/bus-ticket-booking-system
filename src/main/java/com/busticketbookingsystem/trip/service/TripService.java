@@ -43,8 +43,11 @@ public class TripService {
                 .orElseThrow(() -> new ResourceNotFoundException("Dropping Address not found"));
         Driver driver1 = driverRepository.findById(driver1Id)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver 1 not found"));
-        Driver driver2 = driverRepository.findById(driver2Id)
-                .orElseThrow(() -> new ResourceNotFoundException("Driver 2 not found"));
+        Driver driver2 = null;
+        if (driver2Id != null) {
+            driver2 = driverRepository.findById(driver2Id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Driver 2 not found"));
+        }
 
         trip.setRoute(route);
         trip.setBus(bus);

@@ -19,6 +19,7 @@ import java.util.*;
 public class ReviewController {
 
     private static final String REVIEW_BASE_PATH = "/review";
+    private static final String ATTR_REVIEW = "review";
 
     private final ReviewService reviewService;
     private final CustomerService customerService;
@@ -77,8 +78,8 @@ public class ReviewController {
 
     @GetMapping("/view" + REVIEW_BASE_PATH + "s/add")
     public String showAddReviewForm(Model model) {
-        if (!model.containsAttribute("review")) {
-            model.addAttribute("review", new ReviewDTO());
+        if (!model.containsAttribute(ATTR_REVIEW)) {
+            model.addAttribute(ATTR_REVIEW, new ReviewDTO());
         }
         model.addAttribute("customers", customerService.getAll());
 
@@ -91,7 +92,7 @@ public class ReviewController {
     }
 
     @PostMapping("/view" + REVIEW_BASE_PATH + "s/save")
-    public String saveReview(@ModelAttribute("review") ReviewDTO reviewDTO,
+    public String saveReview(@ModelAttribute(ATTR_REVIEW) ReviewDTO reviewDTO,
                              RedirectAttributes redirectAttributes) {
         try {
             reviewService.createReview(reviewDTO);
@@ -99,7 +100,7 @@ public class ReviewController {
             return "redirect:/view/reviews";
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
-            redirectAttributes.addFlashAttribute("review", reviewDTO);
+            redirectAttributes.addFlashAttribute(ATTR_REVIEW, reviewDTO);
             return "redirect:/view/reviews/add";
         }
     }
@@ -123,8 +124,8 @@ public class ReviewController {
     private TripDTO mapTripToDTO(Trip t) {
         return TripDTO.builder()
                 .tripId(t.getTripId())
-                .fromCity(t.getRoute().getFromCity())
-                .toCity(t.getRoute().getToCity())
+                .fromCity(t.getRoute() != null ? t.getRoute().getFromCity() : null)
+                .toCity(t.getRoute() != null ? t.getRoute().getToCity() : null)
                 .departureTime(t.getDepartureTime())
                 .build();
     }
